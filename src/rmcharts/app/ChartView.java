@@ -70,7 +70,7 @@ public ChartView()
     _rowView.addChild(wrap);
     
     // Create configure ChartArea
-    _chartArea = new ChartArea();
+    _chartArea = new ChartAreaLine();
     _chartArea.addEventHandler(e -> _chartArea.animate(), MouseRelease);
     _rowView.addChild(_chartArea);
     
@@ -155,15 +155,15 @@ public String getType()  { return _type; }
  */
 public void setType(String aType)
 {
-    ChartArea old = _chartArea; _rowView.removeChild(_chartArea);
     _type = aType;
     
-    _chartArea = aType==LINE_TYPE? new ChartArea() : new ChartAreaBar();
-    _chartArea._series = old._series; _chartArea._seriesStart = old._seriesStart;
-    _chartArea.addEventHandler(e -> _chartArea.animate(), MouseRelease);
-    _rowView.addChild(_chartArea, _rowView.getChildCount()-2);
-    _legend.update(_chartArea);
-    _chartArea.animate();
+    ChartArea newChartArea = aType==LINE_TYPE? new ChartAreaLine() : new ChartAreaBar();
+    newChartArea._series = _chartArea._series; newChartArea._seriesStart = _chartArea._seriesStart;
+    newChartArea.addEventHandler(e -> newChartArea.animate(), MouseRelease);
+    ViewUtils.replaceView(_chartArea, _chartArea = newChartArea);
+    
+    _legend.update(newChartArea);
+    newChartArea.animate();
 }
 
 }

@@ -14,6 +14,9 @@ public class ChartAreaBar extends ChartArea {
  */
 protected void paintFront(Painter aPntr)
 {
+    // Do normal version to paint axis
+    super.paintFront(aPntr);
+    
     // Get active series and count
     List <DataSeries> seriesList = getSeriesActive();
     int scount = seriesList.size();
@@ -21,20 +24,6 @@ protected void paintFront(Painter aPntr)
     double h = getHeight() - 4, w = getWidth() - 40;
     int dcount = getSeriesLength();
     DataPoint dpnt = getDataPoint();
-    DataSeries dps = dpnt!=null? dpnt.series : null;
-    
-    // Draw axis
-    for(int i=0;i<5;i++) {
-        
-        // Draw lines
-        aPntr.setColor(AXIS_LINES_COLOR); aPntr.setStroke(Stroke.Stroke1);
-        double y = h/4*i; if(y>=getHeight()) y--;
-        aPntr.drawLine(40, y, getWidth(), y);
-        
-        // Draw labels
-        aPntr.setFont(Font.Arial12); aPntr.setColor(AXIS_LABELS_COLOR);
-        aPntr.drawString((200-i*50) + "k", 0, y + 4);
-    }
     
     // If reveal is not full (1) then clip
     if(getReveal()<1) {
@@ -164,7 +153,6 @@ public void dataPointChanged()
     Point pnt = dataPoint.getDataPointLocal(); pnt = localToParent(px, pnt.y, chartView);
     double nx = pnt.x - _dataPointView.getWidth()/2;
     double ny = pnt.y - _dataPointView.getHeight() - 8;
-    System.out.println("New x: index=" + index + ", sw=" + sw + ", nx=" + nx);
     
     // If not onscreen, add and return
     if(_dataPointView.getParent()==null) {
