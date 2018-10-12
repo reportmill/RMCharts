@@ -94,20 +94,14 @@ public void dataPointChanged()
         return;
     }
         
-    // Get series and index
-    int index = dataPoint.index;
-    
-    // Remove ShapeView
-    if(_dataPointView.getChild(0) instanceof ShapeView) _dataPointView.removeChild(0);
-    _dataPointView.setOpacity(1);
+    // Remove children and reset opacity, padding and spacing
+    _dataPointView.removeChildren(); _dataPointView.setOpacity(1);
+    _dataPointView.setPadding(7,7,15,7); _dataPointView.setSpacing(2);
     
     // Set KeyLabel string
-    StringView keyLabel = (StringView)_dataPointView.getChild(0);
+    StringView keyLabel = new StringView(); keyLabel.setFont(Font.Arial10); _dataPointView.addChild(keyLabel);
     String key = String.valueOf(getSeriesStart() + getDataPoint().index);
     keyLabel.setText(key);
-    
-    // Remove row views
-    while(_dataPointView.getChildCount()>1) _dataPointView.removeChild(1);
     
     // Iterate over series
     List <DataSeries> seriesList = getSeriesActive();
@@ -149,7 +143,7 @@ public void dataPointChanged()
     
     // Colculate new location
     double w = getWidth() - 40; int dcount = getSeriesLength(); double sw = w/dcount;
-    double px = index*sw + 40 + sw/2;
+    double px = dataPoint.index*sw + 40 + sw/2;
     Point pnt = dataPoint.getDataPointLocal(); pnt = localToParent(px, pnt.y, chartView);
     double nx = pnt.x - _dataPointView.getWidth()/2;
     double ny = pnt.y - _dataPointView.getHeight() - 8;

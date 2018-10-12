@@ -91,16 +91,8 @@ public ChartView()
     _rowView.addChild(_legend);
     
     // Create/configure DataPoint view
-    _dataPointView = new ColView(); _dataPointView.setPadding(7,7,15,7); _dataPointView.setSpacing(5);
+    _dataPointView = new ColView();
     _dataPointView.setManaged(false); _dataPointView.setPickable(false);
-    StringView sview = new StringView(); sview.setFont(Font.Arial10);
-    _dataPointView.addChild(sview);
-    RowView rview = new RowView(); rview.setSpacing(5);
-    _dataPointView.addChild(rview);
-    rview.addChild(new ShapeView(new Ellipse(0,0,5,5)));
-    StringView sview2 = new StringView(); sview2.setFont(Font.Arial12); rview.addChild(sview2);
-    StringView sview3 = new StringView(); sview3.setFont(Font.Arial12.deriveFont(13).getBold()); rview.addChild(sview3);
-    
     
     // Set values
     //setTitle("Solar Employment Growth by Sector, 2010-2016");

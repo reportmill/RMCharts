@@ -100,32 +100,33 @@ public void dataPointChanged()
         _dataPointView.getAnimCleared(1000).setOpacity(0).setOnFinish(a -> chartView.removeChild(_dataPointView)).play();
         return;
     }
-        
+    
+    // Remove children and reset opacity, padding and spacing
+    _dataPointView.removeChildren(); _dataPointView.setOpacity(1);
+    _dataPointView.setPadding(7,7,15,7); _dataPointView.setSpacing(5);
+     
     // Get series and index
     DataSeries series = dataPoint.series; int index = dataPoint.index;
     
-    // Remove ShapeView
-    if(_dataPointView.getChild(0) instanceof ShapeView) _dataPointView.removeChild(0);
-    _dataPointView.setOpacity(1);
-    
     // Set KeyLabel string
-    StringView keyLabel = (StringView)_dataPointView.getChild(0);
+    StringView keyLabel = new StringView(); keyLabel.setFont(Font.Arial10); _dataPointView.addChild(keyLabel);
     String key = String.valueOf(getSeriesStart() + getDataPoint().index);
     keyLabel.setText(key);
     
-    // Remove row views
-    while(_dataPointView.getChildCount()>2) _dataPointView.removeChild(2);
-    
-    // Set border and bullet color
-    RowView rview = (RowView)_dataPointView.getChild(1);
+    // Create RowView: BulletView
     Color color = getSeriesColor(series.getIndex());
-    rview.getChild(0).setFill(color);
+    ShapeView bulletView = new ShapeView(new Ellipse(0,0,5,5)); bulletView.setFill(color);
     
-    // Set NameLabel string
-    StringView nameLabel = (StringView)rview.getChild(1);
+    // Create RowView: NameLabel, ValLabel
+    StringView nameLabel = new StringView(); nameLabel.setFont(Font.Arial12);
     nameLabel.setText(series.getName() + ":");
-    StringView valLabel = (StringView)rview.getChild(2);
+    StringView valLabel = new StringView(); valLabel.setFont(Font.Arial12.deriveFont(13).getBold());
     valLabel.setText(ChartView._fmt.format(dataPoint.getSeriesValue()));
+    
+    // Create RowView and add BulletView, NameLabel and ValLabel
+    RowView rview = new RowView(); rview.setSpacing(5);
+    rview.setChildren(bulletView, nameLabel, valLabel);
+    _dataPointView.addChild(rview);
     
     // Calculate and set new size, keeping same center
     double oldWidth = _dataPointView.getWidth(), oldHeight = _dataPointView.getHeight();
