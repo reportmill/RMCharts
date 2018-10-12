@@ -2,7 +2,7 @@ package rmcharts.app;
 import snap.util.*;
 
 /**
- * A custom class.
+ * A class to load chart parameters from JSON.
  */
 public class ChartParser {
     
@@ -91,7 +91,7 @@ protected void parsePlotOptions(JSONNode aNode)
         JSONNode pointStart = series.getNode("pointStart");
         if(pointStart!=null) {
             int start = SnapUtils.intValue(pointStart.getNumber());
-            _chartView.getChartArea().setSeriesStart(start);
+            _chartView.setSeriesStart(start);
         }
     }
 }
@@ -128,7 +128,7 @@ protected void parseSeries(JSONNode aNode)
         }
         
         // Add series
-        _chartView.getChartArea().addSeries(series);
+        _chartView.addSeries(series);
     }
 }
 

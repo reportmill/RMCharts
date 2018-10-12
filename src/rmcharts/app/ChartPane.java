@@ -4,7 +4,7 @@ import snap.view.*;
 import snap.web.WebURL;
 
 /**
- * A custom class.
+ * A class to manage a ChartView.
  */
 public class ChartPane extends ViewOwner {
     

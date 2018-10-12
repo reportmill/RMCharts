@@ -4,7 +4,7 @@ import snap.gfx.*;
 import snap.view.*;
 
 /**
- * A custom class.
+ * A ChartArea subclass to display the contents of line chart.
  */
 public class ChartAreaLine extends ChartArea {
 
@@ -15,15 +15,16 @@ public List <Path> getSeriesPaths()
 {
     // Get series paths
     List <Path> paths = new ArrayList();
-    int count = getSeriesLength();
+    int scount = getSeriesCount();
+    int slen = getSeriesLength();
     
     // Iterate over series
-    for(int i=0; i<_series.size();i++) { DataSeries series = _series.get(i); if(series.isDisabled()) continue;
+    for(int i=0; i<scount;i++) { DataSeries series = getSeries(i); if(series.isDisabled()) continue;
     
         Path path = new Path(); paths.add(path);
         
         // Iterate over values
-        for(int j=0;j<count;j++) { double val = series.getValue(j);
+        for(int j=0;j<slen;j++) { double val = series.getValue(j);
             Point p = seriesToLocal(j, val);
             if(j==0) path.moveTo(p.x,p.y); else path.lineTo(p.x,p.y);
         }
@@ -54,7 +55,7 @@ protected void paintFront(Painter aPntr)
     // Draw series paths
     List <Path> paths = getSeriesPaths();
     for(int i=0;i<paths.size();i++) { Path path = paths.get(i); DataSeries series = seriesList.get(i);
-        aPntr.setColor(ChartLegend.COLORS[series.getIndex()]);
+        aPntr.setColor(getSeriesColor(series.getIndex()));
         aPntr.setStroke(Stroke.Stroke2); if(series==dps) aPntr.setStroke(Stroke3);
         aPntr.draw(path);
     }
@@ -67,8 +68,8 @@ protected void paintFront(Painter aPntr)
         
             Point p = seriesToLocal(j, val);
             
-            Shape marker = ChartLegend.SHAPES[series.getIndex()].copyFor(new Transform(p.x-4,p.y-4));
-            Color c = ChartLegend.COLORS[series.getIndex()];
+            Shape marker = getSeriesShape(series.getIndex()).copyFor(new Transform(p.x-4,p.y-4));
+            Color c = getSeriesColor(series.getIndex());
             
             if(series==dps && j==dpnt.index) {
                 aPntr.setColor(c.blend(Color.CLEARWHITE, .5));
@@ -117,7 +118,7 @@ public void dataPointChanged()
     
     // Set border and bullet color
     RowView rview = (RowView)_dataPointView.getChild(1);
-    Color color = ChartLegend.COLORS[series.getIndex()];
+    Color color = getSeriesColor(series.getIndex());
     rview.getChild(0).setFill(color);
     
     // Set NameLabel string

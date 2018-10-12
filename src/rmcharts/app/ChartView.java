@@ -1,5 +1,6 @@
 package rmcharts.app;
 import java.text.DecimalFormat;
+import java.util.*;
 import snap.gfx.*;
 import snap.view.*;
 import snap.web.WebURL;
@@ -10,32 +11,45 @@ import snap.web.WebURL;
 public class ChartView extends ColView {
     
     // The title
-    StringView     _titleView;
+    StringView         _titleView;
     
     // The subtitle
-    StringView     _subtitleView;
+    StringView         _subtitleView;
     
     // The row view for content
-    RowView        _rowView;
+    RowView            _rowView;
     
     // The Y axis title View
-    StringView     _yAxisTitleView;
+    StringView         _yAxisTitleView;
     
     // The ChartArea
-    ChartArea      _chartArea;
+    ChartArea          _chartArea;
     
     // The Legend
-    ChartLegend    _legend;
+    ChartLegend        _legend;
     
     // The chart type
-    String         _type = LINE_TYPE;
+    String             _type = LINE_TYPE;
     
     // The view for the current datapoint
-    ColView        _dataPointView;
+    ColView            _dataPointView;
+    
+    // The list of series
+    List <DataSeries>  _series = new ArrayList();
+    
+    // The series start
+    int                _seriesStart = 2010;
+    
+    // The series shapes
+    Shape              _markerShapes[];
     
     // Constants
     public static final String LINE_TYPE = "Line";
     public static final String BAR_TYPE = "Bar";
+    
+    // Colors
+    static Color    COLORS[] = new Color[] { Color.get("#88B4E7"), Color.BLACK, Color.get("#A6EB8A"),
+        Color.get("#EBA769"), Color.get("#8185E2") };
     
     // Shared
     static DecimalFormat _fmt = new DecimalFormat("#,###.##");
@@ -69,10 +83,8 @@ public ChartView()
     WrapView wrap = new WrapView(_yAxisTitleView); wrap.setPrefWidth(22);
     _rowView.addChild(wrap);
     
-    // Create configure ChartArea
-    _chartArea = new ChartAreaLine();
-    _chartArea.addEventHandler(e -> _chartArea.animate(), MouseRelease);
-    _rowView.addChild(_chartArea);
+    // Create/set ChartArea
+    setChartArea(new ChartAreaLine());
     
     // Create/configure ChartLegend
     _legend = new ChartLegend();
@@ -105,8 +117,8 @@ public ChartView()
     String chartJSONText = WebURL.getURL(getClass(), "Sample.json").getText();
     parser.parseString(chartJSONText);
     
-    // Update chart area
-    _legend.update(_chartArea);
+    // Reload legend and redraw chart
+    _legend.reloadContents();
     _chartArea.animate();
 }
 
@@ -114,6 +126,19 @@ public ChartView()
  * Returns the ChartArea.
  */
 public ChartArea getChartArea()  { return _chartArea; }
+
+/**
+ * Sets the ChartArea.
+ */
+protected void setChartArea(ChartArea aCA)
+{
+    // Add or replace ChartArea
+    if(_chartArea==null) _rowView.addChild(_chartArea = aCA);
+    else ViewUtils.replaceView(_chartArea, _chartArea = aCA);
+
+    // Set ChartArea.ChartView
+    _chartArea._chartView = this;
+}
 
 /**
  * Returns the title.
@@ -158,12 +183,103 @@ public void setType(String aType)
     _type = aType;
     
     ChartArea newChartArea = aType==LINE_TYPE? new ChartAreaLine() : new ChartAreaBar();
-    newChartArea._series = _chartArea._series; newChartArea._seriesStart = _chartArea._seriesStart;
-    newChartArea.addEventHandler(e -> newChartArea.animate(), MouseRelease);
-    ViewUtils.replaceView(_chartArea, _chartArea = newChartArea);
+    setChartArea(newChartArea);
     
-    _legend.update(newChartArea);
+    // Reload legend and redraw chart
+    _legend.reloadContents();
     newChartArea.animate();
+}
+
+/**
+ * Returns the series.
+ */
+public List <DataSeries> getSeries()  { return _series; }
+
+/**
+ * Returns the number of series.
+ */
+public int getSeriesCount()  { return _series.size(); }
+
+/**
+ * Returns the individual series at given index.
+ */
+public DataSeries getSeries(int anIndex)  { return _series.get(anIndex); }
+
+/**
+ * Adds a new series.
+ */
+public void addSeries(DataSeries aSeries)
+{
+    aSeries._index = _series.size();
+    _series.add(aSeries);
+}
+
+/**
+ * Adds a new series for given name and values.
+ */
+public void addSeriesForNameAndValues(String aName, double ... theVals)
+{
+    DataSeries series = new DataSeries(); series.setName(aName); series.setValues(theVals);
+    addSeries(series);
+}
+
+/**
+ * Returns the active series.
+ */
+public List <DataSeries> getSeriesActive()
+{
+    List series = new ArrayList();
+    for(DataSeries s : _series) if(s.isEnabled()) series.add(s);
+    return series;
+}
+
+/**
+ * Returns the start of the series.
+ */
+public int getSeriesStart()  { return _seriesStart; }
+
+/**
+ * Sets the start of the series.
+ */
+public void setSeriesStart(int aValue)
+{
+    _seriesStart = aValue;
+    repaint();
+}
+
+/**
+ * Returns the length of the series.
+ */
+public int getSeriesLength()  { return _series.get(0).getCount(); }
+
+/**
+ * Returns the series color at index.
+ */
+public Color getSeriesColor(int anIndex)  { return COLORS[anIndex]; }
+
+/**
+ * Returns the series shape at index.
+ */
+public Shape getSeriesShape(int anIndex)
+{
+    switch(getType()) {
+        case LINE_TYPE: return getMarkerShapes()[anIndex];
+        default: return getMarkerShapes()[0];
+    }
+}
+
+/**
+ * Returns the marker shapes.
+ */
+public Shape[] getMarkerShapes()
+{
+    if(_markerShapes!=null) return _markerShapes;
+    Shape shp0 = new Ellipse(0,0,8,8);
+    Shape shp1 = new Polygon(4,0,8,4,4,8,0,4);
+    Shape shp2 = new Rect(0,0,8,8);
+    Shape shp3 = new Polygon(4,0,8,8,0,8);
+    Shape shp4 = new Polygon(0,0,8,0,4,8);
+    return _markerShapes = new Shape[] { shp0, shp1, shp2, shp3, shp4 };
 }
 
 }

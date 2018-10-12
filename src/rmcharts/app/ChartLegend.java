@@ -5,47 +5,41 @@ import snap.util.ArrayUtils;
 import snap.view.*;
 
 /**
- * A custom class.
+ * A view to display chart legend.
  */
 public class ChartLegend extends ColView {
     
-    // Colors
-    static Color    COLORS[] = new Color[] { Color.get("#88B4E7"), Color.BLACK, Color.get("#A6EB8A"),
-        Color.get("#EBA769"), Color.get("#8185E2") };
+    // The ChartView
+    ChartView    _chartView;
     
-    // Shapes
-    static Shape SHAPES[];
-    
+/**
+ * Returns the ChartView.
+ */
+public ChartView getChartView()  { return _chartView!=null? _chartView : (_chartView=getParent(ChartView.class)); }
 
 /**
- * Creates a ChartLegend.
+ * Reloads legend contents.
  */
-public ChartLegend()
+public void reloadContents()
 {
-    Shape shp0 = new Ellipse(0,0,8,8);
-    Shape shp1 = new Polygon(4,0,8,4,4,8,0,4);
-    Shape shp2 = new Rect(0,0,8,8);
-    Shape shp3 = new Polygon(4,0,8,8,0,8);
-    Shape shp4 = new Polygon(0,0,8,0,4,8);
-    SHAPES = new Shape[] { shp0, shp1, shp2, shp3, shp4 };
-}
-
-/**
- * Updates.
- */
-public void update(ChartArea aChart)
-{
-    ChartView chart = getParent(ChartView.class);
-    List <DataSeries> allSeries = aChart.getSeries();
+    ChartView chart = getChartView();
+    List <DataSeries> allSeries = chart.getSeries();
     removeChildren();
 
     for(int i=0; i<allSeries.size(); i++) { DataSeries series = allSeries.get(i);
         
-        Shape shp0 = SHAPES[i]; shp0 = shp0.copyFor(new Transform(6, 6));
-        Shape shp1 = new Rect(2,9,16,2);
-        Shape shp3 = Shape.add(shp0, shp1);
-        if(chart.getType()==ChartView.BAR_TYPE) shp3 = SHAPES[0].copyFor(new Transform(6, 6));
-        ShapeView shpView = new ShapeView(shp3); shpView.setPrefSize(20,20); shpView.setFill(COLORS[i]);
+        // Get marker Shape (if LineChart, add crossbar)
+        Shape shp = chart.getSeriesShape(i); shp = shp.copyFor(new Transform(6, 6));
+        if(chart.getType()==ChartView.LINE_TYPE) {
+            Shape shp1 = new Rect(2,9,16,2);
+            shp = Shape.add(shp, shp1);
+        }
+        
+        // Create marker ShapeView
+        ShapeView shpView = new ShapeView(shp); shpView.setPrefSize(20,20);
+        
+        // Set color
+        shpView.setFill(chart.getSeriesColor(i));
         
         StringView sview = new StringView(); sview.setFont(Font.Arial12.deriveFont(13).getBold());
         sview.setText(series.getName());
@@ -64,13 +58,17 @@ public void update(ChartArea aChart)
  */
 void rowWasClicked(RowView aRow)
 {
-    ChartView chart = getParent(ChartView.class);
-    ChartArea chartArea = chart.getChartArea();
+    // Get row/series index
     int index = ArrayUtils.indexOf(getChildren(), aRow);
-    DataSeries series = chartArea.getSeries(index);
+
+    // Get series and disable
+    ChartView chart = getParent(ChartView.class);
+    DataSeries series = chart.getSeries(index);
     series.setDisabled(!series.isDisabled());
-    chartArea.animate();
-    update(chartArea);
+    
+    // Redraw chart and reload legend
+    chart.getChartArea().animate();
+    reloadContents();
 }
 
 }

@@ -5,7 +5,7 @@ import snap.gfx.*;
 import snap.view.*;
 
 /**
- * A custom class.
+ * A ChartArea subclass to display the contents of bar chart.
  */
 public class ChartAreaBar extends ChartArea {
 
@@ -49,7 +49,7 @@ protected void paintFront(Painter aPntr)
             double val = series.getValue(i);
             
             // Draw bar
-            aPntr.setColor(ChartLegend.COLORS[sind]);
+            aPntr.setColor(getSeriesColor(sind));
             double bx = i*sw + 40 + (j+1)*2*barW, by = seriesToLocal(i, val).y, bh = h - by;
             aPntr.fillRect(bx,by,barW, bh);
         }
@@ -120,7 +120,7 @@ public void dataPointChanged()
         StringView sview3 = new StringView(); sview3.setFont(Font.Arial12.deriveFont(13).getBold()); rview.addChild(sview3);
     
         // Set border and bullet color
-        Color color = ChartLegend.COLORS[series.getIndex()];
+        Color color = getSeriesColor(series.getIndex());
         rview.getChild(0).setFill(color);
         
         // Set NameLabel string

@@ -5,16 +5,13 @@ import snap.util.SnapUtils;
 import snap.view.*;
 
 /**
- * A class to draw actual view.
+ * A view to display the actual contents of a chart.
  */
 public class ChartArea extends View {
+    
+    // The ChartView that owns the area
+    ChartView           _chartView;
 
-    // The list of series
-    List <DataSeries>   _series = new ArrayList();
-    
-    // The series start
-    int                 _seriesStart = 2010;
-    
     // The Data point
     DataPoint           _dataPoint;
     
@@ -40,64 +37,42 @@ public ChartArea()
 /**
  * Returns the series.
  */
-public List <DataSeries> getSeries()  { return _series; }
+public List <DataSeries> getSeries()  { return _chartView.getSeries(); }
 
 /**
  * Returns the number of series.
  */
-public int getSeriesCount()  { return _series.size(); }
+public int getSeriesCount()  { return _chartView.getSeriesCount(); }
 
 /**
  * Returns the individual series at given index.
  */
-public DataSeries getSeries(int anIndex)  { return _series.get(anIndex); }
-
-/**
- * Adds a new series.
- */
-public void addSeries(DataSeries aSeries)
-{
-    aSeries._index = _series.size();
-    _series.add(aSeries);
-}
-
-/**
- * Adds a new series for given name and values.
- */
-public void addSeriesForNameAndValues(String aName, double ... theVals)
-{
-    DataSeries series = new DataSeries(); series.setName(aName); series.setValues(theVals);
-    addSeries(series);
-}
+public DataSeries getSeries(int anIndex)  { return _chartView.getSeries(anIndex); }
 
 /**
  * Returns the active series.
  */
-public List <DataSeries> getSeriesActive()
-{
-    List series = new ArrayList();
-    for(DataSeries s : _series) if(s.isEnabled()) series.add(s);
-    return series;
-}
+public List <DataSeries> getSeriesActive()  { return _chartView.getSeriesActive(); }
 
 /**
  * Returns the start of the series.
  */
-public int getSeriesStart()  { return _seriesStart; }
-
-/**
- * Sets the start of the series.
- */
-public void setSeriesStart(int aValue)
-{
-    _seriesStart = aValue;
-    repaint();
-}
+public int getSeriesStart()  { return _chartView.getSeriesStart(); }
 
 /**
  * Returns the length of the series.
  */
-public int getSeriesLength()  { return _series.get(0).getCount(); }
+public int getSeriesLength()  { return _chartView.getSeriesLength(); }
+
+/**
+ * Returns the series color at index.
+ */
+public Color getSeriesColor(int anIndex)  { return _chartView.getSeriesColor(anIndex); }
+
+/**
+ * Returns the series shape at index.
+ */
+public Shape getSeriesShape(int anIndex)  { return _chartView.getSeriesShape(anIndex); }
 
 /**
  * Returns the currently highlighted datapoint.
@@ -250,7 +225,7 @@ public class DataPoint {
     public String getSeriesName()  { return series.getName(); }
     
     /** Return series key. */
-    public double getSeriesKey()  { return _seriesStart + index; }
+    public double getSeriesKey()  { return getSeriesStart() + index; }
     
     /** Return series value. */
     public double getSeriesValue()  { return series.getValue(index); }
