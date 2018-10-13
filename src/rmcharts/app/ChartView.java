@@ -74,10 +74,10 @@ public ChartView()
     addChild(_subtitleView);
     
     // Create RowView
-    _rowView = new RowView(); _rowView.setAlign(Pos.CENTER_LEFT); _rowView.setSpacing(8);
+    _rowView = new RowView(); _rowView.setAlign(Pos.CENTER_LEFT); _rowView.setSpacing(8); _rowView.setGrowWidth(true);
     addChild(_rowView);
     
-    // Create configure SubtitleView
+    // Create configure YAxisTitleView
     _yAxisTitleView = new StringView(); _yAxisTitleView.setTextFill(Color.GRAY); _yAxisTitleView.setRotate(-90);
     _yAxisTitleView.setFont(Font.Arial12.getBold().deriveFont(13));
     WrapView wrap = new WrapView(_yAxisTitleView); wrap.setPrefWidth(22);
