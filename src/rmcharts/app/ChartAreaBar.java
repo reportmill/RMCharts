@@ -12,16 +12,12 @@ public class ChartAreaBar extends ChartArea {
 /**
  * Pains chart.
  */
-protected void paintFront(Painter aPntr)
+protected void paintChart(Painter aPntr, double aX, double aY, double aW, double aH)
 {
-    // Do normal version to paint axis
-    super.paintFront(aPntr);
-    
     // Get active series and count
     List <DataSeries> seriesList = getSeriesActive();
     int scount = seriesList.size();
     
-    double h = getHeight() - 4, w = getWidth() - 40;
     int dcount = getSeriesLength();
     DataPoint dpnt = getDataPoint();
     
@@ -30,7 +26,7 @@ protected void paintFront(Painter aPntr)
         aPntr.save(); aPntr.clipRect(0,getHeight()*(1-getReveal()),getWidth(),getHeight()*getReveal()); }
         
     // Get width of an individual section
-    double sw = w/dcount;
+    double sw = aW/dcount;
     
     // Get width of individual bar (bar count + bar spaces + bar&space at either end)
     double barW = sw/(scount + (scount-1) + 4);
@@ -40,7 +36,7 @@ protected void paintFront(Painter aPntr)
         
         // If selected section, draw background
         if(dpnt!=null && i==dpnt.index) {
-            aPntr.setColor(Color.get("#4488FF09")); aPntr.fillRect(i*sw+40,0,sw,h); }
+            aPntr.setColor(Color.get("#4488FF09")); aPntr.fillRect(aX + i*sw,0,sw,aH); }
         
         // Iterate over series
         for(int j=0;j<scount;j++) { DataSeries series = seriesList.get(j);
@@ -50,7 +46,7 @@ protected void paintFront(Painter aPntr)
             
             // Draw bar
             aPntr.setColor(getSeriesColor(sind));
-            double bx = i*sw + 40 + (j+1)*2*barW, by = seriesToLocal(i, val).y, bh = h - by;
+            double bx = aX + i*sw + (j+1)*2*barW, by = seriesToLocal(i, val).y, bh = aH - by;
             aPntr.fillRect(bx,by,barW, bh);
         }
     }
@@ -66,10 +62,11 @@ public void setDataPointAtPoint(double aX, double aY)
 {
     if(aX<0 || aX>getWidth() || aY<0 || aY>getHeight()) { setDataPoint(null); return; }
     
-    double w = getWidth() - 40;
+    Insets ins = getInsetsAll();
+    double w = getWidth() - ins.getWidth();
     int dcount = getSeriesLength();
     double sw = w/dcount;
-    int section = (int)((aX-40)/sw);
+    int section = (int)((aX-ins.left)/sw);
         
     DataPoint dataPoint = _dataPoint;
     if(dataPoint==null || dataPoint.index!=section) {
@@ -142,8 +139,9 @@ public void dataPointChanged()
     _dataPointView.addChild(shpView, 0);
     
     // Colculate new location
-    double w = getWidth() - 40; int dcount = getSeriesLength(); double sw = w/dcount;
-    double px = dataPoint.index*sw + 40 + sw/2;
+    Insets ins = getInsetsAll();
+    double w = getWidth() - ins.getWidth(); int dcount = getSeriesLength(); double sw = w/dcount;
+    double px = ins.left + dataPoint.index*sw + sw/2;
     Point pnt = dataPoint.getDataPointLocal(); pnt = localToParent(px, pnt.y, chartView);
     double nx = pnt.x - _dataPointView.getWidth()/2;
     double ny = pnt.y - _dataPointView.getHeight() - 8;

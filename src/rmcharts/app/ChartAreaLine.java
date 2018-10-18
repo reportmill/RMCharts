@@ -35,11 +35,8 @@ public List <Path> getSeriesPaths()
 /**
  * Paints chart.
  */
-protected void paintFront(Painter aPntr)
+protected void paintChart(Painter aPntr, double aX, double aY, double aW, double aH)
 {
-    // Do normal version to get axis lines
-    super.paintFront(aPntr);
-    
     // Get Series list
     List <DataSeries> seriesList = getSeriesActive();
     int scount = seriesList.size();

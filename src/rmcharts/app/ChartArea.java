@@ -22,7 +22,6 @@ public class ChartArea extends View {
     public static String   Reveal_Prop = "Reveal";
     public static String   DataPoint_Prop = "DataPoint";
     static Color           AXIS_LINES_COLOR = Color.LIGHTGRAY;
-    static Color           AXIS_LABELS_COLOR = Color.GRAY;
     static Stroke          Stroke3 = new Stroke(3), Stroke4 = new Stroke(4), Stroke5 = new Stroke(5);
 
 /**
@@ -32,6 +31,7 @@ public ChartArea()
 {
     setGrowWidth(true); setPrefSize(600,350);
     enableEvents(MouseMove, MouseExit);
+    setPadding(5,10,5,10);
 }
 
 /**
@@ -140,24 +140,28 @@ public void animate()
  */
 public Point seriesToLocal(double aX, double aY)
 {
+    // Get insets
+    Insets ins = getInsetsAll();
+    
     // Convert X
     int count = getSeriesLength();
-    double w = getWidth() - 40 - 10;
+    double w = getWidth() - ins.getWidth();
     double dx = w/(count-1);
-    double nx = 40 + aX*dx;
+    double nx = ins.left + aX*dx;
 
     // Convert Y and return
-    double h = getHeight() - 4;
-    double ny = h - aY/200000d*h;
+    double h = getHeight() - ins.getHeight();
+    double ny = ins.top + h - aY/200000d*h;
     return new Point(nx, ny);
 }
 
 /**
- * Paints chart.
+ * Paints chart axis lines.
  */
 protected void paintFront(Painter aPntr)
 {
-    double h = getHeight() - 4;
+    Insets ins = getInsetsAll();
+    double h = getHeight() - ins.getHeight();
     
     // Draw axis
     for(int i=0;i<5;i++) {
@@ -165,13 +169,17 @@ protected void paintFront(Painter aPntr)
         // Draw lines
         aPntr.setColor(AXIS_LINES_COLOR); aPntr.setStroke(Stroke.Stroke1);
         double y = h/4*i; if(y>=getHeight()) y--;
-        aPntr.drawLine(40, y, getWidth(), y);
-        
-        // Draw labels
-        aPntr.setFont(Font.Arial12); aPntr.setColor(AXIS_LABELS_COLOR);
-        aPntr.drawString((200-i*50) + "k", 0, y + 4);
+        aPntr.drawLine(0, y, getWidth(), y);
     }
+    
+    // Paint chart
+    paintChart(aPntr, ins.left, ins.top, getWidth() - ins.getWidth(), h);
 }
+
+/**
+ * Paints chart content.
+ */
+protected void paintChart(Painter aPntr, double aX, double aY, double aW, double aH)  { }
 
 /**
  * Handle events.
@@ -238,6 +246,62 @@ public class DataPoint {
     {
         DataPoint other = anObj instanceof DataPoint? (DataPoint)anObj : null; if(other==null) return false;
         return other.series==series && other.index==index;
+    }
+}
+
+/**
+ * A class to layout the ChartArea, ChartXAxis, ChartYAxis.
+ */
+public static class ChartAreaBox extends ParentView {
+    
+    // The X Axis view
+    ChartXAxisView   _xaxis;
+    
+    // The Y Axis view
+    ChartYAxisView   _yaxis;
+    
+    // The ChartArea
+    ChartArea        _area;
+    
+    /**
+     * Create ChartAreaBox.
+     */
+    public ChartAreaBox()
+    {
+        _xaxis = new ChartXAxisView();
+        _yaxis = new ChartYAxisView();
+        setChildren(_yaxis, _xaxis);
+    }
+    
+    /** Sets the ChartArea. */
+    public void setChartArea(ChartArea aCA)
+    {
+        if(_area!=null) removeChild(_area);
+        addChild(_area = aCA, 1);
+        _yaxis._chartArea = aCA;
+    }
+    
+    /** Calculates the preferred width. */
+    protected double getPrefWidthImpl(double aH)
+    {
+        return _yaxis.getPrefWidth() + _area.getPrefWidth();
+    }
+
+    /** Calculates the preferred height. */
+    protected double getPrefHeightImpl(double aW)
+    {
+        return _area.getPrefHeight() + _xaxis.getPrefHeight();
+    }
+
+    /** Actual method to layout children. */
+    protected void layoutImpl()
+    {
+        double pw = getWidth(), ph = getHeight();
+        double aw = _yaxis.getPrefWidth(), ah = _xaxis.getPrefHeight();
+        double cw = pw - aw, ch = ph - ah;
+        _yaxis.setBounds(0,0,aw,ch);
+        _xaxis.setBounds(aw,ch,cw,ph-ah);
+        _area.setBounds(aw,0,cw,ch);
     }
 }
 

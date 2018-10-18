@@ -1,6 +1,7 @@
 package rmcharts.app;
 import java.text.DecimalFormat;
 import java.util.*;
+import rmcharts.app.ChartArea.ChartAreaBox;
 import snap.gfx.*;
 import snap.view.*;
 import snap.web.WebURL;
@@ -21,6 +22,9 @@ public class ChartView extends ColView {
     
     // The Y axis title View
     StringView         _yAxisTitleView;
+    
+    // The view to hold ChartArea, XAxisView, YAxisView
+    ChartAreaBox       _chartAreaBox;
     
     // The ChartArea
     ChartArea          _chartArea;
@@ -83,6 +87,10 @@ public ChartView()
     WrapView wrap = new WrapView(_yAxisTitleView); wrap.setPrefWidth(22);
     _rowView.addChild(wrap);
     
+    // Create/add ChartAreaBox
+    _chartAreaBox =  new ChartAreaBox();
+    _rowView.addChild(_chartAreaBox);
+    
     // Create/set ChartArea
     setChartArea(new ChartAreaLine());
     
@@ -125,8 +133,7 @@ public ChartArea getChartArea()  { return _chartArea; }
 protected void setChartArea(ChartArea aCA)
 {
     // Add or replace ChartArea
-    if(_chartArea==null) _rowView.addChild(_chartArea = aCA);
-    else ViewUtils.replaceView(_chartArea, _chartArea = aCA);
+    _chartAreaBox.setChartArea(_chartArea = aCA);
 
     // Set ChartArea.ChartView
     _chartArea._chartView = this;
