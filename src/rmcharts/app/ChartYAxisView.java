@@ -37,6 +37,7 @@ protected void paintAxis(Painter aPntr, double aY, double aW, double aH)
 {
     // Set font, color
     aPntr.setFont(Font.Arial12); aPntr.setColor(AXIS_LABELS_COLOR);
+    double fontDesc = Font.Arial12.getDescent();
     
     // Draw axis
     for(int i=0;i<5;i++) {
@@ -47,8 +48,9 @@ protected void paintAxis(Painter aPntr, double aY, double aW, double aH)
         // Draw labels
         String str = (200-i*50) + "k";
         Rect strBnds = aPntr.getStringBounds(str);
-        double x = aW - 5 - strBnds.width, y = ly + strBnds.getMidY() - 1;
-        aPntr.drawString(str, x, y + 4);
+        double x = aW - 5 - strBnds.width;
+        double y = ly + fontDesc;
+        aPntr.drawString(str, x, y);
     }
 }
 

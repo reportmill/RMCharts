@@ -36,7 +36,7 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
         
         // If selected section, draw background
         if(dpnt!=null && i==dpnt.index) {
-            aPntr.setColor(Color.get("#4488FF09")); aPntr.fillRect(aX + i*sw,0,sw,aH); }
+            aPntr.setColor(Color.get("#4488FF09")); aPntr.fillRect(aX + i*sw,aY,sw,aH); }
         
         // Iterate over series
         for(int j=0;j<scount;j++) { DataSeries series = seriesList.get(j);
@@ -46,7 +46,8 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
             
             // Draw bar
             aPntr.setColor(getSeriesColor(sind));
-            double bx = aX + i*sw + (j+1)*2*barW, by = seriesToLocal(i, val).y, bh = aH - by;
+            double bx = aX + i*sw + (j+1)*2*barW;
+            double by = seriesToLocal(i, val).y, bh = aY + aH - by;
             aPntr.fillRect(bx,by,barW, bh);
         }
     }
