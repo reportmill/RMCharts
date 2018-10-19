@@ -31,7 +31,7 @@ public ChartArea()
 {
     setGrowWidth(true); setPrefSize(600,350);
     enableEvents(MouseMove, MouseExit);
-    setPadding(5,10,5,10);
+    setPadding(5,10,8,10);
 }
 
 /**
@@ -160,20 +160,37 @@ public Point seriesToLocal(double aX, double aY)
  */
 protected void paintFront(Painter aPntr)
 {
+    // Get insets and chart content width/height (minus insets)
     Insets ins = getInsetsAll();
-    double h = getHeight() - ins.getHeight();
+    double pw = getWidth(), ph = getHeight();
+    double w = pw - ins.getWidth();
+    double h = ph - ins.getHeight();
     
-    // Draw axis
+    // Set axis line color and stroke
+    aPntr.setColor(AXIS_LINES_COLOR); aPntr.setStroke(Stroke.Stroke1);
+    
+    // Get number of interval lines and interval height
+    int icnt = 5;
+    double ih = h/(icnt-1);
+    
+    // Draw y axis lines
     for(int i=0;i<5;i++) {
-        
-        // Draw lines
-        aPntr.setColor(AXIS_LINES_COLOR); aPntr.setStroke(Stroke.Stroke1);
-        double y = h/4*i; if(y>=getHeight()) y--;
-        aPntr.drawLine(0, y, getWidth(), y);
+        double y = ins.top + i*ih;
+        aPntr.drawLine(0, y, pw, y);
+    }
+
+    // Get number of data points and section width
+    int slen = getSeriesLength();
+    double sw = w/(slen-1);
+    
+    // Draw x axis ticks
+    for(int i=0;i<slen;i++) {
+        double x = ins.left + i*sw;
+        aPntr.drawLine(x, ph - ins.bottom, x, ph);
     }
     
     // Paint chart
-    paintChart(aPntr, ins.left, ins.top, getWidth() - ins.getWidth(), h);
+    paintChart(aPntr, ins.left, ins.top, w, h);
 }
 
 /**
@@ -278,7 +295,7 @@ public static class ChartAreaBox extends ParentView {
     {
         if(_area!=null) removeChild(_area);
         addChild(_area = aCA, 1);
-        _yaxis._chartArea = aCA;
+        _yaxis._chartArea = _xaxis._chartArea = aCA;
     }
     
     /** Calculates the preferred width. */
@@ -300,7 +317,7 @@ public static class ChartAreaBox extends ParentView {
         double aw = _yaxis.getPrefWidth(), ah = _xaxis.getPrefHeight();
         double cw = pw - aw, ch = ph - ah;
         _yaxis.setBounds(0,0,aw,ch);
-        _xaxis.setBounds(aw,ch,cw,ph-ah);
+        _xaxis.setBounds(aw,ch,cw,ah);
         _area.setBounds(aw,0,cw,ch);
     }
 }
