@@ -12,6 +12,9 @@ import snap.util.*;
  */
 public class Intervals {
     
+    // The seed min value provided
+    double            _minVal;
+    
     // The seed max value provided
     double            _maxVal;
     
@@ -20,6 +23,9 @@ public class Intervals {
     
     // The change between intervals
     double            _delta;
+    
+    // The number of interval values
+    int               _count;
 
     // The list of interval numbers
     List <Double>     _intervals;
@@ -31,10 +37,14 @@ public class Intervals {
 public Intervals(double minValue, double maxValue, double aHeight)
 {
     // Get intervals for range
-    _maxVal = maxValue; _height = aHeight;
+    _minVal = minValue; _maxVal = maxValue; _height = aHeight;
     _intervals = getIntervalsFor(minValue, maxValue, aHeight);
-    _delta = getInterval(1) - getInterval(0);
 }
+
+/**
+ * Returns the seed min val.
+ */
+public double getSeedValueMin()  { return _minVal; }
 
 /**
  * Returns the seed max val.
@@ -85,18 +95,17 @@ private List <Double> getIntervalsFor(double aMinValue, double aMaxValue, double
             
             // Get intervals for max value
             List <Double> intervals = getIntervalsFor(aMaxValue, aHeight);
-            double interval = intervals.get(1) - intervals.get(0);
             
             // If the lesser value can fit in unused intervals, do a shift and return
-            if(Math.abs(aMinValue) < (6 - intervals.size())*interval) {
+            if(Math.abs(aMinValue) < (6 - _count)*_delta) {
                 
                 // Get first interval
                 double firstInterval = intervals.get(0);
 
                 // 
                 while(aMinValue < firstInterval) {
-                    firstInterval -= interval;
-                    intervals.add(0, firstInterval);
+                    firstInterval -= _delta;
+                    intervals.add(0, firstInterval); _count++;
                 }
                 
                 // Return intervals
@@ -104,19 +113,16 @@ private List <Double> getIntervalsFor(double aMinValue, double aMaxValue, double
             }
             
             // Bump max value and redo
-            aMaxValue = 5*interval + .1f*interval;
+            aMaxValue = 5*_delta + .1f*_delta;
         }
     }
     
     // If min/max aren't predominantly positive, get intervals for flipped & negated min/max...
-    List <Double> intervals = getIntervalsFor(-aMaxValue, -aMinValue);
+    List <Double> intervals = getIntervalsFor(-aMaxValue, -aMinValue, aHeight);
     
-    // ...then flip & negate them
-    ListUtils.reverse(intervals);
-    for(int i=0, iMax=intervals.size(); i<iMax; i++)
-        intervals.set(i, -intervals.get(i));
-    
-    // Return intervals
+    // ...then flip & negate them and return
+    ListUtils.reverse(intervals); for(int i=0, iMax=intervals.size(); i<iMax; i++) intervals.set(i, -intervals.get(i));
+    _delta = -_delta;
     return intervals;
 }
 
@@ -124,7 +130,7 @@ private List <Double> getIntervalsFor(double aMinValue, double aMaxValue, double
  * Returns well-chosen intervals from zero to a given a value. Finds the first multiple of {5,10 or 25}*10^n that
  * equals or exceeds max value, then divides by 5. This method could probably be done a lot simpler.
  */
-private static List <Double> getIntervalsFor(double maxValue, double aHeight)
+private List <Double> getIntervalsFor(double maxValue, double aHeight)
 {
     // Find factor of 10 that is just below maxValue (10 ^ factor+1 is above)
     int pow = -10; double factor = Math.pow(10, pow);
@@ -139,26 +145,44 @@ private static List <Double> getIntervalsFor(double maxValue, double aHeight)
         
         // Find out how many steps it takes to get from zero to maxValue with current increment
         steps = 1;
-        double val = incr; while(val<maxValue && steps<11) { val += incr; steps++; }
+        double axisMax = incr; while(axisMax<maxValue && steps<11) { axisMax += incr; steps++; }
         
         // If more than 10 continue
         if(steps>10) continue;
         
         // If height per step out of bounds, continue
-        double dh = aHeight/steps; if(dh<45 || dh>75) continue;
+        double dh = aHeight/steps; if(dh<40 || dh>80) continue;
         
         // If maxValue within 10 points of height, continue
-        double axisMax = steps*incr, maxValueHeight = maxValue/axisMax*aHeight;
-        if(maxValueHeight+10>aHeight) continue;
+        double maxValueHeight = maxValue/axisMax*aHeight;
+        if(maxValueHeight+16>aHeight) continue;
         
         // Break since increment, steps and padding are sufficient
         break;
     }
     
+    // If only one step, reset delta
+    if(steps==1) for(int i=0; i<increments.length; i++) { incr = increments[i]*factor;
+        
+        // Find out how many steps it takes to get from zero to maxValue with current increment
+        steps = 1;
+        double axisMax = incr; while(axisMax<maxValue && steps<21) { axisMax += incr; steps++; }
+        
+        // If more than 10 continue
+        if(steps>20) continue;
+        
+        // If maxValue within 10 points of height, continue
+        double maxValueHeight = maxValue/axisMax*aHeight;
+        if(maxValueHeight+16>aHeight) continue;
+        
+        // Break since increment, steps and padding are sufficient
+        steps = 1; incr = axisMax; break;
+    }
+    
     // Create intervals
-    List <Double> intervalsList = new ArrayList();
-    for(int i=0;i<=steps;i++) intervalsList.add(incr*i);
-    return intervalsList;
+    _delta = incr; _count = steps+1;
+    _intervals = new ArrayList(); for(int i=0;i<=steps;i++) _intervals.add(incr*i);
+    return _intervals;
 }
 
 }

@@ -34,14 +34,17 @@ public ChartYAxisView()
 public Intervals getIntervals()
 {
     // If intervals have been cached for current max value and height, return them
+    double minVal = 0; //_chartArea.getSeriesActiveMinValue();
     double maxVal = _chartArea.getSeriesActiveMaxValue();
     double height = _chartArea.getHeight() - _chartArea.getInsetsAll().getHeight();
-    double seedMax = _intervals.getSeedValueMax(), seedHeight = _intervals.getSeedHeight();
-    if(_intervals!=null && MathUtils.equals(seedMax, maxVal) && MathUtils.equals(seedHeight, height))
+    double seedMax = _intervals.getSeedValueMax(), seedMin = _intervals.getSeedValueMin();
+    double seedHeight = _intervals.getSeedHeight();
+    if(_intervals!=null && MathUtils.equals(seedMax, maxVal) && MathUtils.equals(seedMin, minVal) &&
+        MathUtils.equals(seedHeight, height))
         return _intervals;
     
     // Create new intervals and return
-    _intervals = new Intervals(0, maxVal, height);
+    _intervals = new Intervals(minVal, maxVal, height);
     return _intervals;
 }
 

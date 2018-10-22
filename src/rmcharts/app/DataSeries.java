@@ -83,11 +83,21 @@ public void setDisabled(boolean aValue)  { _disabled = aValue; }
 public boolean isEnabled()  { return !_disabled; }
 
 /**
- * Returns the max value.
+ * Returns the minimum value in series.
+ */
+public double getMinValue()
+{
+    double minVal = Float.MAX_VALUE;
+    for(Double val : _values) if(val<minVal) minVal = val;
+    return minVal;
+}
+
+/**
+ * Returns the maximum value in series.
  */
 public double getMaxValue()
 {
-    double maxVal = Float.MIN_VALUE;
+    double maxVal = -Float.MAX_VALUE;
     for(Double val : _values) if(val>maxVal) maxVal = val;
     return maxVal;
 }

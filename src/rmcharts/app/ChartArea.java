@@ -61,6 +61,11 @@ public DataSeries getSeries(int anIndex)  { return _chartView.getSeries(anIndex)
 public List <DataSeries> getSeriesActive()  { return _chartView.getSeriesActive(); }
 
 /**
+ * Returns the minimum value for active series.
+ */
+public double getSeriesActiveMinValue()  { return _chartView.getSeriesActiveMinValue(); }
+
+/**
  * Returns the maximum value for active series.
  */
 public double getSeriesActiveMaxValue()  { return _chartView.getSeriesActiveMaxValue(); }

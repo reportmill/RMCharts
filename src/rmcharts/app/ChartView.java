@@ -234,11 +234,21 @@ public List <DataSeries> getSeriesActive()
 }
 
 /**
+ * Returns the minimum value for active series.
+ */
+public double getSeriesActiveMinValue()
+{
+    double minVal = Float.MAX_VALUE;
+    for(DataSeries s : _series) { double mval = s.getMinValue(); if(mval<minVal) minVal = mval; }
+    return minVal;
+}
+
+/**
  * Returns the maximum value for active series.
  */
 public double getSeriesActiveMaxValue()
 {
-    double maxVal = Float.MIN_VALUE;
+    double maxVal = -Float.MAX_VALUE;
     for(DataSeries s : _series) { double mval = s.getMaxValue(); if(mval>maxVal) maxVal = mval; }
     return maxVal;
 }
