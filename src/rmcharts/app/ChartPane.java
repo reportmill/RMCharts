@@ -28,6 +28,7 @@ protected View createUI()
     _chartView = new ChartView();
     _chartView.setEffect(new ShadowEffect());
     BoxView chartBox = new BoxView(_chartView, true, true); chartBox.setPadding(18,50,50,50);
+    chartBox.setGrowHeight(true);
 
     // Create TextView
     TextView textView = new TextView(); textView.setMinHeight(300);

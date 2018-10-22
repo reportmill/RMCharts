@@ -78,7 +78,8 @@ public ChartView()
     addChild(_subtitleView);
     
     // Create RowView
-    _rowView = new RowView(); _rowView.setAlign(Pos.CENTER_LEFT); _rowView.setSpacing(8); _rowView.setGrowWidth(true);
+    _rowView = new RowView(); _rowView.setAlign(Pos.CENTER_LEFT); _rowView.setSpacing(8);
+    _rowView.setGrowWidth(true); _rowView.setGrowHeight(true);
     addChild(_rowView);
     
     // Create configure YAxisTitleView
@@ -230,6 +231,16 @@ public List <DataSeries> getSeriesActive()
     List series = new ArrayList();
     for(DataSeries s : _series) if(s.isEnabled()) series.add(s);
     return series;
+}
+
+/**
+ * Returns the maximum value for active series.
+ */
+public double getSeriesActiveMaxValue()
+{
+    double maxVal = Float.MIN_VALUE;
+    for(DataSeries s : _series) { double mval = s.getMaxValue(); if(mval>maxVal) maxVal = mval; }
+    return maxVal;
 }
 
 /**

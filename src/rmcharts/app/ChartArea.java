@@ -11,6 +11,12 @@ public class ChartArea extends View {
     
     // The ChartView that owns the area
     ChartView           _chartView;
+    
+    // The XAxis View
+    ChartXAxisView      _xaxisView;
+    
+    // The YAxis View
+    ChartYAxisView      _yaxisView;
 
     // The Data point
     DataPoint           _dataPoint;
@@ -53,6 +59,11 @@ public DataSeries getSeries(int anIndex)  { return _chartView.getSeries(anIndex)
  * Returns the active series.
  */
 public List <DataSeries> getSeriesActive()  { return _chartView.getSeriesActive(); }
+
+/**
+ * Returns the maximum value for active series.
+ */
+public double getSeriesActiveMaxValue()  { return _chartView.getSeriesActiveMaxValue(); }
 
 /**
  * Returns the start of the series.
@@ -150,8 +161,9 @@ public Point seriesToLocal(double aX, double aY)
     double nx = ins.left + aX*dx;
 
     // Convert Y and return
+    double axisMaxVal = _yaxisView.getIntervals().getMax();
     double h = getHeight() - ins.getHeight();
-    double ny = ins.top + h - aY/200000d*h;
+    double ny = ins.top + h - aY/axisMaxVal*h;
     return new Point(nx, ny);
 }
 
@@ -169,16 +181,9 @@ protected void paintFront(Painter aPntr)
     // Set axis line color and stroke
     aPntr.setColor(AXIS_LINES_COLOR); aPntr.setStroke(Stroke.Stroke1);
     
-    // Get number of interval lines and interval height
-    int icnt = 5;
-    double ih = h/(icnt-1);
+    // Have YAxisView paint lines
+    paintAxisY(aPntr, 0, ins.top, pw, h);
     
-    // Draw y axis lines
-    for(int i=0;i<5;i++) {
-        double y = ins.top + i*ih;
-        aPntr.drawLine(0, y, pw, y);
-    }
-
     // Paint X Axis
     if(this instanceof ChartAreaBar) paintAxisXBar(aPntr, 0, ins.top, pw, h);
     else paintAxisX(aPntr, ins.left, ins.top, w, h);
@@ -201,6 +206,22 @@ protected void paintAxisX(Painter aPntr, double aX, double aY, double aW, double
     for(int i=0;i<sectionCount;i++) {
         double x = aX + i*sectionW;
         aPntr.drawLine(x, aY + aH, x, parH);
+    }
+}
+
+/**
+ * Paints chart axis lines.
+ */
+protected void paintAxisY(Painter aPntr, double aX, double aY, double aW, double aH)
+{
+    // Get number of interval lines and interval height
+    int intervalCount = _yaxisView.getIntervals().getCount();
+    double ih = aH/(intervalCount-1);
+    
+    // Draw y axis lines
+    for(int i=0;i<intervalCount;i++) {
+        double y = aY + i*ih; y = Math.round(y);
+        aPntr.drawLine(0, y, aW, y);
     }
 }
 
@@ -324,6 +345,7 @@ public static class ChartAreaBox extends ParentView {
         if(_area!=null) removeChild(_area);
         addChild(_area = aCA, 1);
         _yaxis._chartArea = _xaxis._chartArea = aCA;
+        _area._xaxisView = _xaxis; _area._yaxisView = _yaxis;
     }
     
     /** Calculates the preferred width. */
