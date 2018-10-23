@@ -61,16 +61,6 @@ public DataSeries getSeries(int anIndex)  { return _chartView.getSeries(anIndex)
 public List <DataSeries> getSeriesActive()  { return _chartView.getSeriesActive(); }
 
 /**
- * Returns the minimum value for active series.
- */
-public double getSeriesActiveMinValue()  { return _chartView.getSeriesActiveMinValue(); }
-
-/**
- * Returns the maximum value for active series.
- */
-public double getSeriesActiveMaxValue()  { return _chartView.getSeriesActiveMaxValue(); }
-
-/**
  * Returns the start of the series.
  */
 public int getSeriesStart()  { return _chartView.getSeriesStart(); }
@@ -79,6 +69,11 @@ public int getSeriesStart()  { return _chartView.getSeriesStart(); }
  * Returns the length of the series.
  */
 public int getSeriesLength()  { return _chartView.getSeriesLength(); }
+
+/**
+ * Returns the intervals.
+ */
+public Intervals getIntervals()  { return _chartView.getIntervals(); }
 
 /**
  * Returns the series color at index.
@@ -166,8 +161,8 @@ public Point seriesToLocal(double aX, double aY)
     double nx = ins.left + aX*dx;
 
     // Convert Y and return
-    double axisMinVal = _yaxisView.getIntervals().getMin();
-    double axisMaxVal = _yaxisView.getIntervals().getMax();
+    double axisMinVal = getIntervals().getMin();
+    double axisMaxVal = getIntervals().getMax();
     double h = getHeight() - ins.getHeight();
     double ny = ins.top + h - (aY-axisMinVal)/(axisMaxVal-axisMinVal)*h;
     return new Point(nx, ny);
@@ -221,7 +216,7 @@ protected void paintAxisX(Painter aPntr, double aX, double aY, double aW, double
 protected void paintAxisY(Painter aPntr, double aX, double aY, double aW, double aH)
 {
     // Get number of interval lines and interval height
-    int intervalCount = _yaxisView.getIntervals().getCount();
+    int intervalCount = getIntervals().getCount();
     double ih = aH/(intervalCount-1);
     
     // Draw y axis lines

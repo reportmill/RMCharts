@@ -3,6 +3,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 import rmcharts.app.ChartArea.ChartAreaBox;
 import snap.gfx.*;
+import snap.util.MathUtils;
 import snap.view.*;
 import snap.web.WebURL;
 
@@ -43,6 +44,12 @@ public class ChartView extends ColView {
     
     // The series start
     int                _seriesStart = 2010;
+    
+    // Whether to show partial Y axis intervals if min/max don't include zero
+    boolean            _showPartialY;
+    
+    // The intervals
+    Intervals          _intervals = new Intervals(0, 4, 100);
     
     // The series shapes
     Shape              _markerShapes[];
@@ -118,9 +125,8 @@ public ChartView()
     String chartJSONText = WebURL.getURL(getClass(), "Sample.json").getText();
     parser.parseString(chartJSONText);
     
-    // Reload legend and redraw chart
-    _legend.reloadContents();
-    _chartArea.animate();
+    // Reload chart contents
+    reloadContents();
 }
 
 /**
@@ -185,9 +191,8 @@ public void setType(String aType)
     ChartArea newChartArea = aType==LINE_TYPE? new ChartAreaLine() : new ChartAreaBar();
     setChartArea(newChartArea);
     
-    // Reload legend and redraw chart
-    _legend.reloadContents();
-    newChartArea.animate();
+    // Reload chart contents
+    reloadContents();
 }
 
 /**
@@ -239,7 +244,7 @@ public List <DataSeries> getSeriesActive()
 public double getSeriesActiveMinValue()
 {
     double minVal = Float.MAX_VALUE;
-    for(DataSeries s : _series) { double mval = s.getMinValue(); if(mval<minVal) minVal = mval; }
+    for(DataSeries s : getSeriesActive()) { double mval = s.getMinValue(); if(mval<minVal) minVal = mval; }
     return minVal;
 }
 
@@ -249,7 +254,7 @@ public double getSeriesActiveMinValue()
 public double getSeriesActiveMaxValue()
 {
     double maxVal = -Float.MAX_VALUE;
-    for(DataSeries s : _series) { double mval = s.getMaxValue(); if(mval>maxVal) maxVal = mval; }
+    for(DataSeries s : getSeriesActive()) { double mval = s.getMaxValue(); if(mval>maxVal) maxVal = mval; }
     return maxVal;
 }
 
@@ -271,6 +276,43 @@ public void setSeriesStart(int aValue)
  * Returns the length of the series.
  */
 public int getSeriesLength()  { return _series.get(0).getCount(); }
+
+/**
+ * Returns whether to show partial Y axis intervals if min/max don't include zero. 
+ */
+public boolean isShowPartialY()  { return _showPartialY; }
+
+/**
+ * Returns whether to show partial Y axis intervals if min/max don't include zero. 
+ */
+public void setShowPartialY(boolean aValue)
+{
+    if(aValue==_showPartialY) return;
+    _showPartialY = aValue; reloadContents();
+}
+
+/**
+ * Returns the intervals.
+ */
+public Intervals getIntervals()
+{
+    // Get chart min value, max value and height
+    double minVal = getSeriesActiveMinValue();
+    double maxVal = getSeriesActiveMaxValue();
+    double height = _chartArea.getHeight() - _chartArea.getInsetsAll().getHeight();
+    if(!isShowPartialY() && minVal*maxVal>0) {
+        if(minVal>0) minVal = 0; else maxVal = 0; }
+    
+    // If intervals are cached for current min, max and height, return them
+    double seedMax = _intervals.getSeedValueMax(), seedMin = _intervals.getSeedValueMin();
+    double seedHeight = _intervals.getSeedHeight();
+    if(MathUtils.equals(seedMax, maxVal) && MathUtils.equals(seedMin, minVal) && MathUtils.equals(seedHeight, height))
+        return _intervals;
+    
+    // Create new intervals and return
+    _intervals = new Intervals(minVal, maxVal, height);
+    return _intervals;
+}
 
 /**
  * Returns the series color at index.
@@ -300,6 +342,17 @@ public Shape[] getMarkerShapes()
     Shape shp3 = new Polygon(4,0,8,8,0,8);
     Shape shp4 = new Polygon(0,0,8,0,4,8);
     return _markerShapes = new Shape[] { shp0, shp1, shp2, shp3, shp4 };
+}
+
+/**
+ * Reloads chart view contents.
+ */
+public void reloadContents()
+{
+    _legend.reloadContents();
+    _chartArea.animate();
+    _chartArea._yaxisView.repaint();
+    _chartArea._xaxisView.repaint();
 }
 
 }

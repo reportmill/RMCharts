@@ -1,6 +1,5 @@
 package rmcharts.app;
 import snap.gfx.*;
-import snap.util.MathUtils;
 import snap.view.*;
 
 /**
@@ -11,9 +10,6 @@ public class ChartYAxisView extends View {
     // The ChartArea
     ChartArea      _chartArea;
     
-    // The intervals
-    Intervals      _intervals = new Intervals(0, 4, 100);
-    
     // Constants
     static Color   AXIS_LABELS_COLOR = Color.GRAY;
 
@@ -23,26 +19,7 @@ public class ChartYAxisView extends View {
 public ChartYAxisView()
 {
     setPrefWidth(40);
-}
-
-/**
- * Returns the intervals.
- */
-public Intervals getIntervals()
-{
-    // If intervals have been cached for current max value and height, return them
-    double minVal = _chartArea.getSeriesActiveMinValue();
-    double maxVal = _chartArea.getSeriesActiveMaxValue();
-    double height = _chartArea.getHeight() - _chartArea.getInsetsAll().getHeight();
-    double seedMax = _intervals.getSeedValueMax(), seedMin = _intervals.getSeedValueMin();
-    double seedHeight = _intervals.getSeedHeight();
-    if(_intervals!=null && MathUtils.equals(seedMax, maxVal) && MathUtils.equals(seedMin, minVal) &&
-        MathUtils.equals(seedHeight, height))
-        return _intervals;
-    
-    // Create new intervals and return
-    _intervals = new Intervals(minVal, maxVal, height);
-    return _intervals;
+    enableEvents(MousePress);
 }
 
 /**
@@ -64,7 +41,7 @@ protected void paintAxis(Painter aPntr, double aY, double aW, double aH)
     double fontDesc = Font.Arial12.getDescent();
     
     // Get intervals
-    Intervals intervals = getIntervals();
+    Intervals intervals = _chartArea.getIntervals();
     int lineCount = intervals.getCount(), sectionCount = lineCount - 1;
     double intervalDelta = intervals.getDelta(), intervalMax = intervals.getMax();
     
@@ -112,6 +89,16 @@ public String getLabel(double aLineVal, double aDelta)
         return String.valueOf((int)aLineVal);
         
     return String.valueOf(aLineVal);
+}
+
+/**
+ * Handle events.
+ */
+protected void processEvent(ViewEvent anEvent)
+{
+    // Handle MousePress
+    if(anEvent.isMousePress())
+        _chartArea._chartView.setShowPartialY(!_chartArea._chartView.isShowPartialY());
 }
 
 }
