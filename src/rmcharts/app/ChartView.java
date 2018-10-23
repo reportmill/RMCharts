@@ -96,7 +96,7 @@ public ChartView()
     _rowView.addChild(wrap);
     
     // Create/add ChartAreaBox
-    _chartAreaBox =  new ChartAreaBox();
+    _chartAreaBox =  new ChartAreaBox(); _chartAreaBox.setGrowHeight(true);
     _rowView.addChild(_chartAreaBox);
     
     // Create/set ChartArea
