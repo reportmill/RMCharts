@@ -166,9 +166,10 @@ public Point seriesToLocal(double aX, double aY)
     double nx = ins.left + aX*dx;
 
     // Convert Y and return
+    double axisMinVal = _yaxisView.getIntervals().getMin();
     double axisMaxVal = _yaxisView.getIntervals().getMax();
     double h = getHeight() - ins.getHeight();
-    double ny = ins.top + h - aY/axisMaxVal*h;
+    double ny = ins.top + h - (aY-axisMinVal)/(axisMaxVal-axisMinVal)*h;
     return new Point(nx, ny);
 }
 
