@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ColView Padding="4" Spacing="4">
+  <RowView Padding="9" GrowWidth="true">
+    <ToggleButton Name="LineChartButton" PrefWidth="70" PrefHeight="22" Padding="2" text="Line Chart" Position="CENTER_LEFT" Selected="true" Group="bg0" />
+    <ToggleButton Name="BarChartButton" PrefWidth="70" PrefHeight="22" Padding="2" text="Bar Chart" Position="CENTER_RIGHT" Group="bg0" />
+  </RowView>
+  <RowView Padding="4" GrowWidth="true" Spacing="4">
+    <Label text="Chart Title:">
+      <font name="Arial" size="15" />
+    </Label>
+    <TextField Name="TitleText" PrefWidth="320" ColCount="12" />
+  </RowView>
+  <RowView Padding="4" GrowWidth="true" Spacing="4">
+    <Label text="Chart Subtitle:">
+      <font name="Arial" size="15" />
+    </Label>
+    <TextField Name="SubtitleText" PrefWidth="320" ColCount="12" />
+  </RowView>
+  <RowView Padding="4" GrowWidth="true" Spacing="4">
+    <Label text="Y-Axis Title:">
+      <font name="Arial" size="15" />
+    </Label>
+    <TextField Name="YAxisTitleText" PrefWidth="320" ColCount="12" />
+  </RowView>
+  <RowView Padding="4" GrowWidth="true" Spacing="4">
+    <CheckBox Name="PartialYAxisCheckBox" text="Show Partial Y Axis" />
+  </RowView>
+</ColView>

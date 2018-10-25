@@ -76,12 +76,14 @@ protected View createUI()
     chartBox.setGrowHeight(true);
     
     // Create PropsView
-    ToggleButton btn0 = new ToggleButton("Line Chart"); btn0.setName("LineChartButton"); btn0.setGroup("BG0");
-    btn0.setPosition(Pos.CENTER_LEFT); btn0.setPrefSize(70,22); btn0.setSelected(true);
-    ToggleButton btn1 = new ToggleButton("Bar Chart"); btn1.setName("BarChartButton"); btn1.setGroup("BG0");
-    btn1.setPosition(Pos.CENTER_RIGHT); btn1.setPrefSize(70,22);
-    RowView propsView = new RowView(); propsView.setPadding(5,5,5,5); propsView.setAlign(Pos.TOP_CENTER);
-    propsView.setChildren(btn0, btn1);
+    //ToggleButton btn0 = new ToggleButton("Line Chart"); btn0.setName("LineChartButton"); btn0.setGroup("BG0");
+    //btn0.setPosition(Pos.CENTER_LEFT); btn0.setPrefSize(70,22); btn0.setSelected(true);
+    //ToggleButton btn1 = new ToggleButton("Bar Chart"); btn1.setName("BarChartButton"); btn1.setGroup("BG0");
+    //btn1.setPosition(Pos.CENTER_RIGHT); btn1.setPrefSize(70,22);
+    //RowView propsView = new RowView(); propsView.setPadding(5,5,5,5); propsView.setAlign(Pos.TOP_CENTER);
+    //propsView.setChildren(btn0, btn1);
+    PropsPane propsPane = new PropsPane(); propsPane._chartView = _chartView;
+    View propsView = propsPane.getUI();
 
     // Create TextView
     TextView textView = new TextView(); //textView.setMinHeight(300);
