@@ -96,7 +96,7 @@ public ChartView()
     _rowView.addChild(wrap);
     
     // Create/add ChartAreaBox
-    _chartAreaBox =  new ChartAreaBox(); _chartAreaBox.setGrowHeight(true);
+    _chartAreaBox =  new ChartAreaBox(); _chartAreaBox.setGrowWidth(true); _chartAreaBox.setGrowHeight(true);
     _rowView.addChild(_chartAreaBox);
     
     // Create/set ChartArea
@@ -114,18 +114,8 @@ public ChartView()
     //setTitle("Solar Employment Growth by Sector, 2010-2016");
     //setSubtitle("Source: thesolarfoundation.com");
     //setYAxisTitle("Number of Employees");
-    
-    //_chartArea.addSeriesForNameAndValues("Installation", 43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175);
-    //_chartArea.addSeriesForNameAndValues("Manufacturing", 24916, 24064, 29742, 29851, 32490, 30282, 38121, 40434);
-    //_chartArea.addSeriesForNameAndValues("Sales & Distribution", 11744, 17722, 16005, 19771, 20185, 24377, 32147, 39387);
-    //_chartArea.addSeriesForNameAndValues("Project Development", 7988, 7988, 7988, 12169, 15112, 22452, 34400, 34227);
-    //_chartArea.addSeriesForNameAndValues("Other", 12908, 5948, 8105, 11248, 8989, 11816, 18274, 18111);
-    
-    ChartParser parser = new ChartParser(this);
-    String chartJSONText = WebURL.getURL(getClass(), "Sample.json").getText();
-    parser.parseString(chartJSONText);
-    
-    // Reload chart contents
+    addSeriesForNameAndValues("Sample", 1, 2, 2, 3, 4, 4, 5);
+    //addSeriesForNameAndValues("Manufacturing", 24916, 24064, 29742, 29851, 32490, 30282, 38121, 40434);
     reloadContents();
 }
 
@@ -275,7 +265,12 @@ public void setSeriesStart(int aValue)
 /**
  * Returns the length of the series.
  */
-public int getSeriesLength()  { return _series.get(0).getCount(); }
+public int getSeriesLength()
+{
+    if(_series.size()==0) {
+        ;System.currentTimeMillis(); }
+    return _series.get(0).getCount();
+}
 
 /**
  * Returns whether to show partial Y axis intervals if min/max don't include zero. 
@@ -353,6 +348,28 @@ public void reloadContents()
     _chartArea.animate();
     _chartArea._yaxisView.repaint();
     _chartArea._xaxisView.repaint();
+}
+
+/**
+ * Loads the ChartView from JSON source.
+ */
+public void loadFromSource(Object aSrc)
+{
+    WebURL url = WebURL.getURL(aSrc);
+    String jsonText = url.getText();
+    loadFromString(jsonText);
+}
+
+/**
+ * Loads the ChartView from JSON string.
+ */
+public void loadFromString(String aStr)
+{
+    _series.clear();
+    ChartParser parser = new ChartParser(this);
+    parser.parseString(aStr);
+    if(_series.isEmpty()) addSeriesForNameAndValues("Sample", 1, 2, 3, 3, 4, 5);
+    reloadContents();
 }
 
 }
