@@ -76,14 +76,12 @@ protected View createUI()
     chartBox.setGrowHeight(true);
     
     // Create PropsView
-    //ToggleButton btn0 = new ToggleButton("Line Chart"); btn0.setName("LineChartButton"); btn0.setGroup("BG0");
-    //btn0.setPosition(Pos.CENTER_LEFT); btn0.setPrefSize(70,22); btn0.setSelected(true);
-    //ToggleButton btn1 = new ToggleButton("Bar Chart"); btn1.setName("BarChartButton"); btn1.setGroup("BG0");
-    //btn1.setPosition(Pos.CENTER_RIGHT); btn1.setPrefSize(70,22);
-    //RowView propsView = new RowView(); propsView.setPadding(5,5,5,5); propsView.setAlign(Pos.TOP_CENTER);
-    //propsView.setChildren(btn0, btn1);
     PropsPane propsPane = new PropsPane(); propsPane._chartView = _chartView;
     View propsView = propsPane.getUI();
+    
+    // Create DataPane
+    DataPane dataPane = new DataPane(_chartView);
+    View dataPaneUI = dataPane.getUI();
 
     // Create TextView
     TextView textView = new TextView(); //textView.setMinHeight(300);
@@ -95,6 +93,7 @@ protected View createUI()
     // Create TabView
     _tabView = new TabView(); _tabView.setPrefHeight(340); _tabView.setGrowHeight(true);
     _tabView.addTab("Chart Props", propsView);
+    _tabView.addTab("Data Set", dataPaneUI);
     _tabView.addTab("JavaScript Embed", textBox);
     _tabView.setVisible(false); _tabView.setManaged(false); _tabView.setPickable(false);
     

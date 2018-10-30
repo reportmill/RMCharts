@@ -3,7 +3,6 @@ import java.text.DecimalFormat;
 import java.util.*;
 import rmcharts.app.ChartArea.ChartAreaBox;
 import snap.gfx.*;
-import snap.util.MathUtils;
 import snap.view.*;
 import snap.web.WebURL;
 
@@ -39,17 +38,11 @@ public class ChartView extends ColView {
     // The view for the current datapoint
     ColView            _dataPointView;
     
-    // The list of series
-    List <DataSeries>  _series = new ArrayList();
-    
-    // The series start
-    int                _seriesStart = 2010;
+    // The DataSet
+    DataSet            _dataSet = new DataSet(this);
     
     // Whether to show partial Y axis intervals if min/max don't include zero
     boolean            _showPartialY;
-    
-    // The intervals
-    Intervals          _intervals = new Intervals(0, 4, 100);
     
     // The series shapes
     Shape              _markerShapes[];
@@ -114,7 +107,7 @@ public ChartView()
     //setTitle("Solar Employment Growth by Sector, 2010-2016");
     //setSubtitle("Source: thesolarfoundation.com");
     //setYAxisTitle("Number of Employees");
-    addSeriesForNameAndValues("Sample", 1, 2, 2, 3, 4, 4, 5);
+    _dataSet.addSeriesForNameAndValues("Sample", 1, 2, 2, 3, 4, 4, 5);
     //addSeriesForNameAndValues("Manufacturing", 24916, 24064, 29742, 29851, 32490, 30282, 38121, 40434);
     reloadContents();
 }
@@ -186,91 +179,44 @@ public void setType(String aType)
 }
 
 /**
+ * Returns the dataset.
+ */
+public DataSet getDataSet()  { return _dataSet; }
+
+/**
  * Returns the series.
  */
-public List <DataSeries> getSeries()  { return _series; }
+public List <DataSeries> getSeries()  { return _dataSet.getSeries(); }
 
 /**
  * Returns the number of series.
  */
-public int getSeriesCount()  { return _series.size(); }
+public int getSeriesCount()  { return _dataSet.getSeriesCount(); }
 
 /**
  * Returns the individual series at given index.
  */
-public DataSeries getSeries(int anIndex)  { return _series.get(anIndex); }
+public DataSeries getSeries(int anIndex)  { return _dataSet.getSeries(anIndex); }
 
 /**
  * Adds a new series.
  */
-public void addSeries(DataSeries aSeries)
-{
-    aSeries._index = _series.size();
-    _series.add(aSeries);
-}
-
-/**
- * Adds a new series for given name and values.
- */
-public void addSeriesForNameAndValues(String aName, double ... theVals)
-{
-    DataSeries series = new DataSeries(); series.setName(aName); series.setValues(theVals);
-    addSeries(series);
-}
+public void addSeries(DataSeries aSeries)  { _dataSet.addSeries(aSeries); }
 
 /**
  * Returns the active series.
  */
-public List <DataSeries> getSeriesActive()
-{
-    List series = new ArrayList();
-    for(DataSeries s : _series) if(s.isEnabled()) series.add(s);
-    return series;
-}
-
-/**
- * Returns the minimum value for active series.
- */
-public double getSeriesActiveMinValue()
-{
-    double minVal = Float.MAX_VALUE;
-    for(DataSeries s : getSeriesActive()) { double mval = s.getMinValue(); if(mval<minVal) minVal = mval; }
-    return minVal;
-}
-
-/**
- * Returns the maximum value for active series.
- */
-public double getSeriesActiveMaxValue()
-{
-    double maxVal = -Float.MAX_VALUE;
-    for(DataSeries s : getSeriesActive()) { double mval = s.getMaxValue(); if(mval>maxVal) maxVal = mval; }
-    return maxVal;
-}
+public List <DataSeries> getSeriesActive()  { return _dataSet.getSeriesActive(); }
 
 /**
  * Returns the start of the series.
  */
-public int getSeriesStart()  { return _seriesStart; }
+public int getSeriesStart()  { return _dataSet.getSeriesStart(); }
 
 /**
  * Sets the start of the series.
  */
-public void setSeriesStart(int aValue)
-{
-    _seriesStart = aValue;
-    repaint();
-}
-
-/**
- * Returns the length of the series.
- */
-public int getSeriesLength()
-{
-    if(_series.size()==0) {
-        ;System.currentTimeMillis(); }
-    return _series.get(0).getCount();
-}
+public void setSeriesStart(int aValue)  { _dataSet.setSeriesStart(aValue); }
 
 /**
  * Returns whether to show partial Y axis intervals if min/max don't include zero. 
@@ -289,25 +235,7 @@ public void setShowPartialY(boolean aValue)
 /**
  * Returns the intervals.
  */
-public Intervals getIntervals()
-{
-    // Get chart min value, max value and height
-    double minVal = getSeriesActiveMinValue();
-    double maxVal = getSeriesActiveMaxValue();
-    double height = _chartArea.getHeight() - _chartArea.getInsetsAll().getHeight();
-    if(!isShowPartialY() && minVal*maxVal>0) {
-        if(minVal>0) minVal = 0; else maxVal = 0; }
-    
-    // If intervals are cached for current min, max and height, return them
-    double seedMax = _intervals.getSeedValueMax(), seedMin = _intervals.getSeedValueMin();
-    double seedHeight = _intervals.getSeedHeight();
-    if(MathUtils.equals(seedMax, maxVal) && MathUtils.equals(seedMin, minVal) && MathUtils.equals(seedHeight, height))
-        return _intervals;
-    
-    // Create new intervals and return
-    _intervals = new Intervals(minVal, maxVal, height);
-    return _intervals;
-}
+public Intervals getIntervals()  { return _dataSet.getIntervals(); }
 
 /**
  * Returns the series color at index.
@@ -365,10 +293,10 @@ public void loadFromSource(Object aSrc)
  */
 public void loadFromString(String aStr)
 {
-    _series.clear();
+    _dataSet.clear();
     ChartParser parser = new ChartParser(this);
     parser.parseString(aStr);
-    if(_series.isEmpty()) addSeriesForNameAndValues("Sample", 1, 2, 3, 3, 4, 5);
+    if(_dataSet.isEmpty()) _dataSet.addSeriesForNameAndValues("Sample", 1, 2, 3, 3, 4, 5);
     reloadContents();
 }
 

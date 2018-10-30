@@ -41,6 +41,11 @@ public ChartArea()
 }
 
 /**
+ * Returns the data set.
+ */
+public DataSet getDataSet()  { return _chartView.getDataSet(); }
+
+/**
  * Returns the series.
  */
 public List <DataSeries> getSeries()  { return _chartView.getSeries(); }
@@ -68,7 +73,7 @@ public int getSeriesStart()  { return _chartView.getSeriesStart(); }
 /**
  * Returns the length of the series.
  */
-public int getSeriesLength()  { return _chartView.getSeriesLength(); }
+public int getSeriesLength()  { return getDataSet().getValueCount(); }
 
 /**
  * Returns the intervals.
