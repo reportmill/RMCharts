@@ -34,14 +34,16 @@ public static void showChart(String anId, JSObject aMap)
 public static void showChart()
 {
     // Get args from TeaVM env
-    String arg0 = getMainArg0();
-    String arg1 = getMainArg1();
+    String arg0_containerName = getMainArg0();
+    Object arg1_ConfigObject = getMainArg1();
     
     // Create ad show ChartPane
-    ChartPane chartPane = new ChartPane(); chartPane.setWindowVisible(true);
+    ChartPane chartPane = new ChartPane();
+    if(arg0_containerName!=null) chartPane.getWindow().setName(arg0_containerName);
+    chartPane.setWindowVisible(true);
     
     // Load chart from JSON string
-    if(arg1 instanceof String) { String str = arg1;
+    if(arg1_ConfigObject instanceof String) { String str = (String)arg1_ConfigObject;
         chartPane._chartView.loadFromString(str);
     }
 }
