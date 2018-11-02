@@ -113,6 +113,25 @@ public ChartView()
 }
 
 /**
+ * Returns the type.
+ */
+public String getType()  { return _type; }
+
+/**
+ * Sets the type.
+ */
+public void setType(String aType)
+{
+    _type = aType;
+    
+    ChartArea newChartArea = aType==LINE_TYPE? new ChartAreaLine() : new ChartAreaBar();
+    setChartArea(newChartArea);
+    
+    // Reload chart contents
+    reloadContents();
+}
+
+/**
  * Returns the ChartArea.
  */
 public ChartArea getChartArea()  { return _chartArea; }
@@ -160,22 +179,24 @@ public String getYAxisTitle()  { return _yAxisTitleView.getText(); }
 public void setYAxisTitle(String aStr)  { _yAxisTitleView.setText(aStr); }
 
 /**
- * Returns the type.
+ * Returns the Legend.
  */
-public String getType()  { return _type; }
+public ChartLegend getLegend()  { return _legend; }
 
 /**
- * Sets the type.
+ * Returns whether to show legend.
  */
-public void setType(String aType)
+public boolean isShowLegend()  { return _legend.isVisible(); }
+
+/**
+ * Sets whether to show legend.
+ */
+public void setShowLegend(boolean aValue)
 {
-    _type = aType;
+    if(aValue==isShowLegend()) return;
     
-    ChartArea newChartArea = aType==LINE_TYPE? new ChartAreaLine() : new ChartAreaBar();
-    setChartArea(newChartArea);
-    
-    // Reload chart contents
-    reloadContents();
+    if(aValue) { _legend.setVisible(true); _legend.setManaged(true); _legend.setPickable(true); }
+    else { _legend.setVisible(false); _legend.setManaged(false); _legend.setPickable(false); }
 }
 
 /**

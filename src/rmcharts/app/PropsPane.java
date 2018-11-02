@@ -14,12 +14,16 @@ public class PropsPane extends ViewOwner {
  */
 protected void resetUI()
 {
+    if(_chartView==null || _chartView.getLegend()==null) return;
+    
     // Reset TitleText, SubtitleText, YAxisTitleText
     setViewValue("TitleText", _chartView.getTitle());
     setViewValue("SubtitleText", _chartView.getSubtitle());
     setViewValue("YAxisTitleText", _chartView.getYAxisTitle());
     
-    // Reset PartialYAxisCheckBox
+    // Reset ShowLegendCheckBox, PartialYAxisCheckBox
+    System.out.println("ShowLegendCheckBox found: " + (getView("LegendShowingCheckBox")!=null));
+    setViewValue("LegendShowingCheckBox", _chartView.isShowLegend());
     setViewValue("PartialYAxisCheckBox", _chartView.isShowPartialY());
 }
 
@@ -37,7 +41,8 @@ protected void respondUI(ViewEvent anEvent)
     if(anEvent.equals("SubtitleText")) _chartView.setSubtitle(anEvent.getStringValue());
     if(anEvent.equals("YAxisTitleText")) _chartView.setYAxisTitle(anEvent.getStringValue());
     
-    // Handle PartialYAxisCheckBox
+    // Handle ShowLegendCheckBox, PartialYAxisCheckBox
+    if(anEvent.equals("ShowLegendCheckBox")) _chartView.setShowLegend(anEvent.getBoolValue());
     if(anEvent.equals("PartialYAxisCheckBox")) _chartView.setShowPartialY(anEvent.getBoolValue());
 }
 

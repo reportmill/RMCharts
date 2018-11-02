@@ -34,13 +34,27 @@ protected void parseChart(JSONNode aNode)
         JSONNode node = aNode.getNode(i);
         
         switch(key.toLowerCase()) {
-            case "title": parseTitle(node); break;
-            case "subtitle": parseSubtitle(node); break;
-            case "yaxis": parseYAxis(node); break;
+            case "chart": parseChartNode(node); break;
+            case "legend": parseLegend(node); break;
             case "plotoptions": parsePlotOptions(node); break;
             case "series": parseSeries(node); break;
+            case "subtitle": parseSubtitle(node); break;
+            case "title": parseTitle(node); break;
+            case "yaxis": parseYAxis(node); break;
             default: System.out.println("Unsupported node: " + key);
         }
+    }
+}
+
+/**
+ * Parse a chart node.
+ */
+protected void parseChartNode(JSONNode aNode)
+{
+    String type = aNode.getNodeString("type");
+    if(type!=null) switch(type) {
+        case "line": _chartView.setType(ChartView.LINE_TYPE); break;
+        case "column": _chartView.setType(ChartView.BAR_TYPE); break;
     }
 }
 
@@ -76,6 +90,17 @@ protected void parseYAxis(JSONNode aNode)
         if(text!=null)
             _chartView.setYAxisTitle(text);
     }
+}
+
+/**
+ * Parse a Legend node.
+ */
+protected void parseLegend(JSONNode aNode)
+{
+    // Get enabled node
+    JSONNode enabledNode = aNode.getNode("enabled");
+    if(enabledNode!=null)
+        _chartView.setShowLegend(enabledNode.getBoolean());
 }
 
 /**

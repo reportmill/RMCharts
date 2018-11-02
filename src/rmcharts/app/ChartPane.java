@@ -15,8 +15,14 @@ public class ChartPane extends ViewOwner {
     // The chartView
     ChartView     _chartView;
     
+    // The ChartBox
+    ChartBox      _chartBox;
+    
     // The TabView
     TabView       _tabView;
+    
+    // The Options button
+    Button        _optionButton;
 
 /**
  * Creates a ChartPane.
@@ -49,12 +55,14 @@ public void setShowFull(boolean aValue)
             Rect maxRect = screenRect.getRectCenteredInside(psize.width, psize.height);
             getWindow().setMaximizedBounds(maxRect);
         }
+        _chartBox.setPadding(50,50,50,50); _chartView.setEffect(new ShadowEffect());
         getWindow().setMaximized(true);
     }
     
     // Disable ShowFull
     else {
         _tabView.setVisible(false); _tabView.setManaged(false); _tabView.setPickable(false);
+        _chartBox.setPadding(0,0,0,0); _chartView.setEffect(null);
         getWindow().setMaximized(false);
     }
 }
@@ -64,16 +72,15 @@ public void setShowFull(boolean aValue)
  */
 protected View createUI()
 {
-    // Toolbar
-    Button btn2 = new Button("Max"); btn2.setName("MaximizeButton"); btn2.setLeanX(HPos.RIGHT);
-    RowView toolBar = new RowView(); toolBar.setPadding(5,5,5,5); toolBar.setAlign(HPos.CENTER);
-    toolBar.setChildren(btn2);
+    // Create OptionButton
+    _optionButton = new Button("Max"); _optionButton.setName("OptionButton");
+    _optionButton.setSize(_optionButton.getPrefSize()); _optionButton.setManaged(false);
     
     // Create ChartView
-    _chartView = new ChartView();
-    _chartView.setEffect(new ShadowEffect());
-    BoxView chartBox = new BoxView(_chartView, true, true); chartBox.setPadding(18,50,50,50);
-    chartBox.setGrowHeight(true);
+    _chartView = new ChartView(); //
+    _chartBox = new ChartBox();
+    _chartBox.setGrowHeight(true);
+    _chartBox.addChild(_optionButton);
     
     // Create PropsView
     PropsPane propsPane = new PropsPane(); propsPane._chartView = _chartView;
@@ -99,7 +106,7 @@ protected View createUI()
     
     // Create ColView
     ColView col = new ColView(); col.setFillWidth(true); col.setGrowHeight(true); col.setFill(new Color(.93));
-    col.setChildren(toolBar, chartBox, _tabView);
+    col.setChildren(_chartBox, _tabView);
     return col;
 }
 
@@ -108,13 +115,25 @@ protected View createUI()
  */
 protected void respondUI(ViewEvent anEvent)
 {
-    // Handle LineChartButton, BarChartButton
-    if(anEvent.equals("LineChartButton")) _chartView.setType(ChartView.LINE_TYPE);
-    if(anEvent.equals("BarChartButton")) _chartView.setType(ChartView.BAR_TYPE);
-    
-    // Handle MaximizeButton
-    if(anEvent.equals("MaximizeButton"))
+    // Handle OptionButton
+    if(anEvent.equals("OptionButton"))
         setShowFull(!isShowFull());
+}
+
+/**
+ * A View class to hold chart.
+ */
+public class ChartBox extends BoxView {
+    
+    /** Create ChartBox. */
+    public ChartBox()  { super(_chartView, true, true); }
+    
+    /** Override to position OptionsButton. */
+    protected void layoutImpl()
+    {
+        super.layoutImpl();
+        _optionButton.setXY(getWidth() - _optionButton.getWidth() - 5, 4);
+    }
 }
 
 }

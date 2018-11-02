@@ -23,6 +23,9 @@
     <TextField Name="YAxisTitleText" PrefWidth="320" ColCount="12" />
   </RowView>
   <RowView Padding="4" GrowWidth="true" Spacing="4">
+    <CheckBox Name="ShowLegendCheckBox" text="Show Legend" />
+  </RowView>
+  <RowView Padding="4" GrowWidth="true" Spacing="4">
     <CheckBox Name="PartialYAxisCheckBox" text="Show Partial Y Axis" />
   </RowView>
 </ColView>
