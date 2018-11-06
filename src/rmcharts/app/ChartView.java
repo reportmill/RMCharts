@@ -44,6 +44,9 @@ public class ChartView extends ColView {
     // Whether to show partial Y axis intervals if min/max don't include zero
     boolean            _showPartialY;
     
+    // The graph colors
+    Color              _colors[] = COLORS;
+    
     // The series shapes
     Shape              _markerShapes[];
     
@@ -156,7 +159,11 @@ public String getTitle()  { return _titleView.getText(); }
 /**
  * Sets the title.
  */
-public void setTitle(String aStr)  { _titleView.setText(aStr); }
+public void setTitle(String aStr)
+{
+    _titleView.setText(aStr);
+    _titleView.setPhantom(aStr==null || aStr.length()==0);
+}
 
 /**
  * Returns the subtitle.
@@ -166,7 +173,11 @@ public String getSubtitle()  { return _subtitleView.getText(); }
 /**
  * Sets the subtitle.
  */
-public void setSubtitle(String aStr)  { _subtitleView.setText(aStr); }
+public void setSubtitle(String aStr)
+{
+    _subtitleView.setText(aStr);
+    _subtitleView.setPhantom(aStr==null || aStr.length()==0);
+}
 
 /**
  * Returns the YAxisTitle.
@@ -259,9 +270,27 @@ public void setShowPartialY(boolean aValue)
 public Intervals getIntervals()  { return _dataSet.getIntervals(); }
 
 /**
+ * Returns the colors.
+ */
+public Color[] getColors()  { return _colors; }
+
+/**
+ * Sets the graph colors.
+ */
+public void setColors(Color ... theColors)
+{
+    _colors = theColors;
+    reloadContents();
+}
+
+/**
  * Returns the series color at index.
  */
-public Color getSeriesColor(int anIndex)  { return COLORS[anIndex]; }
+public Color getSeriesColor(int anIndex)
+{
+    if(anIndex<_colors.length) return _colors[anIndex];
+    return COLORS[(anIndex - _colors.length)%COLORS.length];
+}
 
 /**
  * Returns the series shape at index.

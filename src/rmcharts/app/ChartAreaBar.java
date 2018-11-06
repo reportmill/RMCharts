@@ -19,10 +19,10 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
     
     // Get active series and count
     List <DataSeries> seriesList = getSeriesActive();
-    int scount = seriesList.size();
+    int seriesCount = seriesList.size();
     
-    // Get number of sections
-    int sectionCount = getSeriesLength();
+    // Get number of values
+    int valueCount = getSeriesLength();
     DataPoint dpnt = getDataPoint();
     
     // If reveal is not full (1) then clip
@@ -30,27 +30,34 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
         aPntr.save(); aPntr.clipRect(0,getHeight()*(1-getReveal()),getWidth(),getHeight()*getReveal()); }
         
     // Get width of an individual section
-    double sectionW = aW/sectionCount;
+    double sectionW = aW/valueCount;
+    
+    // Get width of group
+    double groupPadding = .2, groupWidthRatio = 1 - groupPadding*2;
+    double groupW = groupWidthRatio>=0? groupWidthRatio*sectionW : 1;
+    double groupPadW = (sectionW - groupW)/2;
     
     // Get width of individual bar (bar count + bar spaces + bar&space at either end)
-    double barW = sectionW/(scount + (scount-1) + 4);
+    double barPadding = .2, barWidthRatio = 1 - barPadding*2;
+    double barW = barWidthRatio>=0? barWidthRatio*groupW/seriesCount : 1;
+    double barPadW = barWidthRatio>=0? barPadding*groupW/seriesCount : 1;
         
     // Iterate over sections
-    for(int i=0;i<sectionCount;i++) {
+    for(int i=0;i<valueCount;i++) {
         
         // If selected section, draw background
         if(dpnt!=null && i==dpnt.index) {
             aPntr.setColor(Color.get("#4488FF09")); aPntr.fillRect(aX + i*sectionW, aY, sectionW, aH); }
         
         // Iterate over series
-        for(int j=0;j<scount;j++) { DataSeries series = seriesList.get(j);
+        for(int j=0;j<seriesCount;j++) { DataSeries series = seriesList.get(j);
         
             int sind = getSeries().indexOf(series);
             double val = series.getValue(i);
             
             // Draw bar
             aPntr.setColor(getSeriesColor(sind));
-            double bx = aX + i*sectionW + (j+1)*2*barW;
+            double bx = aX + i*sectionW + groupPadW + (j*2+1)*barPadW + j*barW;
             double by = seriesToLocal(i, val).y, bh = aY + aH - by;
             aPntr.fillRect(bx,by,barW, bh - .5);
         }

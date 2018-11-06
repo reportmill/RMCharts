@@ -22,8 +22,7 @@ protected void resetUI()
     setViewValue("YAxisTitleText", _chartView.getYAxisTitle());
     
     // Reset ShowLegendCheckBox, PartialYAxisCheckBox
-    System.out.println("ShowLegendCheckBox found: " + (getView("LegendShowingCheckBox")!=null));
-    setViewValue("LegendShowingCheckBox", _chartView.isShowLegend());
+    setViewValue("ShowLegendCheckBox", _chartView.isShowLegend());
     setViewValue("PartialYAxisCheckBox", _chartView.isShowPartialY());
 }
 

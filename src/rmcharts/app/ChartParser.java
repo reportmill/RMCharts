@@ -1,4 +1,6 @@
 package rmcharts.app;
+import java.util.*;
+import snap.gfx.Color;
 import snap.util.*;
 
 /**
@@ -35,6 +37,7 @@ protected void parseChart(JSONNode aNode)
         
         switch(key.toLowerCase()) {
             case "chart": parseChartNode(node); break;
+            case "colors": parseColors(node); break;
             case "legend": parseLegend(node); break;
             case "plotoptions": parsePlotOptions(node); break;
             case "series": parseSeries(node); break;
@@ -127,7 +130,7 @@ protected void parsePlotOptions(JSONNode aNode)
 protected void parseSeries(JSONNode aNode)
 {
     // Complain if not series
-    if(!aNode.isArray()) { System.out.println("Series is not array"); return; }
+    if(!aNode.isArray()) { System.err.println("ChartParser.parseSeries: Series is not array"); return; }
     
     // Iterate over array
     for(int i=0;i<aNode.getNodeCount();i++) { JSONNode seriesNode = aNode.getNode(i);
@@ -143,7 +146,7 @@ protected void parseSeries(JSONNode aNode)
             
         // Get data node
         JSONNode dataNode = seriesNode.getNode("data");
-        if(dataNode==null) { System.out.println("Series has no data!"); continue; }
+        if(dataNode==null) { System.err.println("ChartParser.parseSeries: Series has no data!"); continue; }
         
         // Iterate over values
         for(int j=0; j<dataNode.getNodeCount(); j++) { JSONNode valNode = dataNode.getNode(j);
@@ -155,6 +158,29 @@ protected void parseSeries(JSONNode aNode)
         // Add series
         _chartView.addSeries(series);
     }
+}
+
+/**
+ * Parse chart colors.
+ */
+protected void parseColors(JSONNode aNode)
+{
+    // Complain if not array
+    if(!aNode.isArray()) { System.err.println("Colors is not array"); return; }
+    
+    // Iterate over nodes to get color strings
+    List <Color> colors = new ArrayList();
+    for(int i=0;i<aNode.getNodeCount();i++) { JSONNode colorNode = aNode.getNode(i);
+    
+        // Get color
+        String str = colorNode.getString();
+        Color color = Color.get(str);
+        if(color==null) System.err.println("ChartParser.parseColors: Invalid color: " + str);
+        else colors.add(color);
+    }
+    
+    // Set colors
+    _chartView.setColors(colors.toArray(new Color[colors.size()]));
 }
 
 }

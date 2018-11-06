@@ -1,4 +1,7 @@
 {
+    "chart": {
+        "type": "column"
+    },
     "title": {
         "text": "Solar Employment Growth by Sector, 2010-2016"
     },
@@ -17,6 +20,8 @@
         "align": "right",
         "verticalAlign": "middle"
     },
+
+	"colors": ["#FF5000", "#5378FC", "#3D5199", "#292a2e"],
 
     "plotOptions": {
         "series": {
