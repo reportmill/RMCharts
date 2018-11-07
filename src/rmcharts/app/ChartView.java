@@ -20,9 +20,6 @@ public class ChartView extends ColView {
     // The row view for content
     RowView            _rowView;
     
-    // The Y axis title View
-    StringView         _yAxisTitleView;
-    
     // The view to hold ChartArea, XAxisView, YAxisView
     ChartAreaBox       _chartAreaBox;
     
@@ -84,12 +81,6 @@ public ChartView()
     _rowView = new RowView(); _rowView.setAlign(Pos.CENTER_LEFT); _rowView.setSpacing(8);
     _rowView.setGrowWidth(true); _rowView.setGrowHeight(true);
     addChild(_rowView);
-    
-    // Create configure YAxisTitleView
-    _yAxisTitleView = new StringView(); _yAxisTitleView.setTextFill(Color.GRAY); _yAxisTitleView.setRotate(-90);
-    _yAxisTitleView.setFont(Font.Arial12.getBold().deriveFont(13));
-    WrapView wrap = new WrapView(_yAxisTitleView); wrap.setPrefWidth(22);
-    _rowView.addChild(wrap);
     
     // Create/add ChartAreaBox
     _chartAreaBox =  new ChartAreaBox(); _chartAreaBox.setGrowWidth(true); _chartAreaBox.setGrowHeight(true);
@@ -180,14 +171,9 @@ public void setSubtitle(String aStr)
 }
 
 /**
- * Returns the YAxisTitle.
+ * Returns the YAxis View.
  */
-public String getYAxisTitle()  { return _yAxisTitleView.getText(); }
-
-/**
- * Sets the YAxisTitle.
- */
-public void setYAxisTitle(String aStr)  { _yAxisTitleView.setText(aStr); }
+public ChartYAxisView getYAxis()  { return _chartAreaBox._yaxis; }
 
 /**
  * Returns the Legend.

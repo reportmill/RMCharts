@@ -24,9 +24,10 @@ public WrapView(View aView)
  */
 protected double getPrefWidthImpl(double aH)
 {
+    Insets ins = getInsetsAll();
     double w = _content.getPrefWidth(), h = _content.getPrefHeight();
     Rect bnds = _content.localToParent(new Rect(0,0,w,h)).getBounds();
-    return bnds.width;
+    return bnds.width + ins.getWidth();
 }
 
 /**
@@ -34,9 +35,10 @@ protected double getPrefWidthImpl(double aH)
  */
 protected double getPrefHeightImpl(double aW)
 {
+    Insets ins = getInsetsAll();
     double w = _content.getPrefWidth(), h = _content.getPrefHeight();
     Rect bnds = _content.localToParent(new Rect(0,0,w,h)).getBounds();
-    return bnds.height;
+    return bnds.height + ins.getHeight();
 }
 
 /**
@@ -44,9 +46,11 @@ protected double getPrefHeightImpl(double aW)
  */
 protected void layoutImpl()
 {
-    double w = _content.getPrefWidth(), h = _content.getPrefHeight();
-    _content.setSize(w,h);
-    _content.setXY(getWidth()/2 - w/2, getHeight()/2 - h/2);
+    Insets ins = getInsetsAll();
+    double pw = getWidth(), ph = getHeight();
+    double cw = _content.getPrefWidth(), ch = _content.getPrefHeight();
+    _content.setSize(cw,ch);
+    _content.setXY(ins.left + (pw - ins.getWidth() - cw)/2, ins.top + (ph - ins.getHeight() - ch)/2);
 }
 
 }

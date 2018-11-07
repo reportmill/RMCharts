@@ -91,7 +91,7 @@ protected void parseYAxis(JSONNode aNode)
     if(titleNode!=null) {
         String text = titleNode.getNodeString("text");
         if(text!=null)
-            _chartView.setYAxisTitle(text);
+            _chartView.getYAxis().setTitle(text);
     }
 }
 

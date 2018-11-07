@@ -19,7 +19,7 @@ protected void resetUI()
     // Reset TitleText, SubtitleText, YAxisTitleText
     setViewValue("TitleText", _chartView.getTitle());
     setViewValue("SubtitleText", _chartView.getSubtitle());
-    setViewValue("YAxisTitleText", _chartView.getYAxisTitle());
+    setViewValue("YAxisTitleText", _chartView.getYAxis().getTitle());
     
     // Reset ShowLegendCheckBox, PartialYAxisCheckBox
     setViewValue("ShowLegendCheckBox", _chartView.isShowLegend());
@@ -38,7 +38,7 @@ protected void respondUI(ViewEvent anEvent)
     // Handle TitleText, SubtitleText, YAxisTitleText
     if(anEvent.equals("TitleText")) _chartView.setTitle(anEvent.getStringValue());
     if(anEvent.equals("SubtitleText")) _chartView.setSubtitle(anEvent.getStringValue());
-    if(anEvent.equals("YAxisTitleText")) _chartView.setYAxisTitle(anEvent.getStringValue());
+    if(anEvent.equals("YAxisTitleText")) _chartView.getYAxis().setTitle(anEvent.getStringValue());
     
     // Handle ShowLegendCheckBox, PartialYAxisCheckBox
     if(anEvent.equals("ShowLegendCheckBox")) _chartView.setShowLegend(anEvent.getBoolValue());
