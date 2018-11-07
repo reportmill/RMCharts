@@ -30,11 +30,16 @@ public ChartYAxisView()
     enableEvents(MousePress);
     
     // Create configure YAxisTitleView
-    _titleView = new StringView(); _titleView.setTextFill(Color.GRAY); _titleView.setRotate(-90);
+    _titleView = new StringView(); _titleView.setTextFill(Color.GRAY); _titleView.setRotate(270);
     _titleView.setFont(Font.Arial12.getBold().deriveFont(13));
     _titleViewBox = new WrapView(_titleView); //_titleViewBox.setPrefWidth(22);
     addChild(_titleViewBox);
 }
+
+/**
+ * Returns the YAxis title view.
+ */
+public StringView getTitleView()  { return _titleView; }
 
 /**
  * Returns the YAxis title.

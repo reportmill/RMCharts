@@ -32,18 +32,17 @@ public void parseString(String aStr)
  */
 protected void parseChart(JSONNode aNode)
 {
-    for(int i=0; i<aNode.getNodeCount(); i++) { String key = aNode.getKey(i);
-        JSONNode node = aNode.getNode(i);
+    for(JSONNode child : aNode.getNodes()) { String key = child.getKey();
         
         switch(key.toLowerCase()) {
-            case "chart": parseChartNode(node); break;
-            case "colors": parseColors(node); break;
-            case "legend": parseLegend(node); break;
-            case "plotoptions": parsePlotOptions(node); break;
-            case "series": parseSeries(node); break;
-            case "subtitle": parseSubtitle(node); break;
-            case "title": parseTitle(node); break;
-            case "yaxis": parseYAxis(node); break;
+            case "chart": parseChartNode(child); break;
+            case "colors": parseColors(child); break;
+            case "legend": parseLegend(child); break;
+            case "plotoptions": parsePlotOptions(child); break;
+            case "series": parseSeries(child); break;
+            case "subtitle": parseSubtitle(child); break;
+            case "title": parseTitle(child); break;
+            case "yaxis": parseYAxis(child); break;
             default: System.out.println("Unsupported node: " + key);
         }
     }
@@ -86,12 +85,31 @@ protected void parseSubtitle(JSONNode aNode)
  */
 protected void parseYAxis(JSONNode aNode)
 {
-    // Get title node
-    JSONNode titleNode = aNode.getNode("title");
-    if(titleNode!=null) {
-        String text = titleNode.getNodeString("text");
-        if(text!=null)
-            _chartView.getYAxis().setTitle(text);
+    for(JSONNode child : aNode.getNodes()) { String key = child.getKey();
+        switch(key.toLowerCase()) {
+            case "title": parseYAxisTitle(child); break;
+            default: System.out.println("Unsupported node: yaxis." + key);
+        }
+    }
+}
+
+/**
+ * Parse a YAxis title node.
+ */
+protected void parseYAxisTitle(JSONNode aNode)
+{
+    for(JSONNode child : aNode.getNodes()) { String key = child.getKey();
+        switch(key.toLowerCase()) {
+            case "text": {
+                String text = child.getString();
+                _chartView.getYAxis().setTitle(text);
+            } break;
+            case "rotation": {
+                double rot = child.getNumber().doubleValue();
+                _chartView.getYAxis().getTitleView().setRotate(rot);
+            }
+            default: System.out.println("Unsupported node: yaxis.title." + key);
+        }
     }
 }
 
