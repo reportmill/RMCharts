@@ -171,6 +171,11 @@ public void setSubtitle(String aStr)
 }
 
 /**
+ * Returns the XAxis View.
+ */
+public ChartXAxisView getXAxis()  { return _chartAreaBox._xaxis; }
+
+/**
  * Returns the YAxis View.
  */
 public ChartYAxisView getYAxis()  { return _chartAreaBox._yaxis; }

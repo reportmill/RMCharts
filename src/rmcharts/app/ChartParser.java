@@ -43,6 +43,7 @@ protected void parseChart(JSONNode aNode)
             case "series": parseSeries(child); break;
             case "subtitle": parseSubtitle(child); break;
             case "title": parseTitle(child); break;
+            case "xaxis": parseXAxis(child); break;
             case "yaxis": parseYAxis(child); break;
             default: System.out.println("Unsupported node: " + key);
         }
@@ -82,14 +83,180 @@ protected void parseSubtitle(JSONNode aNode)
 }
 
 /**
+ * Parse a XAxis node.
+ */
+protected void parseXAxis(JSONNode aNode)
+{
+    // Get XAxis
+    ChartXAxisView xaxis = _chartView.getXAxis();
+
+    // Iterate over nodes
+    for(JSONNode child : aNode.getNodes()) { String key = child.getKey();
+        switch(key.toLowerCase()) {
+            
+            // Handle title node
+            case "title": parseXAxisTitle(child); break;
+            
+            // Handle categories array
+            case "categories": parseXAxisCategories(child); break;
+            
+            // Handle labels node
+            case "labels": parseXAxisLabels(child); break;
+            
+            // Handle default (complain)
+            default: System.out.println("Unsupported node: xaxis." + key + " = " + child.getString());
+        }
+    }
+}
+
+/**
+ * Parse xaxis categories node.
+ */
+protected void parseXAxisCategories(JSONNode aNode)
+{
+    // Complain if not series
+    if(!aNode.isArray()) { System.err.println("ChartParser.parseXAxisCategories: Node not array"); return; }
+    
+    // Iterate over array
+    List <String> strings = new ArrayList();
+    for(int i=0;i<aNode.getNodeCount();i++) { JSONNode strNode = aNode.getNode(i);
+        strings.add(strNode.getString()); }
+    
+    // Set categories string list
+    _chartView.getXAxis().setCategories(strings);
+}
+
+/**
+ * Parse a XAxis labels node.
+ */
+protected void parseXAxisLabels(JSONNode aNode)
+{
+    // Get YAxis
+    ChartYAxisView yaxis = _chartView.getYAxis();
+
+    // Iterate over nodes
+    for(JSONNode child : aNode.getNodes()) { String key = child.getKey();
+        switch(key.toLowerCase()) {
+            
+            // Handle style node
+            //case "style": parseXAxisLabelsStyle(child); break;
+            
+            // Handle default (complain)
+            default: System.out.println("Unsupported node: xaxis.labels." + key + " = " + child.getString());
+        }
+    }
+}
+
+/**
+ * Parse a XAxis title node.
+ */
+protected void parseXAxisTitle(JSONNode aNode)
+{
+    // Get XAxis
+    ChartXAxisView xaxis = _chartView.getXAxis();
+
+    // Iterate over nodes
+    for(JSONNode child : aNode.getNodes()) { String key = child.getKey();
+        switch(key.toLowerCase()) {
+            
+            // Handle xaxis.title.align
+            /*case "align": {
+                String val = child.getString().toLowerCase();
+                if(val.equals("high")) xaxis.getTitleView().getParent().setAlign(VPos.TOP);
+                else if(val.equals("low")) xaxis.getTitleView().getParent().setAlign(VPos.BOTTOM);
+            } break;*/
+            
+            // Handle xaxis.title.rotation
+            /*case "rotation": {
+                double rot = child.getNumber().doubleValue();
+                yaxis.getTitleView().setRotate(rot);
+            } break;*/
+            
+            // Handle xaxis.title.text
+            /*case "offset": {
+                double val = child.getNumber().doubleValue();
+                yaxis.setTitleOffset(val);
+            } break;*/
+            
+            // Handle xaxis.title.text
+            /*case "text": {
+                String text = child.getString();
+                yaxis.setTitle(text);
+            } break;*/
+            
+            // Handle xaxis.title.X
+            /*case "x": {
+                double x = child.getNumber().doubleValue();
+                yaxis.getTitleView().setTransX(x);
+            } break;*/
+            
+            // Handle xaxis.title.Y
+            /*case "y": {
+                double y = child.getNumber().doubleValue();
+                yaxis.getTitleView().setTransY(y);
+            } break;*/
+            
+            // Handle default (complain)
+            default: System.out.println("Unsupported node: xaxis.title." + key + " = " + child.getString());
+        }
+    }
+}
+
+/**
  * Parse a YAxis node.
  */
 protected void parseYAxis(JSONNode aNode)
 {
     for(JSONNode child : aNode.getNodes()) { String key = child.getKey();
         switch(key.toLowerCase()) {
+            
+            // Handle labels node
+            case "labels": parseYAxisLabels(child); break;
+            
+            // Handle title node
             case "title": parseYAxisTitle(child); break;
-            default: System.out.println("Unsupported node: yaxis." + key);
+            
+            // Handle default (complain)
+            default: System.out.println("Unsupported node: yaxis." + key + " = " + child.getString());
+        }
+    }
+}
+
+/**
+ * Parse a YAxis labels node.
+ */
+protected void parseYAxisLabels(JSONNode aNode)
+{
+    // Get YAxis
+    ChartYAxisView yaxis = _chartView.getYAxis();
+
+    // Iterate over nodes
+    for(JSONNode child : aNode.getNodes()) { String key = child.getKey();
+        switch(key.toLowerCase()) {
+            
+            // Handle style node
+            case "style": parseYAxisLabelsStyle(child); break;
+            
+            // Handle default (complain)
+            default: System.out.println("Unsupported node: yaxis.labels." + key + " = " + child.getString());
+        }
+    }
+}
+
+/**
+ * Parse a YAxis labels style node.
+ */
+protected void parseYAxisLabelsStyle(JSONNode aNode)
+{
+    // Get YAxis
+    ChartYAxisView yaxis = _chartView.getYAxis();
+
+    // Iterate over nodes
+    for(JSONNode child : aNode.getNodes()) { String key = child.getKey();
+        switch(key.toLowerCase()) {
+            
+            // Handle default (complain)
+            default: System.out.println("Unsupported node: yaxis.labels.style." + key + " = " + child.getString());
         }
     }
 }
@@ -113,38 +280,59 @@ protected void parseYAxisTitle(JSONNode aNode)
                 else if(val.equals("low")) yaxis.getTitleView().getParent().setAlign(VPos.BOTTOM);
             } break;
             
-            // Handle YAxis.Title.Rotation
+            // Handle yaxis.title.rotation
             case "rotation": {
                 double rot = child.getNumber().doubleValue();
                 yaxis.getTitleView().setRotate(rot);
             } break;
             
-            // Handle YAxis.Title.Text
+            // Handle yaxis.title.offset
             case "offset": {
                 double val = child.getNumber().doubleValue();
                 yaxis.setTitleOffset(val);
             } break;
             
-            // Handle YAxis.Title.Text
+            // Handle yaxis.title.style
+            case "style": parseYAxisTitleStyle(child); break;
+            
+            // Handle yaxis.title.text
             case "text": {
                 String text = child.getString();
                 yaxis.setTitle(text);
             } break;
             
-            // Handle YAxis.Title.X
+            // Handle yaxis.title.x
             case "x": {
                 double x = child.getNumber().doubleValue();
                 yaxis.getTitleView().setTransX(x);
             } break;
             
-            // Handle YAxis.Title.Y
+            // Handle yaxis.title.y
             case "y": {
                 double y = child.getNumber().doubleValue();
                 yaxis.getTitleView().setTransY(y);
             } break;
             
             // Handle default (complain)
-            default: System.out.println("Unsupported node: yaxis.title." + key);
+            default: System.out.println("Unsupported node: yaxis.title." + key + " = " + child.getString());
+        }
+    }
+}
+
+/**
+ * Parse a YAxis title style node.
+ */
+protected void parseYAxisTitleStyle(JSONNode aNode)
+{
+    // Get YAxis
+    ChartYAxisView yaxis = _chartView.getYAxis();
+
+    // Iterate over nodes
+    for(JSONNode child : aNode.getNodes()) { String key = child.getKey();
+        switch(key.toLowerCase()) {
+            
+            // Handle default (complain)
+            default: System.out.println("Unsupported node: yaxis.title.style." + key + " = " + child.getString());
         }
     }
 }

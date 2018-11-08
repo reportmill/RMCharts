@@ -1,4 +1,5 @@
 package rmcharts.app;
+import java.util.List;
 import snap.gfx.*;
 import snap.view.View;
 
@@ -8,7 +9,10 @@ import snap.view.View;
 public class ChartXAxisView extends View {
 
     // The ChartArea
-    ChartArea      _chartArea;
+    ChartArea         _chartArea;
+    
+    // The categories
+    List <String>     _categories;
 
     // Constants
     static Color           AXIS_LABELS_COLOR = Color.GRAY;
@@ -19,6 +23,33 @@ public class ChartXAxisView extends View {
 public ChartXAxisView()
 {
     setPrefHeight(18);
+}
+
+/**
+ * Returns the categories.
+ */
+public List <String> getCategories()  { return _categories; }
+
+/**
+ * Sets the categories.
+ */
+public void setCategories(List <String> theStrings)
+{
+    _categories = theStrings;
+}
+
+/**
+ * Returns the label string at given index.
+ */
+public String getLabel(int anIndex)
+{
+    // If categories exist, return the category string at index
+    if(_categories!=null && anIndex<_categories.size())
+        return _categories.get(anIndex);
+        
+    // Otherwise, return string for start value and index
+    int val = _chartArea.getSeriesStart() + anIndex;
+    return String.valueOf(val);
 }
 
 /**
@@ -44,7 +75,6 @@ protected void paintAxis(Painter aPntr, double aX, double aW, double aH)
     
     // Get number of data points
     int dpc = _chartArea.getSeriesLength();
-    int start = _chartArea.getSeriesStart();
     double sw = aW/(dpc-1);
     
     // Draw axis
@@ -54,7 +84,7 @@ protected void paintAxis(Painter aPntr, double aX, double aW, double aH)
         double lx = aX + sw*i;
         
         // Draw labels
-        String str = String.valueOf(start+i);
+        String str = getLabel(i);
         Rect strBnds = aPntr.getStringBounds(str);
         double x = lx - Math.round(strBnds.getMidX());
         double y = fontHeight;
@@ -73,7 +103,6 @@ protected void paintAxisBar(Painter aPntr, double aX, double aW, double aH)
     
     // Get number of data points
     int sectionCount = _chartArea.getSeriesLength();
-    int start = _chartArea.getSeriesStart();
     double sectionW = aW/sectionCount;
     
     // Draw axis
@@ -83,7 +112,7 @@ protected void paintAxisBar(Painter aPntr, double aX, double aW, double aH)
         double lx = aX + sectionW*i + sectionW/2;
         
         // Draw labels
-        String str = String.valueOf(start+i);
+        String str = getLabel(i);
         Rect strBnds = aPntr.getStringBounds(str);
         double x = lx - strBnds.getMidX(); x = Math.round(x);
         double y = fontHeight;
