@@ -1,6 +1,7 @@
 package rmcharts.app;
 import java.util.*;
 import snap.gfx.Color;
+import snap.gfx.VPos;
 import snap.util.*;
 
 /**
@@ -98,16 +99,51 @@ protected void parseYAxis(JSONNode aNode)
  */
 protected void parseYAxisTitle(JSONNode aNode)
 {
+    // Get YAxis
+    ChartYAxisView yaxis = _chartView.getYAxis();
+
+    // Iterate over nodes
     for(JSONNode child : aNode.getNodes()) { String key = child.getKey();
         switch(key.toLowerCase()) {
-            case "text": {
-                String text = child.getString();
-                _chartView.getYAxis().setTitle(text);
+            
+            // Handle yaxis.title.align
+            case "align": {
+                String val = child.getString().toLowerCase();
+                if(val.equals("high")) yaxis.getTitleView().getParent().setAlign(VPos.TOP);
+                else if(val.equals("low")) yaxis.getTitleView().getParent().setAlign(VPos.BOTTOM);
             } break;
+            
+            // Handle YAxis.Title.Rotation
             case "rotation": {
                 double rot = child.getNumber().doubleValue();
-                _chartView.getYAxis().getTitleView().setRotate(rot);
-            }
+                yaxis.getTitleView().setRotate(rot);
+            } break;
+            
+            // Handle YAxis.Title.Text
+            case "offset": {
+                double val = child.getNumber().doubleValue();
+                yaxis.setTitleOffset(val);
+            } break;
+            
+            // Handle YAxis.Title.Text
+            case "text": {
+                String text = child.getString();
+                yaxis.setTitle(text);
+            } break;
+            
+            // Handle YAxis.Title.X
+            case "x": {
+                double x = child.getNumber().doubleValue();
+                yaxis.getTitleView().setTransX(x);
+            } break;
+            
+            // Handle YAxis.Title.Y
+            case "y": {
+                double y = child.getNumber().doubleValue();
+                yaxis.getTitleView().setTransY(y);
+            } break;
+            
+            // Handle default (complain)
             default: System.out.println("Unsupported node: yaxis.title." + key);
         }
     }
