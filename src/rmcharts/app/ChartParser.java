@@ -207,8 +207,26 @@ protected void parseXAxisTitle(JSONNode aNode)
  */
 protected void parseYAxis(JSONNode aNode)
 {
+    // Get YAxis
+    ChartYAxisView yaxis = _chartView.getYAxis();
+
+    // Iterate over nodes
     for(JSONNode child : aNode.getNodes()) { String key = child.getKey();
         switch(key.toLowerCase()) {
+            
+            // Handle gridLineColor node
+            case "gridlinecolor": {
+                String cstr = child.getString(); Color color = Color.get(cstr);
+                if(color!=null) yaxis.setGridLineColor(color);
+                else System.out.println("ChartParser: Invalid string for yaxis.gridlinecolor: " + cstr);
+            } break;
+            
+            // Handle gridlineDashStyle node
+            case "gridlinedashstyle": {
+                String str = child.getString();
+                if(str.equals("dash")) yaxis.setGridLineDashArray(new double[] { 4d, 3d });
+                else if(str.equals("longdash")) yaxis.setGridLineDashArray(new double[] { 8d, 3d });
+            } break;
             
             // Handle labels node
             case "labels": parseYAxisLabels(child); break;

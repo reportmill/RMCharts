@@ -25,8 +25,15 @@ public class ChartYAxisView extends ParentView {
     // Labels margin - distance of labels right edge to axis
     double         _labelsMargin = 8;
     
+    // THe grid line color
+    Color          _gridLineColor = GRID_LINES_COLOR;
+    
+    // The grid line
+    double         _gridLineDashArray[];
+    
     // Constants
     static Color   AXIS_LABELS_COLOR = Color.GRAY;
+    static Color   GRID_LINES_COLOR = Color.get("#E6");
 
 /**
  * Creates the ChartYAxisView.
@@ -100,6 +107,26 @@ public double getLabelsOffset()  { return getMaxLabelWidth() + getLabelsMargin()
  * Returns the distance between axis labels right edge and the axis.
  */
 public double getLabelsMargin()  { return _labelsMargin; }
+
+/**
+ * Returns the grid line color.
+ */
+public Color getGridLineColor()  { return _gridLineColor; }
+
+/**
+ * Returns the grid line color.
+ */
+public void setGridLineColor(Color aColor)  { _gridLineColor = aColor; }
+
+/**
+ * Returns the grid line dash array.
+ */
+public double[] getGridLineDashArray()  { return _gridLineDashArray; }
+
+/**
+ * Returns the grid line dash array.
+ */
+public void setGridLineDashArray(double theVals[])  { _gridLineDashArray = theVals; }
 
 /**
  * Paints chart y axis.

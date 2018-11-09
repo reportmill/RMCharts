@@ -185,7 +185,11 @@ protected void paintFront(Painter aPntr)
     double h = ph - ins.getHeight();
     
     // Set axis line color and stroke
-    aPntr.setColor(AXIS_LINES_COLOR); aPntr.setStroke(Stroke.Stroke1);
+    aPntr.setColor(AXIS_LINES_COLOR);
+    double lineWidth = 1;
+    double dashes[] = _yaxisView.getGridLineDashArray();
+    Stroke stroke = dashes==null && lineWidth==1? Stroke.Stroke1 : new Stroke(lineWidth, dashes, 0);
+    aPntr.setStroke(stroke);
     
     // Have YAxisView paint lines
     paintAxisY(aPntr, 0, ins.top, pw, h);
@@ -229,6 +233,8 @@ protected void paintAxisY(Painter aPntr, double aX, double aY, double aW, double
         double y = aY + i*ih; y = Math.round(y);
         aPntr.drawLine(0, y, aW, y);
     }
+    
+    aPntr.setStroke(Stroke.Stroke1);
 }
 
 /**
