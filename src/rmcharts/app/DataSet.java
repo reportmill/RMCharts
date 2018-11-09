@@ -14,7 +14,7 @@ public class DataSet {
     List <DataSeries>  _series = new ArrayList();
     
     // The series start
-    int                _seriesStart = 2010;
+    int                _seriesStart = 0;
 
     // The intervals
     Intervals          _intervals = new Intervals(0, 4, 100);

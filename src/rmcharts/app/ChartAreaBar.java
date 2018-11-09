@@ -10,7 +10,7 @@ import snap.view.*;
 public class ChartAreaBar extends ChartArea {
 
 /**
- * Pains chart.
+ * Paints chart.
  */
 protected void paintChart(Painter aPntr, double aX, double aY, double aW, double aH)
 {
@@ -38,7 +38,7 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
     double groupPadW = (sectionW - groupW)/2;
     
     // Get width of individual bar (bar count + bar spaces + bar&space at either end)
-    double barPadding = .2, barWidthRatio = 1 - barPadding*2;
+    double barPadding = .1, barWidthRatio = 1 - barPadding*2;
     double barW = barWidthRatio>=0? barWidthRatio*groupW/seriesCount : 1;
     double barPadW = barWidthRatio>=0? barPadding*groupW/seriesCount : 1;
         

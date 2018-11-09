@@ -375,12 +375,17 @@ public static class ChartAreaBox extends ParentView {
     /** Actual method to layout children. */
     protected void layoutImpl()
     {
+        // Set chart area height first, since height can effect yaxis label width
         double pw = getWidth(), ph = getHeight();
-        double aw = _yaxis.getPrefWidth(), ah = _xaxis.getPrefHeight();
+        double ah = _xaxis.getPrefHeight();
+        _area.setHeight(ph - ah);
+        
+        // Now set bounds of areay, xaxis and yaxis
+        double aw = _yaxis.getPrefWidth(ph - ah);
         double cw = pw - aw, ch = ph - ah;
-        _yaxis.setBounds(0,0,aw,ch);
-        _xaxis.setBounds(aw,ch,cw,ah);
         _area.setBounds(aw,0,cw,ch);
+        _xaxis.setBounds(aw,ch,cw,ah);
+        _yaxis.setBounds(0,0,aw,ch);
     }
 }
 

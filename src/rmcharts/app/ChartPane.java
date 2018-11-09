@@ -77,7 +77,7 @@ protected View createUI()
     _optionButton.setSize(_optionButton.getPrefSize()); _optionButton.setManaged(false);
     
     // Create ChartView
-    _chartView = new ChartView(); //
+    _chartView = new ChartView();
     _chartBox = new ChartBox();
     _chartBox.setGrowHeight(true);
     _chartBox.addChild(_optionButton);
@@ -91,7 +91,7 @@ protected View createUI()
     View dataPaneUI = dataPane.getUI();
 
     // Create TextView
-    TextView textView = new TextView(); //textView.setMinHeight(300);
+    TextView textView = new TextView();
     textView.setDefaultStyle(textView.getDefaultStyle().copyFor(Font.Arial14));
     textView.setSource(WebURL.getURL(ChartPane.class, "Sample.json"));
     BoxView textBox = new BoxView(textView, true, true); textBox.setFill(new Color(.93)); textBox.setPadding(4,4,4,4);

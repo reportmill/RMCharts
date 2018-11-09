@@ -20,7 +20,7 @@ public class ChartYAxisView extends ParentView {
     Double         _titleOffset;
     
     // Title margin - distance of title right edge to labels
-    double         _titleMargin = 40;
+    double         _titleMargin = 10;
     
     // Labels margin - distance of labels right edge to axis
     double         _labelsMargin = 8;
@@ -75,9 +75,7 @@ public void setTitle(String aStr)
 public double getTitleOffset()
 {
     if(_titleOffset!=null) return _titleOffset;
-    String title = getTitle();
-    double titleMarg = title!=null && title.length()>0? getTitleMargin() : 0;
-    return _titleViewBox.getPrefWidth() + titleMarg + getLabelsOffset();
+    return _titleViewBox.getPrefWidth() + getLabelsOffset();
 }
 
 /**
@@ -187,7 +185,7 @@ protected void layoutImpl()
 {
     double w = getWidth(), h = getHeight();
     double toff = getTitleOffset(), tw = _titleViewBox.getPrefWidth();
-    _titleViewBox.setBounds(w - toff, 0, tw, h);
+    _titleViewBox.setBounds(0, 0, tw, h);
 }
 
 /**
