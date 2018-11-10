@@ -322,13 +322,13 @@ protected void parseYAxisTitle(JSONNode aNode)
             // Handle yaxis.title.x
             case "x": {
                 double x = child.getNumber().doubleValue();
-                yaxis.getTitleView().setTransX(x);
+                yaxis.setTitleX(x);
             } break;
             
             // Handle yaxis.title.y
             case "y": {
                 double y = child.getNumber().doubleValue();
-                yaxis.getTitleView().setTransY(y);
+                yaxis.setTitleY(y);
             } break;
             
             // Handle default (complain)

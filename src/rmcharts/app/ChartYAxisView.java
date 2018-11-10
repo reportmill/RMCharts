@@ -22,6 +22,9 @@ public class ChartYAxisView extends ParentView {
     // Title margin - distance of title right edge to labels
     double         _titleMargin = 10;
     
+    // Title x/y - additional offset for title
+    double         _titleX, _titleY;
+    
     // Labels margin - distance of labels right edge to axis
     double         _labelsMargin = 8;
     
@@ -95,6 +98,26 @@ public double getTitleMargin()  { return _titleMargin; }
  * Sets the distance between the title and axis labels.
  */
 public void setTitleMargin(double aValue)  { _titleMargin = aValue; }
+
+/**
+ * Returns the additional offset of title.
+ */
+public double getTitleX()  { return _titleX; }
+
+/**
+ * Returns the additional offset of title.
+ */
+public void setTitleX(double aValue)  { _titleX = aValue; }
+
+/**
+ * Returns the additional offset of title.
+ */
+public double getTitleY()  { return _titleY; }
+
+/**
+ * Returns the additional offset of title.
+ */
+public void setTitleY(double aValue)  { _titleY = aValue; }
 
 /**
  * Returns the distance between axis labels left edge and axis.
@@ -172,9 +195,8 @@ protected void paintAxis(Painter aPntr, double aX, double aY, double aW, double 
  */
 protected double getPrefWidthImpl(double aH)
 {
-    double toff = getTitleOffset(), loff = getLabelsOffset();
+    double toff = getTitleOffset() - getTitleX(), loff = getLabelsOffset();
     double pw = Math.max(toff, loff);
-    if(_titleView.getTransX()<0) pw = Math.max(pw, toff - _titleView.getTransX());
     return pw;
 }
 
@@ -184,8 +206,9 @@ protected double getPrefWidthImpl(double aH)
 protected void layoutImpl()
 {
     double w = getWidth(), h = getHeight();
-    double toff = getTitleOffset(), tw = _titleViewBox.getPrefWidth();
-    _titleViewBox.setBounds(0, 0, tw, h);
+    double toff = getTitleOffset() - getTitleX(), loff = getLabelsOffset(), tw = _titleViewBox.getPrefWidth();
+    double titleX = toff>loff? 0 : loff - toff;
+    _titleViewBox.setBounds(titleX, getTitleY(), tw, h);
 }
 
 /**
