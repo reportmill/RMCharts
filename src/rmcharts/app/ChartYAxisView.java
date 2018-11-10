@@ -26,7 +26,7 @@ public class ChartYAxisView extends ParentView {
     double         _titleX, _titleY;
     
     // Labels margin - distance of labels right edge to axis
-    double         _labelsMargin = 8;
+    double         _labelsMargin = 15;
     
     // THe grid line color
     Color          _gridLineColor = GRID_LINES_COLOR;
