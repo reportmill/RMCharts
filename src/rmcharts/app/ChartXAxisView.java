@@ -13,6 +13,9 @@ public class ChartXAxisView extends View {
     
     // The categories
     List <String>     _categories;
+    
+    // The length of the vertical tick lines drawn from the X axis down twards it's labels and title
+    double            _tickLength = 10;
 
     // Constants
     static Color           AXIS_LABELS_COLOR = Color.GRAY;
@@ -37,6 +40,16 @@ public void setCategories(List <String> theStrings)
 {
     _categories = theStrings;
 }
+
+/**
+ * Returns the length of the vertical tick lines drawn from the X axis down twards it's labels and title.
+ */
+public double getTickLength()  { return _tickLength; }
+
+/**
+ * Sets the length of the vertical tick lines drawn from the X axis down twards it's labels and title.
+ */
+public void setTickLength(double aValue)  { _tickLength = aValue; }
 
 /**
  * Returns the label string at given index.
