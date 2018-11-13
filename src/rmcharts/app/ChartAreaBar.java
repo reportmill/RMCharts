@@ -22,7 +22,7 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
     int seriesCount = seriesList.size();
     
     // Get number of values
-    int valueCount = getSeriesLength();
+    int valueCount = getValueCount();
     DataPoint dpnt = getDataPoint();
     
     // If reveal is not full (1) then clip
@@ -76,7 +76,7 @@ public void setDataPointAtPoint(double aX, double aY)
     
     Insets ins = getInsetsAll();
     double w = getWidth() - ins.getWidth();
-    int dcount = getSeriesLength();
+    int dcount = getValueCount();
     double sw = w/dcount;
     int section = (int)((aX-ins.left)/sw);
         
@@ -153,7 +153,7 @@ public void dataPointChanged()
     // Colculate new location
     //Insets ins = getInsetsAll(); double aX = ins.left, aW = getWidth() - ins.getWidth();
     double aX = 0, aW = getWidth();
-    double w = aW; int dcount = getSeriesLength(); double sw = w/dcount;
+    double w = aW; int dcount = getValueCount(); double sw = w/dcount;
     double px = aX + dataPoint.index*sw + sw/2;
     Point pnt = dataPoint.getDataPointLocal(); pnt = localToParent(px, pnt.y, chartView);
     double nx = pnt.x - _dataPointView.getWidth()/2;

@@ -12,12 +12,6 @@ public class ChartArea extends View {
     // The ChartView that owns the area
     ChartView           _chartView;
     
-    // The XAxis View
-    ChartXAxisView      _xaxisView;
-    
-    // The YAxis View
-    ChartYAxisView      _yaxisView;
-
     // The Data point
     DataPoint           _dataPoint;
     
@@ -39,6 +33,16 @@ public ChartArea()
     enableEvents(MouseMove, MouseExit);
     setPadding(5,10,8,10);
 }
+
+/**
+ * Returns the XAxis View.
+ */
+public ChartXAxisView getXAxis()  { return _chartView._xaxis; }
+
+/**
+ * Returns the YAxis View.
+ */
+public ChartYAxisView getYAxis()  { return _chartView._yaxis; }
 
 /**
  * Returns the data set.
@@ -73,7 +77,7 @@ public int getSeriesStart()  { return _chartView.getSeriesStart(); }
 /**
  * Returns the length of the series.
  */
-public int getSeriesLength()  { return getDataSet().getValueCount(); }
+public int getValueCount()  { return getDataSet().getValueCount(); }
 
 /**
  * Returns the intervals.
@@ -117,7 +121,7 @@ public void setDataPointAtPoint(double aX, double aY)
     
     List <DataSeries> seriesList = getSeriesActive();
     for(int i=0;i<seriesList.size();i++) { DataSeries series = seriesList.get(i);
-        for(int j=0;j<getSeriesLength();j++) {
+        for(int j=0;j<getValueCount();j++) {
             Point pnt = seriesToLocal(j,series.getValue(j));
             double d = Point.getDistance(aX, aY, pnt.x, pnt.y);
             if(d<dist) { dist = d;
@@ -160,7 +164,7 @@ public Point seriesToLocal(double aX, double aY)
     Insets ins = getInsetsAll();
     
     // Convert X
-    int count = getSeriesLength();
+    int count = getValueCount();
     double w = getWidth() - ins.getWidth();
     double dx = w/(count-1);
     double nx = ins.left + aX*dx;
@@ -187,7 +191,7 @@ protected void paintFront(Painter aPntr)
     // Set axis line color and stroke
     aPntr.setColor(AXIS_LINES_COLOR);
     double lineWidth = 1;
-    double dashes[] = _yaxisView.getGridLineDashArray();
+    double dashes[] = getYAxis().getGridLineDashArray();
     Stroke stroke = dashes==null && lineWidth==1? Stroke.Stroke1 : new Stroke(lineWidth, dashes, 0);
     aPntr.setStroke(stroke);
     
@@ -208,7 +212,7 @@ protected void paintFront(Painter aPntr)
 protected void paintAxisX(Painter aPntr, double aX, double aY, double aW, double aH)
 {
     // Get number of data points and section width
-    int sectionCount = getSeriesLength();
+    int sectionCount = getValueCount();
     double sectionW = aW/(sectionCount-1);
     double parH = getHeight();
     
@@ -243,7 +247,7 @@ protected void paintAxisY(Painter aPntr, double aX, double aY, double aW, double
 protected void paintAxisXBar(Painter aPntr, double aX, double aY, double aW, double aH)
 {
     // Get number of data points and section width
-    int sectionCount = getSeriesLength();
+    int sectionCount = getValueCount();
     double sectionW = aW/sectionCount;
     double parH = getHeight(), parW = aX + aW;
     
@@ -324,68 +328,6 @@ public class DataPoint {
     {
         DataPoint other = anObj instanceof DataPoint? (DataPoint)anObj : null; if(other==null) return false;
         return other.series==series && other.index==index;
-    }
-}
-
-/**
- * A class to layout the ChartArea, ChartXAxis, ChartYAxis.
- */
-public static class ChartAreaBox extends ParentView {
-    
-    // The X Axis view
-    ChartXAxisView   _xaxis;
-    
-    // The Y Axis view
-    ChartYAxisView   _yaxis;
-    
-    // The ChartArea
-    ChartArea        _area;
-    
-    /**
-     * Create ChartAreaBox.
-     */
-    public ChartAreaBox()
-    {
-        _xaxis = new ChartXAxisView();
-        _yaxis = new ChartYAxisView();
-        setChildren(_yaxis, _xaxis);
-    }
-    
-    /** Sets the ChartArea. */
-    public void setChartArea(ChartArea aCA)
-    {
-        if(_area!=null) removeChild(_area);
-        addChild(_area = aCA, 1);
-        _yaxis._chartArea = _xaxis._chartArea = aCA;
-        _area._xaxisView = _xaxis; _area._yaxisView = _yaxis;
-    }
-    
-    /** Calculates the preferred width. */
-    protected double getPrefWidthImpl(double aH)
-    {
-        return _yaxis.getPrefWidth() + _area.getPrefWidth();
-    }
-
-    /** Calculates the preferred height. */
-    protected double getPrefHeightImpl(double aW)
-    {
-        return _area.getPrefHeight() + _xaxis.getPrefHeight();
-    }
-
-    /** Actual method to layout children. */
-    protected void layoutImpl()
-    {
-        // Set chart area height first, since height can effect yaxis label width
-        double pw = getWidth(), ph = getHeight();
-        double ah = _xaxis.getPrefHeight();
-        _area.setHeight(ph - ah);
-        
-        // Now set bounds of areay, xaxis and yaxis
-        double aw = _yaxis.getPrefWidth(ph - ah);
-        double cw = pw - aw, ch = ph - ah;
-        _area.setBounds(aw,0,cw,ch);
-        _xaxis.setBounds(aw,ch,cw,ah);
-        _yaxis.setBounds(0,0,aw,ch);
     }
 }
 

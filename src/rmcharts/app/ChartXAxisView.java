@@ -87,7 +87,7 @@ protected void paintAxis(Painter aPntr, double aX, double aW, double aH)
     double fontHeight = Math.ceil(Font.Arial12.getAscent());
     
     // Get number of data points
-    int dpc = _chartArea.getSeriesLength();
+    int dpc = _chartArea.getValueCount();
     double sw = aW/(dpc-1);
     
     // Draw axis
@@ -115,7 +115,7 @@ protected void paintAxisBar(Painter aPntr, double aX, double aW, double aH)
     double fontHeight = Math.ceil(Font.Arial12.getAscent());
     
     // Get number of data points
-    int sectionCount = _chartArea.getSeriesLength();
+    int sectionCount = _chartArea.getValueCount();
     double sectionW = aW/sectionCount;
     
     // Draw axis

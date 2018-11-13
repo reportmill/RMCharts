@@ -1,7 +1,6 @@
 package rmcharts.app;
 import java.text.DecimalFormat;
 import java.util.*;
-import rmcharts.app.ChartArea.ChartAreaBox;
 import snap.gfx.*;
 import snap.view.*;
 import snap.web.WebURL;
@@ -20,11 +19,17 @@ public class ChartView extends ColView {
     // The row view for content
     RowView            _rowView;
     
-    // The view to hold ChartArea, XAxisView, YAxisView
-    ChartAreaBox       _chartAreaBox;
-    
     // The ChartArea
     ChartArea          _chartArea;
+    
+    // The XAxis
+    ChartXAxisView     _xaxis;
+    
+    // The YAxis
+    ChartYAxisView     _yaxis;
+    
+    // The view to hold ChartArea, XAxisView, YAxisView
+    ChartAreaBox       _chartAreaBox;
     
     // The Legend
     ChartLegend        _legend;
@@ -82,8 +87,12 @@ public ChartView()
     _rowView.setGrowWidth(true); _rowView.setGrowHeight(true);
     addChild(_rowView);
     
+    // Create XAxis and YAxis
+    _xaxis = new ChartXAxisView();
+    _yaxis = new ChartYAxisView();
+    
     // Create/add ChartAreaBox
-    _chartAreaBox =  new ChartAreaBox(); _chartAreaBox.setGrowWidth(true); _chartAreaBox.setGrowHeight(true);
+    _chartAreaBox =  new ChartAreaBox();
     _rowView.addChild(_chartAreaBox);
     
     // Create/set ChartArea
@@ -135,10 +144,7 @@ public ChartArea getChartArea()  { return _chartArea; }
  */
 protected void setChartArea(ChartArea aCA)
 {
-    // Add or replace ChartArea
-    _chartAreaBox.setChartArea(_chartArea = aCA);
-
-    // Set ChartArea.ChartView
+    _chartAreaBox.setChartArea(aCA);
     _chartArea._chartView = this;
 }
 
@@ -173,12 +179,12 @@ public void setSubtitle(String aStr)
 /**
  * Returns the XAxis View.
  */
-public ChartXAxisView getXAxis()  { return _chartAreaBox._xaxis; }
+public ChartXAxisView getXAxis()  { return _xaxis; }
 
 /**
  * Returns the YAxis View.
  */
-public ChartYAxisView getYAxis()  { return _chartAreaBox._yaxis; }
+public ChartYAxisView getYAxis()  { return _yaxis; }
 
 /**
  * Returns the Legend.
@@ -315,8 +321,8 @@ public void reloadContents()
 {
     _legend.reloadContents();
     _chartArea.animate();
-    _chartArea._yaxisView.repaint();
-    _chartArea._xaxisView.repaint();
+    _yaxis.repaint();
+    _xaxis.repaint();
 }
 
 /**
@@ -339,6 +345,45 @@ public void loadFromString(String aStr)
     parser.parseString(aStr);
     if(_dataSet.isEmpty()) _dataSet.addSeriesForNameAndValues("Sample", 1, 2, 3, 3, 4, 5);
     reloadContents();
+}
+
+/**
+ * A class to layout ChartArea and X/Y axis views.
+ */
+private class ChartAreaBox extends ParentView {
+    
+    /** Create ChartAreaBox. */
+    public ChartAreaBox()  { setGrowWidth(true); setGrowHeight(true); setChildren(_yaxis, _xaxis); }
+    
+    /** Sets the ChartArea. */
+    protected void setChartArea(ChartArea aCA)
+    {
+        if(_chartArea!=null) removeChild(_chartArea);
+        addChild(_chartArea = aCA, 1);
+        _yaxis._chartArea = _xaxis._chartArea = aCA;
+    }
+    
+    /** Calculates the preferred width. */
+    protected double getPrefWidthImpl(double aH)  { return _yaxis.getPrefWidth() + _chartArea.getPrefWidth(); }
+
+    /** Calculates the preferred height. */
+    protected double getPrefHeightImpl(double aW)  { return _chartArea.getPrefHeight() + _xaxis.getPrefHeight(); }
+
+    /** Actual method to layout children. */
+    protected void layoutImpl()
+    {
+        // Set chart area height first, since height can effect yaxis label width
+        double pw = getWidth(), ph = getHeight();
+        double ah = _xaxis.getPrefHeight();
+        _chartArea.setHeight(ph - ah);
+        
+        // Now set bounds of areay, xaxis and yaxis
+        double aw = _yaxis.getPrefWidth(ph - ah);
+        double cw = pw - aw, ch = ph - ah;
+        _chartArea.setBounds(aw,0,cw,ch);
+        _xaxis.setBounds(aw,ch,cw,ah);
+        _yaxis.setBounds(0,0,aw,ch);
+    }
 }
 
 }

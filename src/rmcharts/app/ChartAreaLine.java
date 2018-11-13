@@ -16,7 +16,7 @@ public List <Path> getSeriesPaths()
     // Get series paths
     List <Path> paths = new ArrayList();
     int scount = getSeriesCount();
-    int slen = getSeriesLength();
+    int slen = getValueCount();
     
     // Iterate over series
     for(int i=0; i<scount;i++) { DataSeries series = getSeries(i); if(series.isDisabled()) continue;
@@ -41,7 +41,7 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
     List <DataSeries> seriesList = getSeriesActive();
     int scount = seriesList.size();
     
-    int count = getSeriesLength();
+    int count = getValueCount();
     DataPoint dpnt = getDataPoint();
     DataSeries dps = dpnt!=null? dpnt.series : null;
     
