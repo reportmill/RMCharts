@@ -16,9 +16,6 @@ public class ChartView extends ColView {
     // The subtitle
     StringView         _subtitleView;
     
-    // The row view for content
-    RowView            _rowView;
-    
     // The ChartArea
     ChartArea          _chartArea;
     
@@ -28,11 +25,14 @@ public class ChartView extends ColView {
     // The YAxis
     ChartYAxisView     _yaxis;
     
-    // The view to hold ChartArea, XAxisView, YAxisView
-    ChartAreaBox       _chartAreaBox;
-    
     // The Legend
     ChartLegend        _legend;
+    
+    // The view to hold ChartArea and X/Y axis views
+    ChartAreaBox       _chartAreaBox;
+    
+    // The view to hold ChartAreaBox and Legend
+    RowView            _rowView;
     
     // The chart type
     String             _type = LINE_TYPE;
@@ -92,7 +92,7 @@ public ChartView()
     _yaxis = new ChartYAxisView();
     
     // Create/add ChartAreaBox
-    _chartAreaBox =  new ChartAreaBox();
+    _chartAreaBox = new ChartAreaBox();
     _rowView.addChild(_chartAreaBox);
     
     // Create/set ChartArea
@@ -106,12 +106,9 @@ public ChartView()
     _dataPointView = new ColView();
     _dataPointView.setManaged(false); _dataPointView.setPickable(false);
     
-    // Set values
-    //setTitle("Solar Employment Growth by Sector, 2010-2016");
-    //setSubtitle("Source: thesolarfoundation.com");
-    //setYAxisTitle("Number of Employees");
+    // Set sample values
+    //setTitle("Sample Growth by Sector, 2012-2018");
     _dataSet.addSeriesForNameAndValues("Sample", 1, 2, 2, 3, 4, 4, 5);
-    //addSeriesForNameAndValues("Manufacturing", 24916, 24064, 29742, 29851, 32490, 30282, 38121, 40434);
     reloadContents();
 }
 
@@ -132,20 +129,6 @@ public void setType(String aType)
     
     // Reload chart contents
     reloadContents();
-}
-
-/**
- * Returns the ChartArea.
- */
-public ChartArea getChartArea()  { return _chartArea; }
-
-/**
- * Sets the ChartArea.
- */
-protected void setChartArea(ChartArea aCA)
-{
-    _chartAreaBox.setChartArea(aCA);
-    _chartArea._chartView = this;
 }
 
 /**
@@ -174,6 +157,20 @@ public void setSubtitle(String aStr)
 {
     _subtitleView.setText(aStr);
     _subtitleView.setPhantom(aStr==null || aStr.length()==0);
+}
+
+/**
+ * Returns the ChartArea.
+ */
+public ChartArea getChartArea()  { return _chartArea; }
+
+/**
+ * Sets the ChartArea.
+ */
+protected void setChartArea(ChartArea aCA)
+{
+    _chartAreaBox.setChartArea(aCA);
+    _chartArea._chartView = this;
 }
 
 /**
