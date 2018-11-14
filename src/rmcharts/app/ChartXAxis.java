@@ -6,7 +6,7 @@ import snap.view.View;
 /**
  * A view to paint Chart X Axis.
  */
-public class ChartXAxisView extends View {
+public class ChartXAxis extends View {
 
     // The ChartArea
     ChartArea         _chartArea;
@@ -25,9 +25,9 @@ public class ChartXAxisView extends View {
     static Color           AXIS_LABELS_COLOR = Color.GRAY;
 
 /**
- * Creates the ChartXAxisView.
+ * Creates the ChartXAxis.
  */
-public ChartXAxisView()
+public ChartXAxis()
 {
     setFont(Font.Arial12);
 }

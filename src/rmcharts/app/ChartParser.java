@@ -88,7 +88,7 @@ protected void parseSubtitle(JSONNode aNode)
 protected void parseXAxis(JSONNode aNode)
 {
     // Get XAxis
-    ChartXAxisView xaxis = _chartView.getXAxis();
+    ChartXAxis xaxis = _chartView.getXAxis();
 
     // Iterate over nodes
     for(JSONNode child : aNode.getNodes()) { String key = child.getKey();
@@ -138,7 +138,7 @@ protected void parseXAxisCategories(JSONNode aNode)
 protected void parseXAxisLabels(JSONNode aNode)
 {
     // Get YAxis
-    ChartYAxisView yaxis = _chartView.getYAxis();
+    ChartYAxis yaxis = _chartView.getYAxis();
 
     // Iterate over nodes
     for(JSONNode child : aNode.getNodes()) { String key = child.getKey();
@@ -159,7 +159,7 @@ protected void parseXAxisLabels(JSONNode aNode)
 protected void parseXAxisTitle(JSONNode aNode)
 {
     // Get XAxis
-    ChartXAxisView xaxis = _chartView.getXAxis();
+    ChartXAxis xaxis = _chartView.getXAxis();
 
     // Iterate over nodes
     for(JSONNode child : aNode.getNodes()) { String key = child.getKey();
@@ -214,7 +214,7 @@ protected void parseXAxisTitle(JSONNode aNode)
 protected void parseYAxis(JSONNode aNode)
 {
     // Get YAxis
-    ChartYAxisView yaxis = _chartView.getYAxis();
+    ChartYAxis yaxis = _chartView.getYAxis();
 
     // Iterate over nodes
     for(JSONNode child : aNode.getNodes()) { String key = child.getKey();
@@ -252,7 +252,7 @@ protected void parseYAxis(JSONNode aNode)
 protected void parseYAxisLabels(JSONNode aNode)
 {
     // Get YAxis
-    ChartYAxisView yaxis = _chartView.getYAxis();
+    ChartYAxis yaxis = _chartView.getYAxis();
 
     // Iterate over nodes
     for(JSONNode child : aNode.getNodes()) { String key = child.getKey();
@@ -273,7 +273,7 @@ protected void parseYAxisLabels(JSONNode aNode)
 protected void parseYAxisLabelsStyle(JSONNode aNode)
 {
     // Get YAxis
-    ChartYAxisView yaxis = _chartView.getYAxis();
+    ChartYAxis yaxis = _chartView.getYAxis();
 
     // Iterate over nodes
     for(JSONNode child : aNode.getNodes()) { String key = child.getKey();
@@ -291,7 +291,7 @@ protected void parseYAxisLabelsStyle(JSONNode aNode)
 protected void parseYAxisTitle(JSONNode aNode)
 {
     // Get YAxis
-    ChartYAxisView yaxis = _chartView.getYAxis();
+    ChartYAxis yaxis = _chartView.getYAxis();
 
     // Iterate over nodes
     for(JSONNode child : aNode.getNodes()) { String key = child.getKey();
@@ -349,7 +349,7 @@ protected void parseYAxisTitle(JSONNode aNode)
 protected void parseYAxisTitleStyle(JSONNode aNode)
 {
     // Get YAxis
-    ChartYAxisView yaxis = _chartView.getYAxis();
+    ChartYAxis yaxis = _chartView.getYAxis();
 
     // Iterate over nodes
     for(JSONNode child : aNode.getNodes()) { String key = child.getKey();

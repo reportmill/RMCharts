@@ -5,7 +5,7 @@ import snap.view.*;
 /**
  * A view to paint Chart Y Axis.
  */
-public class ChartYAxisView extends ParentView {
+public class ChartYAxis extends ParentView {
     
     // The ChartArea
     ChartArea      _chartArea;
@@ -39,9 +39,9 @@ public class ChartYAxisView extends ParentView {
     static Color   GRID_LINES_COLOR = Color.get("#E6");
 
 /**
- * Creates the ChartYAxisView.
+ * Creates the ChartYAxis.
  */
-public ChartYAxisView()
+public ChartYAxis()
 {
     enableEvents(MousePress);
     

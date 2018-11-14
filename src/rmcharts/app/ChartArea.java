@@ -33,12 +33,12 @@ public ChartArea()
 /**
  * Returns the XAxis View.
  */
-public ChartXAxisView getXAxis()  { return _chartView._xaxis; }
+public ChartXAxis getXAxis()  { return _chartView._xaxis; }
 
 /**
  * Returns the YAxis View.
  */
-public ChartYAxisView getYAxis()  { return _chartView._yaxis; }
+public ChartYAxis getYAxis()  { return _chartView._yaxis; }
 
 /**
  * Returns the data set.

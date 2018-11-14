@@ -20,10 +20,10 @@ public class ChartView extends ColView {
     ChartArea          _chartArea;
     
     // The XAxis
-    ChartXAxisView     _xaxis;
+    ChartXAxis         _xaxis;
     
     // The YAxis
-    ChartYAxisView     _yaxis;
+    ChartYAxis         _yaxis;
     
     // The Legend
     ChartLegend        _legend;
@@ -88,8 +88,8 @@ public ChartView()
     addChild(_rowView);
     
     // Create XAxis and YAxis
-    _xaxis = new ChartXAxisView();
-    _yaxis = new ChartYAxisView();
+    _xaxis = new ChartXAxis();
+    _yaxis = new ChartYAxis();
     
     // Create/add ChartAreaBox
     _chartAreaBox = new ChartAreaBox();
@@ -175,12 +175,12 @@ protected void setChartArea(ChartArea aCA)
 /**
  * Returns the XAxis View.
  */
-public ChartXAxisView getXAxis()  { return _xaxis; }
+public ChartXAxis getXAxis()  { return _xaxis; }
 
 /**
  * Returns the YAxis View.
  */
-public ChartYAxisView getYAxis()  { return _yaxis; }
+public ChartYAxis getYAxis()  { return _yaxis; }
 
 /**
  * Returns the Legend.
