@@ -67,7 +67,7 @@ protected void calcSizes()
     if(_seriesCount==getSeriesActive().size() && _valCount==getValueCount()) return;
     
     // Get number of values and section width
-    _seriesCount = getSeriesCount();
+    _seriesCount = getSeriesActive().size();
     _valCount = getValueCount();
     _sectionWidth = getWidth()/_valCount;
 
