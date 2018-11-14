@@ -24,7 +24,15 @@ public class ChartAreaBar extends ChartArea {
     
     // The width of a bar and the bar pad in points
     double             _barWidth, _barPadWidth;
-    
+
+/**
+ * Creates a ChartAreaBar.
+ */
+public ChartAreaBar()
+{
+    setPadding(5,0,0,0); // Add top so top axis line isn't on edge
+}
+
 /**
  * Returns the group padding.
  */

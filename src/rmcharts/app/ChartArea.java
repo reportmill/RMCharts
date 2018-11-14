@@ -28,7 +28,6 @@ public ChartArea()
 {
     setGrowWidth(true); setPrefSize(600,350);
     enableEvents(MouseMove, MouseExit);
-    setPadding(5,10,8,10);
 }
 
 /**
@@ -165,29 +164,8 @@ protected void paintFront(Painter aPntr)
     // Have YAxisView paint lines
     paintAxisY(aPntr, 0, ins.top, pw, h);
     
-    // Paint X Axis
-    if(this instanceof ChartAreaBar) paintAxisXBar(aPntr, 0, ins.top, pw, h);
-    else paintAxisX(aPntr, ins.left, ins.top, w, h);
-    
     // Paint chart
     paintChart(aPntr, ins.left, ins.top, w, h);
-}
-
-/**
- * Paints chart axis lines.
- */
-protected void paintAxisX(Painter aPntr, double aX, double aY, double aW, double aH)
-{
-    // Get number of data points and section width
-    int sectionCount = getValueCount();
-    double sectionW = aW/(sectionCount-1);
-    double parH = getHeight();
-    
-    // Draw x axis ticks
-    for(int i=0;i<sectionCount;i++) {
-        double x = aX + i*sectionW;
-        aPntr.drawLine(x, aY + aH, x, parH);
-    }
 }
 
 /**
@@ -206,23 +184,6 @@ protected void paintAxisY(Painter aPntr, double aX, double aY, double aW, double
     }
     
     aPntr.setStroke(Stroke.Stroke1);
-}
-
-/**
- * Paints chart axis lines.
- */
-protected void paintAxisXBar(Painter aPntr, double aX, double aY, double aW, double aH)
-{
-    // Get number of data points and section width
-    int sectionCount = getValueCount();
-    double sectionW = aW/sectionCount;
-    double parH = getHeight(), parW = aX + aW;
-    
-    // Draw x axis ticks
-    for(int i=0;i<sectionCount+1;i++) {
-        double x = aX + i*sectionW; if(x>=parW) x -= .5; else if(x<=0) x += .5;
-        aPntr.drawLine(x, aY + aH, x, parH);
-    }
 }
 
 /**

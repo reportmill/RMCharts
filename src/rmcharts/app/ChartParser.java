@@ -103,6 +103,12 @@ protected void parseXAxis(JSONNode aNode)
             // Handle labels node
             case "labels": parseXAxisLabels(child); break;
             
+            // Handle tickLength
+            case "ticklength": {
+                double val = child.getNumber().doubleValue();
+                xaxis.setTickLength(val);
+            } break;
+            
             // Handle default (complain)
             default: System.out.println("Unsupported node: xaxis." + key + " = " + child.getString());
         }

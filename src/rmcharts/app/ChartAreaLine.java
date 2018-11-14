@@ -8,6 +8,14 @@ import snap.gfx.*;
 public class ChartAreaLine extends ChartArea {
 
 /**
+ * Creates a ChartAreaLine.
+ */
+public ChartAreaLine()
+{
+    setPadding(5,10,0,10); // Add padding so endpoints aren't on edges
+}
+
+/**
  * Returns the list of paths for each series.
  */
 public List <Path> getSeriesPaths()
