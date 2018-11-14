@@ -20,7 +20,7 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
     int seriesCount = seriesList.size();
     
     // Get number of values
-    int valueCount = getValueCount();
+    int valCount = getValueCount();
     int selSection = _chartView.getToolTipView().getValueIndex();
     
     // If reveal is not full (1) then clip
@@ -28,7 +28,7 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
         aPntr.save(); aPntr.clipRect(0,getHeight()*(1-getReveal()),getWidth(),getHeight()*getReveal()); }
         
     // Get width of an individual section
-    double sectionW = aW/valueCount;
+    double sectionW = aW/valCount;
     
     // Get width of group
     double groupPadding = .2, groupWidthRatio = 1 - groupPadding*2;
@@ -41,7 +41,7 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
     double barPadW = barWidthRatio>=0? barPadding*groupW/seriesCount : 1;
         
     // Iterate over sections
-    for(int i=0;i<valueCount;i++) {
+    for(int i=0;i<valCount;i++) {
         
         // If selected section, draw background
         if(i==selSection) {
@@ -92,34 +92,53 @@ public Point dataPointInLocal(DataSeries aSeries, int anIndex)
     double bx = anIndex*sectionW + groupPadW + (seriesIndex*2+1)*barPadW + seriesIndex*barW;
     double by = seriesToLocal(anIndex, val).y, bh = height - by;
     
-    return new Point(Math.round(bx + barW/2), Math.round(by) - 8);
-        
-    //double aX = 0, aW = getWidth();
-    //double w = aW; int dcount = getValueCount(); double sw = w/dcount;
-    //double px = aX + anIndex*sw + sw/2;
-    //Point pnt = super.dataPointInLocal(aSeries, anIndex); pnt = localToParent(px, pnt.y, _chartView);
-    //return pnt;
+    return new Point(Math.round(bx + barW/2), Math.round(by));
 }
 
 /**
- * Sets the datapoint based on the X/Y location.
+ * Returns the data point best associated with given x/y (null if none).
  */
-public void updateToolTipForPoint(double aX, double aY)
+protected DataPoint getDataPointAt(double aX, double aY)
 {
-    if(aX<0 || aX>getWidth() || aY<0 || aY>getHeight()) { super.updateToolTipForPoint(-1,-1); return; }
+    // For bar chart, render to full width
+    double cx = 0, cy = 0, cw = getWidth(), ch = getHeight();
     
-    Insets ins = getInsetsAll();
-    double w = getWidth() - ins.getWidth();
-    int dcount = getValueCount();
-    double sw = w/dcount;
-    int section = (int)((aX-ins.left)/sw);
+    // Get active series and count
+    List <DataSeries> seriesList = getSeriesActive();
+    int seriesCount = seriesList.size();
     
-    ToolTipView toolTip = _chartView.getToolTipView();
-    DataPoint dataPoint = toolTip.getDataPoint();
-    if(dataPoint==null || dataPoint.getValueIndex()!=section)
-        dataPoint = new DataPoint(_chartView, getSeries(0), section);
+    // Get width of an individual section
+    int valCount = getValueCount();
+    double sectionW = cw/valCount;
     
-    toolTip.setDataPoint(dataPoint);
+    // Get width of group
+    double groupPadding = .2, groupWidthRatio = 1 - groupPadding*2;
+    double groupW = groupWidthRatio>=0? groupWidthRatio*sectionW : 1;
+    double groupPadW = (sectionW - groupW)/2;
+    
+    // Get width of individual bar (bar count + bar spaces + bar&space at either end)
+    double barPadding = .1, barWidthRatio = 1 - barPadding*2;
+    double barW = barWidthRatio>=0? barWidthRatio*groupW/seriesCount : 1;
+    double barPadW = barWidthRatio>=0? barPadding*groupW/seriesCount : 1;
+    Rect bnds = new Rect();
+        
+    // Iterate over sections
+    for(int i=0;i<valCount;i++) {
+        
+        // Iterate over series
+        for(int j=0;j<seriesCount;j++) { DataSeries series = seriesList.get(j);
+        
+            double val = series.getValue(i);
+            
+            // Draw bar
+            double bx = cx + i*sectionW + groupPadW + (j*2+1)*barPadW + j*barW;
+            double by = seriesToLocal(i, val).y, bh = aY + ch - by;
+            bnds.setRect(bx-1,by,barW+2, bh);
+            if(bnds.contains(aX, aY))
+                return new DataPoint(_chartView, series, i);
+        }
+    }
+    return null;
 }
 
 }

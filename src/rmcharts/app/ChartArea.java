@@ -236,43 +236,38 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
 protected void processEvent(ViewEvent anEvent)
 {
     // Handle MouseMove
-    if(anEvent.isMouseMove() || anEvent.isMouseClick())
-        updateToolTipForPoint(anEvent.getX(), anEvent.getY());
+    if(anEvent.isMouseMove() || anEvent.isMouseClick()) {
+        DataPoint dpnt = getDataPointAt(anEvent.getX(), anEvent.getY());
+        _chartView.getToolTipView().setDataPoint(dpnt);
+    }
         
     // Handle MouseExit
     if(anEvent.isMouseExit())
-        updateToolTipForPoint(-1,-1);
+        _chartView.getToolTipView().setDataPoint(null);
 }
 
 /**
- * Sets the datapoint based on the X/Y location.
+ * Returns the data point best associated with given x/y (null if none).
  */
-protected void updateToolTipForPoint(double aX, double aY)
+protected DataPoint getDataPointAt(double aX, double aY)
 {
-    // Get ToolTipView
-    ToolTipView toolTip = _chartView.getToolTipView();
+    // If point out of bounds, return null
+    if(aX<0 || aX>getWidth() || aY<0 || aY>getWidth()) return null;
     
-    // If point out of bounds, clear tool tip
-    if(aX<0 || aY<0) { toolTip.setDataPoint(null); return; }
-    
-    // Find new series and value index for point
-    DataSeries selSeries = toolTip.getSeries();
-    int selIndex = toolTip.getValueIndex();
-    Point lastPointLocal = selSeries!=null? toolTip.getPointInChartArea() : new Point(2000,2000);
-    double dist = Point.getDistance(aX, aY, lastPointLocal.x, lastPointLocal.y);
-    
+    // Iterate over active series to find series + value index closest to point
+    DataSeries selSeries = null; int index = -1; double dist = Float.MAX_VALUE;
     List <DataSeries> seriesList = getSeriesActive();
     for(int i=0;i<seriesList.size();i++) { DataSeries series = seriesList.get(i);
         for(int j=0;j<getValueCount();j++) {
             Point pnt = seriesToLocal(j,series.getValue(j));
             double d = Point.getDistance(aX, aY, pnt.x, pnt.y);
             if(d<dist) { dist = d;
-                selSeries = series; selIndex = j; }
+                selSeries = series; index = j; }
         }
     }
     
-    toolTip.setSeries(selSeries);
-    toolTip.setValueIndex(selIndex);
+    // Return DataPoint for closest series+index
+    return selSeries!=null? new DataPoint(_chartView, selSeries, index) : null;
 }
 
 /**
