@@ -6,58 +6,122 @@ import snap.gfx.*;
  * A ChartArea subclass to display the contents of bar chart.
  */
 public class ChartAreaBar extends ChartArea {
+    
+    // The number of series and values to chart
+    int                _seriesCount, _valCount;
+    
+    // The width of a section (one for each series value)
+    double             _sectionWidth;
+    
+    // The ratio of a section used to pad a group of bars
+    double             _groupPad = .2;
+    
+    // The width of a group and the group pad in points
+    double             _groupWidth, _groupPadWidth;
+    
+    // The ratio of a group used to pad a bar
+    double             _barPad = .1;
+    
+    // The width of a bar and the bar pad in points
+    double             _barWidth, _barPadWidth;
+    
+/**
+ * Returns the group padding.
+ */
+public double getGroupPadding()  { return _groupPad; }
+
+/**
+ * Sets the group padding.
+ */
+public void setGroupPadding(double aValue)
+{
+    _groupPad = aValue;
+    clearSizes(); repaint();
+}
+
+/**
+ * Returns the bar padding.
+ */
+public double getBarPadding()  { return _barPad; }
+
+/**
+ * Sets the bar padding.
+ */
+public void setBarPadding(double aValue)
+{
+    _barPad = aValue;
+    clearSizes(); repaint();
+}
+
+/**
+ * Override to recalculate group/point padding and width.
+ */
+public void setWidth(double aValue)  { super.setWidth(aValue); clearSizes(); }
+
+/**
+ * Override to recalculate group/point padding and width.
+ */
+protected void calcSizes()
+{
+    // If recacl not needed, just return
+    if(_seriesCount==getSeriesActive().size() && _valCount==getValueCount()) return;
+    
+    // Get number of values and section width
+    _seriesCount = getSeriesCount();
+    _valCount = getValueCount();
+    _sectionWidth = getWidth()/_valCount;
+
+    // Get group widths
+    double groupWidthRatio = 1 - _groupPad*2;
+    _groupWidth = groupWidthRatio>=0? groupWidthRatio*_sectionWidth : 1;
+    _groupPadWidth = (_sectionWidth - _groupWidth)/2;
+    
+    // Get width of individual bar (bar count + bar spaces + bar&space at either end)
+    double barWidthRatio = 1 - _barPad*2;
+    _barWidth = barWidthRatio>=0? barWidthRatio*_groupWidth/_seriesCount : 1;
+    _barPadWidth = barWidthRatio>=0? _barPad*_groupWidth/_seriesCount : 1;
+}
+
+/**
+ * Override to recalculate group/point padding and width.
+ */
+protected void clearSizes()  { _seriesCount = -1; }
 
 /**
  * Paints chart.
  */
 protected void paintChart(Painter aPntr, double aX, double aY, double aW, double aH)
 {
-    // For bar chart, render to full width
-    aX = 0; aW = getWidth();
+    // Get chart area bounds and recalc sizes
+    double cx = aX = 0, cw = aW = getWidth();
+    calcSizes();
     
-    // Get active series and count
+    // Get active series and selected section
     List <DataSeries> seriesList = getSeriesActive();
-    int seriesCount = seriesList.size();
-    
-    // Get number of values
-    int valCount = getValueCount();
     int selSection = _chartView.getToolTipView().getValueIndex();
     
     // If reveal is not full (1) then clip
     if(getReveal()<1) {
         aPntr.save(); aPntr.clipRect(0,getHeight()*(1-getReveal()),getWidth(),getHeight()*getReveal()); }
         
-    // Get width of an individual section
-    double sectionW = aW/valCount;
-    
-    // Get width of group
-    double groupPadding = .2, groupWidthRatio = 1 - groupPadding*2;
-    double groupW = groupWidthRatio>=0? groupWidthRatio*sectionW : 1;
-    double groupPadW = (sectionW - groupW)/2;
-    
-    // Get width of individual bar (bar count + bar spaces + bar&space at either end)
-    double barPadding = .1, barWidthRatio = 1 - barPadding*2;
-    double barW = barWidthRatio>=0? barWidthRatio*groupW/seriesCount : 1;
-    double barPadW = barWidthRatio>=0? barPadding*groupW/seriesCount : 1;
-        
     // Iterate over sections
-    for(int i=0;i<valCount;i++) {
+    for(int i=0;i<_valCount;i++) {
         
         // If selected section, draw background
         if(i==selSection) {
-            aPntr.setColor(Color.get("#4488FF09")); aPntr.fillRect(aX + i*sectionW, aY, sectionW, aH); }
+            aPntr.setColor(Color.get("#4488FF09")); aPntr.fillRect(cx + i*_sectionWidth, aY, _sectionWidth, aH); }
         
         // Iterate over series
-        for(int j=0;j<seriesCount;j++) { DataSeries series = seriesList.get(j);
+        for(int j=0;j<_seriesCount;j++) { DataSeries series = seriesList.get(j);
         
             int sind = getSeries().indexOf(series);
             double val = series.getValue(i);
             
             // Draw bar
             aPntr.setColor(getSeriesColor(sind));
-            double bx = aX + i*sectionW + groupPadW + (j*2+1)*barPadW + j*barW;
+            double bx = cx + i*_sectionWidth + _groupPadWidth + (j*2+1)*_barPadWidth + j*_barWidth;
             double by = seriesToLocal(i, val).y, bh = aY + aH - by;
-            aPntr.fillRect(bx,by,barW, bh - .5);
+            aPntr.fillRect(bx, by, _barWidth, bh - .5);
         }
     }
     
@@ -70,29 +134,15 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
  */
 public Point dataPointInLocal(DataSeries aSeries, int anIndex)
 {
-    // Get width of an individual section
-    double width = getWidth(), height = getHeight();
+    // Get chart area bounds and recalc sizes
+    double cx = 0, ch = getHeight(); calcSizes();
+    
+    // Caclulate bar bounds for data point
     int seriesIndex = getSeriesActive().indexOf(aSeries);
-    int seriesCount = getSeriesActive().size();
-    int valueCount = getValueCount();
-    double sectionW = width/valueCount;
-    
-    // Get width of group
-    double groupPadding = .2, groupWidthRatio = 1 - groupPadding*2;
-    double groupW = groupWidthRatio>=0? groupWidthRatio*sectionW : 1;
-    double groupPadW = (sectionW - groupW)/2;
-    
-    // Get width of individual bar (bar count + bar spaces + bar&space at either end)
-    double barPadding = .1, barWidthRatio = 1 - barPadding*2;
-    double barW = barWidthRatio>=0? barWidthRatio*groupW/seriesCount : 1;
-    double barPadW = barWidthRatio>=0? barPadding*groupW/seriesCount : 1;
-    
     double val = aSeries.getValue(anIndex);
-    
-    double bx = anIndex*sectionW + groupPadW + (seriesIndex*2+1)*barPadW + seriesIndex*barW;
-    double by = seriesToLocal(anIndex, val).y, bh = height - by;
-    
-    return new Point(Math.round(bx + barW/2), Math.round(by));
+    double bx = anIndex*_sectionWidth + _groupPadWidth + (seriesIndex*2+1)*_barPadWidth + seriesIndex*_barWidth;
+    double by = seriesToLocal(anIndex, val).y, bh = ch - by;
+    return new Point(Math.round(bx + _barWidth/2), Math.round(by));
 }
 
 /**
@@ -100,44 +150,26 @@ public Point dataPointInLocal(DataSeries aSeries, int anIndex)
  */
 protected DataPoint getDataPointAt(double aX, double aY)
 {
-    // For bar chart, render to full width
-    double cx = 0, cy = 0, cw = getWidth(), ch = getHeight();
+    // Get chart area bounds and recalc sizes
+    double cx = 0, ch = getHeight(); calcSizes();
     
-    // Get active series and count
+    // Get active series list and count
     List <DataSeries> seriesList = getSeriesActive();
-    int seriesCount = seriesList.size();
-    
-    // Get width of an individual section
-    int valCount = getValueCount();
-    double sectionW = cw/valCount;
-    
-    // Get width of group
-    double groupPadding = .2, groupWidthRatio = 1 - groupPadding*2;
-    double groupW = groupWidthRatio>=0? groupWidthRatio*sectionW : 1;
-    double groupPadW = (sectionW - groupW)/2;
-    
-    // Get width of individual bar (bar count + bar spaces + bar&space at either end)
-    double barPadding = .1, barWidthRatio = 1 - barPadding*2;
-    double barW = barWidthRatio>=0? barWidthRatio*groupW/seriesCount : 1;
-    double barPadW = barWidthRatio>=0? barPadding*groupW/seriesCount : 1;
-    Rect bnds = new Rect();
         
     // Iterate over sections
-    for(int i=0;i<valCount;i++) {
+    for(int i=0;i<_valCount;i++) {
         
-        // Iterate over series
-        for(int j=0;j<seriesCount;j++) { DataSeries series = seriesList.get(j);
-        
+        // Iterate over series and if bar contains point, return data point
+        for(int j=0;j<_seriesCount;j++) { DataSeries series = seriesList.get(j);
             double val = series.getValue(i);
-            
-            // Draw bar
-            double bx = cx + i*sectionW + groupPadW + (j*2+1)*barPadW + j*barW;
+            double bx = cx + i*_sectionWidth + _groupPadWidth + (j*2+1)*_barPadWidth + j*_barWidth;
             double by = seriesToLocal(i, val).y, bh = aY + ch - by;
-            bnds.setRect(bx-1,by,barW+2, bh);
-            if(bnds.contains(aX, aY))
+            if(Rect.contains(bx-1, by, _barWidth + 2, bh, aX, aY))
                 return new DataPoint(_chartView, series, i);
         }
     }
+    
+    // Return null since bar not found for point
     return null;
 }
 
