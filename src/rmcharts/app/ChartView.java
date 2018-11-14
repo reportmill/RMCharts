@@ -37,8 +37,8 @@ public class ChartView extends ColView {
     // The chart type
     String             _type = LINE_TYPE;
     
-    // The view for the current datapoint
-    ColView            _dataPointView;
+    // The ToolTipView
+    ToolTipView        _toolTipView;
     
     // The DataSet
     DataSet            _dataSet = new DataSet(this);
@@ -102,9 +102,8 @@ public ChartView()
     _legend = new ChartLegend();
     _rowView.addChild(_legend);
     
-    // Create/configure DataPoint view
-    _dataPointView = new ColView();
-    _dataPointView.setManaged(false); _dataPointView.setPickable(false);
+    // Create ToolTipView
+    _toolTipView = new ToolTipView(this);
     
     // Set sample values
     //setTitle("Sample Growth by Sector, 2012-2018");
@@ -203,6 +202,11 @@ public void setShowLegend(boolean aValue)
     if(aValue) { _legend.setVisible(true); _legend.setManaged(true); _legend.setPickable(true); }
     else { _legend.setVisible(false); _legend.setManaged(false); _legend.setPickable(false); }
 }
+
+/**
+ * Returns the tool tip view.
+ */
+public ToolTipView getToolTipView()  { return _toolTipView; }
 
 /**
  * Returns the dataset.

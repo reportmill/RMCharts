@@ -21,8 +21,8 @@ public static void main(String args[])
     else ViewUtils.runLater(() -> {
         ChartPane chartPane = new ChartPane(); chartPane.setWindowVisible(true);
         //String jsonText = WebURL.getURL(App.class, "Sample.json").getText();
-        //String jsonText = WebURL.getURL("/Temp/ChartSamples/ColBasic.json").getText();
-        String jsonText = WebURL.getURL("/Temp/ChartSamples/ThriveLeads.json").getText();
+        String jsonText = WebURL.getURL("/Temp/ChartSamples/ColBasic.json").getText();
+        //String jsonText = WebURL.getURL("/Temp/ChartSamples/ThriveLeads.json").getText();
         chartPane._chartView.loadFromString(jsonText);
     });
 }

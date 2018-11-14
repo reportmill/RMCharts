@@ -12,9 +12,6 @@ public class ChartArea extends View {
     // The ChartView that owns the area
     ChartView           _chartView;
     
-    // The Data point
-    DataPoint           _dataPoint;
-    
     // The amount of the chart to show horizontally (0-1)
     double              _reveal = 1;
     
@@ -95,44 +92,6 @@ public Color getSeriesColor(int anIndex)  { return _chartView.getSeriesColor(anI
 public Shape getSeriesShape(int anIndex)  { return _chartView.getSeriesShape(anIndex); }
 
 /**
- * Returns the currently highlighted datapoint.
- */
-public DataPoint getDataPoint()  { return _dataPoint; }
-
-/**
- * Sets the currently highlighted datapoint.
- */
-public void setDataPoint(DataPoint aDP)
-{
-    if(SnapUtils.equals(aDP, _dataPoint)) return;
-    firePropChange(DataPoint_Prop, _dataPoint, _dataPoint = aDP);
-    dataPointChanged();
-    repaint();
-}
-
-/**
- * Sets the datapoint based on the X/Y location.
- */
-public void setDataPointAtPoint(double aX, double aY)
-{
-    DataPoint dataPoint = _dataPoint;
-    Point lastPointLocal = dataPoint!=null? dataPoint.getDataPointLocal() : new Point(1000,1000);
-    double dist = Point.getDistance(aX, aY, lastPointLocal.x, lastPointLocal.y);
-    
-    List <DataSeries> seriesList = getSeriesActive();
-    for(int i=0;i<seriesList.size();i++) { DataSeries series = seriesList.get(i);
-        for(int j=0;j<getValueCount();j++) {
-            Point pnt = seriesToLocal(j,series.getValue(j));
-            double d = Point.getDistance(aX, aY, pnt.x, pnt.y);
-            if(d<dist) { dist = d;
-                dataPoint = new DataPoint(); dataPoint.series = series; dataPoint.index = j; }
-        }
-    }
-    
-    setDataPoint(dataPoint);
-}
-
-/**
  * Return the ratio of the chart to show horizontally.
  */
 public double getReveal()  { return _reveal; }
@@ -175,6 +134,14 @@ public Point seriesToLocal(double aX, double aY)
     double h = getHeight() - ins.getHeight();
     double ny = ins.top + h - (aY-axisMinVal)/(axisMaxVal-axisMinVal)*h;
     return new Point(nx, ny);
+}
+
+/**
+ * Returns the given data point (series + value index) in local coords.
+ */
+public Point dataPointInLocal(DataSeries aSeries, int anIndex)
+{
+    return seriesToLocal(anIndex, aSeries.getValue(anIndex));
 }
 
 /**
@@ -270,17 +237,43 @@ protected void processEvent(ViewEvent anEvent)
 {
     // Handle MouseMove
     if(anEvent.isMouseMove() || anEvent.isMouseClick())
-        setDataPointAtPoint(anEvent.getX(), anEvent.getY());
+        updateToolTipForPoint(anEvent.getX(), anEvent.getY());
         
     // Handle MouseExit
     if(anEvent.isMouseExit())
-        setDataPoint(null);
+        updateToolTipForPoint(-1,-1);
 }
 
 /**
- * Called when ChartArea DataPoint changed.
+ * Sets the datapoint based on the X/Y location.
  */
-public void dataPointChanged()  { }
+protected void updateToolTipForPoint(double aX, double aY)
+{
+    // Get ToolTipView
+    ToolTipView toolTip = _chartView.getToolTipView();
+    
+    // If point out of bounds, clear tool tip
+    if(aX<0 || aY<0) { toolTip.setDataPoint(null); return; }
+    
+    // Find new series and value index for point
+    DataSeries selSeries = toolTip.getSeries();
+    int selIndex = toolTip.getValueIndex();
+    Point lastPointLocal = selSeries!=null? toolTip.getPointInChartArea() : new Point(2000,2000);
+    double dist = Point.getDistance(aX, aY, lastPointLocal.x, lastPointLocal.y);
+    
+    List <DataSeries> seriesList = getSeriesActive();
+    for(int i=0;i<seriesList.size();i++) { DataSeries series = seriesList.get(i);
+        for(int j=0;j<getValueCount();j++) {
+            Point pnt = seriesToLocal(j,series.getValue(j));
+            double d = Point.getDistance(aX, aY, pnt.x, pnt.y);
+            if(d<dist) { dist = d;
+                selSeries = series; selIndex = j; }
+        }
+    }
+    
+    toolTip.setSeries(selSeries);
+    toolTip.setValueIndex(selIndex);
+}
 
 /**
  * Returns the value for given key.
@@ -298,37 +291,6 @@ public void setValue(String aPropName, Object aValue)
 {
     if(aPropName.equals(Reveal_Prop)) setReveal(SnapUtils.doubleValue(aValue));
     else super.setValue(aPropName, aValue);
-}
-
-/**
- * A class to hold a data point.
- */
-public class DataPoint {
-    
-    // The series
-    DataSeries   series;
-    
-    // The index
-    int          index;
-    
-    /** Return series name. */
-    public String getSeriesName()  { return series.getName(); }
-    
-    /** Return series key. */
-    public double getSeriesKey()  { return getSeriesStart() + index; }
-    
-    /** Return series value. */
-    public double getSeriesValue()  { return series.getValue(index); }
-    
-    /** Returns the DataPoint in local coords. */
-    public Point getDataPointLocal()  { return seriesToLocal(index, getSeriesValue()); }
-    
-    /** Standard equals implementation. */
-    public boolean equals(Object anObj)
-    {
-        DataPoint other = anObj instanceof DataPoint? (DataPoint)anObj : null; if(other==null) return false;
-        return other.series==series && other.index==index;
-    }
 }
 
 }
