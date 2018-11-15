@@ -83,12 +83,12 @@ public Intervals getIntervals()  { return _chartView.getIntervals(); }
 /**
  * Returns the series color at index.
  */
-public Color getSeriesColor(int anIndex)  { return _chartView.getSeriesColor(anIndex); }
+public Color getColor(int anIndex)  { return _chartView.getColor(anIndex); }
 
 /**
  * Returns the series shape at index.
  */
-public Shape getSeriesShape(int anIndex)  { return _chartView.getSeriesShape(anIndex); }
+public Shape getMarkerShape(int anIndex)  { return _chartView.getMarkerShape(anIndex); }
 
 /**
  * Return the ratio of the chart to show horizontally.

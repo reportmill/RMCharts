@@ -59,7 +59,7 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
     // Draw series paths
     List <Path> paths = getSeriesPaths();
     for(int i=0;i<paths.size();i++) { Path path = paths.get(i); DataSeries series = seriesList.get(i);
-        aPntr.setColor(getSeriesColor(series.getIndex()));
+        aPntr.setColor(getColor(series.getIndex()));
         aPntr.setStroke(Stroke.Stroke2); if(series==selSeries) aPntr.setStroke(Stroke3);
         aPntr.draw(path);
     }
@@ -72,8 +72,8 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
         
             Point p = seriesToLocal(j, val);
             
-            Shape marker = getSeriesShape(series.getIndex()).copyFor(new Transform(p.x-4,p.y-4));
-            Color c = getSeriesColor(series.getIndex());
+            Shape marker = getMarkerShape(series.getIndex()).copyFor(new Transform(p.x-4,p.y-4));
+            Color c = getColor(series.getIndex());
             
             if(series==selSeries && j==selValIndex) {
                 aPntr.setColor(c.blend(Color.CLEARWHITE, .5));

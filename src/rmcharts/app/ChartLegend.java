@@ -29,7 +29,7 @@ public void reloadContents()
     for(int i=0; i<allSeries.size(); i++) { DataSeries series = allSeries.get(i);
         
         // Get marker Shape (if LineChart, add crossbar)
-        Shape shp = chart.getSeriesShape(i); shp = shp.copyFor(new Transform(6, 6));
+        Shape shp = chart.getMarkerShape(i); shp = shp.copyFor(new Transform(6, 6));
         if(chart.getType()==ChartView.LINE_TYPE) {
             Shape shp1 = new Rect(2,9,16,2);
             shp = Shape.add(shp, shp1);
@@ -39,7 +39,7 @@ public void reloadContents()
         ShapeView shpView = new ShapeView(shp); shpView.setPrefSize(20,20);
         
         // Set color
-        shpView.setFill(chart.getSeriesColor(i));
+        shpView.setFill(chart.getColor(i));
         
         StringView sview = new StringView(); sview.setFont(Font.Arial12.deriveFont(13).getBold());
         sview.setText(series.getName());

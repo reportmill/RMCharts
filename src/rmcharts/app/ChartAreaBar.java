@@ -24,6 +24,9 @@ public class ChartAreaBar extends ChartArea {
     
     // The width of a bar and the bar pad in points
     double             _barWidth, _barPadWidth;
+    
+    // Whether to use colors for each series value instead of series
+    boolean            _colorValues;
 
 /**
  * Creates a ChartAreaBar.
@@ -60,6 +63,16 @@ public void setBarPadding(double aValue)
     _barPad = aValue;
     clearSizes(); repaint();
 }
+
+/**
+ * Returns whether to use colors for each series value instead of series.
+ */
+public boolean isColorValues()  { return _colorValues; }
+
+/**
+ * Returns whether to use colors for each series value instead of series.
+ */
+public void setColorValues(boolean aValue)  { _colorValues = aValue; }
 
 /**
  * Override to recalculate group/point padding and width.
@@ -107,6 +120,7 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
     // Get active series and selected section
     List <DataSeries> seriesList = getSeriesActive();
     int selSection = _chartView.getToolTipView().getValueIndex();
+    boolean colorSeries = !isColorValues();
     
     // If reveal is not full (1) then clip
     if(getReveal()<1) {
@@ -126,7 +140,7 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
             double val = series.getValue(i);
             
             // Draw bar
-            aPntr.setColor(getSeriesColor(sind));
+            Color color = colorSeries? getColor(sind) : getColor(i); aPntr.setColor(color);
             double bx = cx + i*_sectionWidth + _groupPadWidth + (j*2+1)*_barPadWidth + j*_barWidth;
             double by = seriesToLocal(i, val).y, bh = aY + aH - by;
             aPntr.fillRect(bx, by, _barWidth, bh - .5);

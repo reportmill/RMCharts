@@ -373,19 +373,79 @@ protected void parseLegend(JSONNode aNode)
 }
 
 /**
- * Parse plot options.
+ * Parse plotOptions node.
  */
 protected void parsePlotOptions(JSONNode aNode)
 {
-    JSONNode series = aNode.getNode("series");
-    
-    // Parse series
-    if(series!=null) {
-        
-        JSONNode pointStart = series.getNode("pointStart");
-        if(pointStart!=null) {
-            int start = SnapUtils.intValue(pointStart.getNumber());
-            _chartView.setSeriesStart(start);
+    // Iterate over nodes
+    for(JSONNode child : aNode.getNodes()) { String key = child.getKey();
+        switch(key.toLowerCase()) {
+            
+            // Handle plotOptions.column
+            case "column": parsePlotOptionsColumn(child); break;
+            
+            // Handle plotOptions.series
+            case "series": parsePlotOptionsSeries(child); break;
+            
+            // Handle default (complain)
+            default: System.out.println("Unsupported node: plotOptions." + key + " = " + child.getString());
+        }
+    }
+}
+
+/**
+ * Parse plotOptions.column node.
+ */
+protected void parsePlotOptionsColumn(JSONNode aNode)
+{
+    // Get column chart
+    ChartAreaBar colChart = (ChartAreaBar)_chartView.getChartArea();
+
+    // Iterate over nodes
+    for(JSONNode child : aNode.getNodes()) { String key = child.getKey();
+        switch(key.toLowerCase()) {
+            
+            // Handle colorByPoint
+            case "colorbypoint": {
+                boolean val = child.getBoolean();
+                colChart.setColorValues(val);
+            } break;
+            
+            // Handle groupPadding
+            case "grouppadding": {
+                double val = SnapUtils.doubleValue(child.getNumber());
+                colChart.setGroupPadding(val);
+            } break;
+            
+            // Handle pointPadding
+            case "pointpadding": {
+                double val = SnapUtils.doubleValue(child.getNumber());
+                colChart.setBarPadding(val);
+            } break;
+            
+            // Handle default (complain)
+            default: System.out.println("Unsupported node: plotOptions.column." + key + " = " + child.getString());
+        }
+    }
+}
+
+/**
+ * Parse plotOptions.series node.
+ */
+protected void parsePlotOptionsSeries(JSONNode aNode)
+{
+    // Iterate over nodes
+    for(JSONNode child : aNode.getNodes()) { String key = child.getKey();
+        switch(key.toLowerCase()) {
+            
+            // Handle pointStart
+            case "pointstart": {
+                int start = SnapUtils.intValue(child.getNumber());
+                _chartView.setSeriesStart(start);
+            } break;
+            
+            // Handle default (complain)
+            default: System.out.println("Unsupported node: plotOptions.Series." + key + " = " + child.getString());
         }
     }
 }

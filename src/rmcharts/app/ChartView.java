@@ -284,7 +284,7 @@ public void setColors(Color ... theColors)
 /**
  * Returns the series color at index.
  */
-public Color getSeriesColor(int anIndex)
+public Color getColor(int anIndex)
 {
     if(anIndex<_colors.length) return _colors[anIndex];
     return COLORS[(anIndex - _colors.length)%COLORS.length];
@@ -293,7 +293,7 @@ public Color getSeriesColor(int anIndex)
 /**
  * Returns the series shape at index.
  */
-public Shape getSeriesShape(int anIndex)
+public Shape getMarkerShape(int anIndex)
 {
     switch(getType()) {
         case LINE_TYPE: return getMarkerShapes()[anIndex];

@@ -14,7 +14,7 @@ public class ToolTipView extends ColView {
     DataSeries     _series;
     
     // The value index being tipped
-    int            _valIndex;
+    int            _valIndex = -1;
     
     // A runnable to reload contents
     Runnable       _reloadLater, _reloadRun = () -> { reloadContentsNow(); _reloadLater = null; };
@@ -39,7 +39,7 @@ public DataSeries getSeries()  { return _series; }
 public void setSeries(DataSeries aSeries)
 {
     if(aSeries==getSeries()) return;
-    _series = aSeries;
+    _series = aSeries; if(aSeries==null) _valIndex = -1;
     reloadContents();
 }
 
@@ -140,7 +140,7 @@ protected void reloadContentsNow()
     keyLabel.setText(key);
     
     // Create RowView: BulletView
-    Color color = _chartView.getSeriesColor(series.getIndex());
+    Color color = _chartView.getColor(series.getIndex());
     ShapeView bulletView = new ShapeView(new Ellipse(0,0,5,5)); bulletView.setFill(color);
     
     // Create RowView: NameLabel, ValLabel
