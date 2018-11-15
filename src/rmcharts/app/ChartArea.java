@@ -162,7 +162,8 @@ protected void paintFront(Painter aPntr)
     aPntr.setStroke(stroke);
     
     // Have YAxisView paint lines
-    paintAxisY(aPntr, 0, ins.top, pw, h);
+    if(_chartView.getYAxis().isVisible())
+        paintAxisY(aPntr, 0, ins.top, pw, h);
     
     // Paint chart
     paintChart(aPntr, ins.left, ins.top, w, h);
@@ -230,6 +231,16 @@ protected DataPoint getDataPointAt(double aX, double aY)
     // Return DataPoint for closest series+index
     return selSeries!=null? new DataPoint(_chartView, selSeries, index) : null;
 }
+
+/**
+ * Called when chart is activated.
+ */
+public void activate()  { }
+
+/**
+ * Called when chart is deactivated.
+ */
+public void deactivate()  { }
 
 /**
  * Returns the value for given key.

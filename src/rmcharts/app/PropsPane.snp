@@ -2,7 +2,8 @@
 <ColView Padding="4" Spacing="4">
   <RowView Padding="9" GrowWidth="true">
     <ToggleButton Name="LineChartButton" PrefWidth="70" PrefHeight="22" Padding="2" text="Line Chart" Position="CENTER_LEFT" Selected="true" Group="bg0" />
-    <ToggleButton Name="BarChartButton" PrefWidth="70" PrefHeight="22" Padding="2" text="Bar Chart" Position="CENTER_RIGHT" Group="bg0" />
+    <ToggleButton Name="BarChartButton" PrefWidth="70" PrefHeight="22" Padding="2" text="Bar Chart" Position="CENTER" Group="bg0" />
+    <ToggleButton Name="PieChartButton" PrefWidth="70" PrefHeight="22" Padding="2" text="Pie Chart" Position="CENTER_RIGHT" Group="bg0" />
   </RowView>
   <RowView Padding="4" GrowWidth="true" Spacing="4">
     <Label text="Chart Title:">

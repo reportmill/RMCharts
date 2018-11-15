@@ -445,7 +445,7 @@ protected void parsePlotOptionsSeries(JSONNode aNode)
             } break;
             
             // Handle default (complain)
-            default: System.out.println("Unsupported node: plotOptions.Series." + key + " = " + child.getString());
+            default: System.out.println("Unsupported node: plotOptions.series." + key + " = " + child.getString());
         }
     }
 }

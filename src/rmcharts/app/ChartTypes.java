@@ -8,11 +8,14 @@ public class ChartTypes {
     // The ChartView
     ChartView             _chartView;
 
-    // A Column Chart
+    // A column chart
     ChartAreaBar          _colChart;
     
-    // A LineChart
+    // A line chart
     ChartAreaLine         _lineChart;
+
+    // A pie chart
+    ChartAreaPie          _pieChart;
 
 /**
  * Creates the ChartTypes.
@@ -25,8 +28,9 @@ public ChartTypes(ChartView aCV)  { _chartView = aCV; }
 public ChartArea getChart(String aType)
 {
     switch(aType) {
-        case ChartView.LINE_TYPE: return getLineChart();
         case ChartView.BAR_TYPE: return getColumnChart();
+        case ChartView.LINE_TYPE: return getLineChart();
+        case ChartView.PIE_TYPE: return getPieChart();
         default: return null;
     }
 }
@@ -47,6 +51,15 @@ public ChartAreaLine getLineChart()
 {
     if(_lineChart!=null) return _lineChart;
     _lineChart = new ChartAreaLine(); _lineChart._chartView = _chartView; return _lineChart;
+}
+
+/**
+ * Returns the pie chart.
+ */
+public ChartAreaPie getPieChart()
+{
+    if(_pieChart!=null) return _pieChart;
+    _pieChart = new ChartAreaPie(); _pieChart._chartView = _chartView; return _pieChart;
 }
 
 }

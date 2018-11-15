@@ -56,8 +56,9 @@ public class ChartView extends ColView {
     Shape              _markerShapes[];
     
     // Constants
-    public static final String LINE_TYPE = "Line";
     public static final String BAR_TYPE = "Bar";
+    public static final String LINE_TYPE = "Line";
+    public static final String PIE_TYPE = "Pie";
     
     // Colors
     static Color    COLORS[] = new Color[] { Color.get("#88B4E7"), Color.BLACK, Color.get("#A6EB8A"),
@@ -175,8 +176,11 @@ public ChartArea getChartArea()  { return _chartArea; }
  */
 protected void setChartArea(ChartArea aCA)
 {
+    if(_chartArea!=null) _chartArea.deactivate();
+    
     _chartAreaBox.setChartArea(aCA);
     _chartArea._chartView = this;
+    _chartArea.activate();
 }
 
 /**
@@ -372,21 +376,31 @@ private class ChartAreaBox extends ParentView {
     }
     
     /** Calculates the preferred width. */
-    protected double getPrefWidthImpl(double aH)  { return _yaxis.getPrefWidth() + _chartArea.getPrefWidth(); }
+    protected double getPrefWidthImpl(double aH)
+    {
+        double pw = _chartArea.getPrefWidth();
+        if(_yaxis.isVisible()) pw += _yaxis.getPrefWidth();
+        return pw;
+    }
 
     /** Calculates the preferred height. */
-    protected double getPrefHeightImpl(double aW)  { return _chartArea.getPrefHeight() + _xaxis.getPrefHeight(); }
+    protected double getPrefHeightImpl(double aW)
+    {
+        double ph = _chartArea.getPrefHeight();
+        if(_xaxis.isVisible()) ph += _xaxis.getPrefHeight();
+        return ph;
+    }
 
     /** Actual method to layout children. */
     protected void layoutImpl()
     {
         // Set chart area height first, since height can effect yaxis label width
         double pw = getWidth(), ph = getHeight();
-        double ah = _xaxis.getPrefHeight();
+        double ah = _xaxis.isVisible()? _xaxis.getPrefHeight() : 0;
         _chartArea.setHeight(ph - ah);
         
         // Now set bounds of areay, xaxis and yaxis
-        double aw = _yaxis.getPrefWidth(ph - ah);
+        double aw = _yaxis.isVisible()? _yaxis.getPrefWidth(ph - ah) : 0;
         double cw = pw - aw, ch = ph - ah;
         _chartArea.setBounds(aw,0,cw,ch);
         _xaxis.setBounds(aw,ch,cw,ah);

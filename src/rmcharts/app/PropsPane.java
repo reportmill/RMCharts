@@ -33,9 +33,10 @@ protected void resetUI()
  */
 protected void respondUI(ViewEvent anEvent)
 {
-    // Handle LineChartButton, BarChartButton
-    if(anEvent.equals("LineChartButton")) _chartView.setType(ChartView.LINE_TYPE);
+    // Handle BarChartButton, LineChartButton, PieChartButton
     if(anEvent.equals("BarChartButton")) _chartView.setType(ChartView.BAR_TYPE);
+    if(anEvent.equals("LineChartButton")) _chartView.setType(ChartView.LINE_TYPE);
+    if(anEvent.equals("PieChartButton")) _chartView.setType(ChartView.PIE_TYPE);
     
     // Handle TitleText, SubtitleText, YAxisTitleText
     if(anEvent.equals("TitleText")) _chartView.setTitle(anEvent.getStringValue());
