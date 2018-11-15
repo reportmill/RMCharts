@@ -399,7 +399,7 @@ protected void parsePlotOptions(JSONNode aNode)
 protected void parsePlotOptionsColumn(JSONNode aNode)
 {
     // Get column chart
-    ChartAreaBar colChart = (ChartAreaBar)_chartView.getChartArea();
+    ChartAreaBar colChart = _chartView.getChartTypes().getColumnChart();
 
     // Iterate over nodes
     for(JSONNode child : aNode.getNodes()) { String key = child.getKey();

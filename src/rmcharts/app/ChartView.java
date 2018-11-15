@@ -28,6 +28,9 @@ public class ChartView extends ColView {
     // The Legend
     ChartLegend        _legend;
     
+    // The object holding specific chart types
+    ChartTypes         _chartTypes = new ChartTypes(this);
+    
     // The view to hold ChartArea and X/Y axis views
     ChartAreaBox       _chartAreaBox;
     
@@ -96,7 +99,7 @@ public ChartView()
     _rowView.addChild(_chartAreaBox);
     
     // Create/set ChartArea
-    setChartArea(new ChartAreaLine());
+    setChartArea(_chartTypes.getLineChart());
     
     // Create/configure ChartLegend
     _legend = new ChartLegend();
@@ -123,12 +126,16 @@ public void setType(String aType)
 {
     _type = aType;
     
-    ChartArea newChartArea = aType==LINE_TYPE? new ChartAreaLine() : new ChartAreaBar();
-    setChartArea(newChartArea);
-    
-    // Reload chart contents
+    // Get ChartArea for type, set in ChartView and reload contents
+    ChartArea chartArea = _chartTypes.getChart(aType);
+    setChartArea(chartArea);
     reloadContents();
 }
+
+/**
+ * Returns the ChartTypes object.
+ */
+public ChartTypes getChartTypes()  { return _chartTypes; }
 
 /**
  * Returns the title.

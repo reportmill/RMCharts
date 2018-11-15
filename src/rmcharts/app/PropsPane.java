@@ -2,7 +2,7 @@ package rmcharts.app;
 import snap.view.*;
 
 /**
- * A custom class.
+ * A class to manage UI to edit a ChartView.
  */
 public class PropsPane extends ViewOwner {
     
@@ -14,7 +14,9 @@ public class PropsPane extends ViewOwner {
  */
 protected void resetUI()
 {
-    if(_chartView==null || _chartView.getLegend()==null) return;
+    // Reset LineChartButton, BarChartButton
+    String typeName = _chartView.getType() + "ChartButton";
+    setViewValue(typeName, true);
     
     // Reset TitleText, SubtitleText, YAxisTitleText
     setViewValue("TitleText", _chartView.getTitle());
