@@ -95,7 +95,7 @@ public void setValueIndex(int anIndex)
 /**
  * Returns the tooltip series and value index as a DataPoint.
  */
-public DataPoint getDataPoint()  { return new DataPoint(_chartView, _series, _valIndex); }
+public DataPoint getDataPoint()  { return _series!=null && _valIndex>=0? _series.getPoint(_valIndex) : null; }
 
 /**
  * Sets the tooltip series and value index from DataPoint.
@@ -103,7 +103,7 @@ public DataPoint getDataPoint()  { return new DataPoint(_chartView, _series, _va
 public void setDataPoint(DataPoint aDP)
 {
     if(aDP==null) { setSeries(null); setValueIndex(-1); }
-    else { setSeries(aDP.getSeries()); setValueIndex(aDP.getValueIndex()); }
+    else { setSeries(aDP.getSeries()); setValueIndex(aDP.getIndex()); }
 }
 
 /**

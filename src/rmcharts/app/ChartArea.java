@@ -217,19 +217,19 @@ protected DataPoint getDataPointAt(double aX, double aY)
     if(aX<0 || aX>getWidth() || aY<0 || aY>getWidth()) return null;
     
     // Iterate over active series to find series + value index closest to point
-    DataSeries selSeries = null; int index = -1; double dist = Float.MAX_VALUE;
+    DataPoint dataPoint = null; double dist = Float.MAX_VALUE;
     List <DataSeries> seriesList = getSeriesActive();
     for(int i=0;i<seriesList.size();i++) { DataSeries series = seriesList.get(i);
         for(int j=0;j<getValueCount();j++) {
             Point pnt = seriesToLocal(j,series.getValue(j));
             double d = Point.getDistance(aX, aY, pnt.x, pnt.y);
             if(d<dist) { dist = d;
-                selSeries = series; index = j; }
+                dataPoint = series.getPoint(j); }
         }
     }
     
     // Return DataPoint for closest series+index
-    return selSeries!=null? new DataPoint(_chartView, selSeries, index) : null;
+    return dataPoint;
 }
 
 /**

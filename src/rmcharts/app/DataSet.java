@@ -51,6 +51,7 @@ public void addSeries(DataSeries aSeries)
 {
     aSeries._index = _series.size();
     _series.add(aSeries);
+    aSeries._dset = this;
 }
 
 /**
@@ -63,8 +64,9 @@ public void clear()  { _series.clear(); }
  */
 public void addSeriesForNameAndValues(String aName, double ... theVals)
 {
-    DataSeries series = new DataSeries(); series.setName(aName); series.setValues(theVals);
+    DataSeries series = new DataSeries(); series.setName(aName);
     addSeries(series);
+    series.setValues(theVals);
 }
 
 /**

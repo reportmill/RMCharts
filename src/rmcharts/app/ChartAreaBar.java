@@ -187,7 +187,7 @@ protected DataPoint getDataPointAt(double aX, double aY)
             double bx = cx + i*_sectionWidth + _groupPadWidth + (j*2+1)*_barPadWidth + j*_barWidth;
             double by = seriesToLocal(i, val).y, bh = aY + ch - by;
             if(Rect.contains(bx-1, by, _barWidth + 2, bh, aX, aY))
-                return new DataPoint(_chartView, series, i);
+                return series.getPoint(i);
         }
     }
     

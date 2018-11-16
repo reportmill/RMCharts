@@ -463,6 +463,7 @@ protected void parseSeries(JSONNode aNode)
     
         // Create series
         DataSeries series = new DataSeries();
+        _chartView.addSeries(series);
         
         // Get name
         JSONNode nameNode = seriesNode.getNode("name");
@@ -480,9 +481,6 @@ protected void parseSeries(JSONNode aNode)
             if(value!=null)
                 series.addValue(value.doubleValue());
         }
-        
-        // Add series
-        _chartView.addSeries(series);
     }
 }
 
