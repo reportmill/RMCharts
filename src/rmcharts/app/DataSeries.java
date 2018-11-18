@@ -60,16 +60,17 @@ public DataPoint getPoint(int anIndex)
 public void setValues(double ... theVals)
 {
     _points.clear();
-    for(double v : theVals) addValue(v);
+    for(double v : theVals) addValue(null, v);
 }
 
 /**
  * Adds a value.
  */
-public void addValue(double aValue)
+public void addValue(String aName, double aValue)
 {
     DataPoint dpnt = new DataPoint();
     dpnt._series = this;
+    dpnt._name = aName;
     dpnt._index = getCount();
     dpnt._y = aValue;
     _points.add(dpnt);

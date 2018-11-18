@@ -9,6 +9,9 @@ public class DataPoint {
     // The series this point belongs to
     DataSeries   _series;
     
+    // The data point name
+    String       _name;
+    
     // The data point x value (usually the index)
     Double       _x;
     
@@ -22,6 +25,11 @@ public class DataPoint {
  * Returns the series.
  */
 public DataSeries getSeries()  { return _series; }
+
+/**
+ * Returns the name.
+ */
+public String getName()  { return _name; }
 
 /**
  * Returns the X value.

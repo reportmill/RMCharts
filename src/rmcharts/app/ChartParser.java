@@ -57,8 +57,9 @@ protected void parseChartNode(JSONNode aNode)
 {
     String type = aNode.getNodeString("type");
     if(type!=null) switch(type) {
-        case "line": _chartView.setType(ChartView.LINE_TYPE); break;
         case "column": _chartView.setType(ChartView.BAR_TYPE); break;
+        case "line": _chartView.setType(ChartView.LINE_TYPE); break;
+        case "pie": _chartView.setType(ChartView.PIE_TYPE); break;
     }
 }
 
@@ -451,7 +452,7 @@ protected void parsePlotOptionsSeries(JSONNode aNode)
 }
 
 /**
- * Parse plot series.
+ * Parse series node.
  */
 protected void parseSeries(JSONNode aNode)
 {
@@ -465,25 +466,69 @@ protected void parseSeries(JSONNode aNode)
         DataSeries series = new DataSeries();
         _chartView.addSeries(series);
         
-        // Get name
-        JSONNode nameNode = seriesNode.getNode("name");
-        String name = nameNode!=null? nameNode.getString() : null;
-        if(name!=null)
-            series.setName(name);
-            
-        // Get data node
-        JSONNode dataNode = seriesNode.getNode("data");
-        if(dataNode==null) { System.err.println("ChartParser.parseSeries: Series has no data!"); continue; }
-        
-        // Iterate over values
-        for(int j=0; j<dataNode.getNodeCount(); j++) { JSONNode valNode = dataNode.getNode(j);
-            Number value = valNode.getNumber();
-            if(value!=null)
-                series.addValue(value.doubleValue());
+        // Iterate over nodes
+        for(JSONNode child : seriesNode.getNodes()) { String key = child.getKey();
+            switch(key.toLowerCase()) {
+                
+                // Handle name
+                case "name": {
+                    String name = child.getString();
+                    series.setName(name);
+                } break;
+                
+                // Handle data
+                case "data": parseSeriesData(child, series); break;
+                
+                // Handle default (complain)
+                default: System.out.println("Unsupported node: series[" + i + "]." + key + " = " + child.getString());
+            }
         }
     }
 }
 
+/**
+ * Parse series data node.
+ */
+protected void parseSeriesData(JSONNode aNode, DataSeries aSeries)
+{
+    // Complain if not series
+    if(!aNode.isArray()) { System.err.println("ChartParser.series.data: Series.data is not array"); return; }
+    
+    // Iterate over array
+    for(int i=0;i<aNode.getNodeCount();i++) { JSONNode dataNode = aNode.getNode(i);
+    
+        // Handle Node is object
+        if(dataNode.isObject()) {
+            String name = null; double val = 0;
+            
+            // Iterate over nodes
+            for(JSONNode child : dataNode.getNodes()) { String key = child.getKey();
+                switch(key.toLowerCase()) {
+                    
+                    // Handle name
+                    case "name": name = child.getString(); break;
+                    
+                    // Handle y
+                    case "y": val = SnapUtils.doubleValue(child.getNumber()); break;
+                    
+                    // Handle default (complain)
+                    default: System.out.println("Unsupported node: series[]." + key + " = " + child.getString());
+                }
+            }
+            
+            // Add value
+            aSeries.addValue(name, val);
+        }
+        
+        // Handle Node is number
+        else {
+            Number value = dataNode.getNumber();
+            if(value!=null)
+                aSeries.addValue(null, value.doubleValue());
+        }
+    }
+}
+    
 /**
  * Parse chart colors.
  */
