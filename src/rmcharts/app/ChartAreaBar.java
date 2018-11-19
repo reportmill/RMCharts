@@ -8,7 +8,7 @@ import snap.gfx.*;
 public class ChartAreaBar extends ChartArea {
     
     // The number of series and values to chart
-    int                _seriesCount, _valCount;
+    int                _seriesCount, _pointCount;
     
     // The width of a section (one for each series value)
     double             _sectionWidth;
@@ -85,12 +85,12 @@ public void setWidth(double aValue)  { super.setWidth(aValue); clearSizes(); }
 protected void calcSizes()
 {
     // If recacl not needed, just return
-    if(_seriesCount==getSeriesActive().size() && _valCount==getValueCount()) return;
+    if(_seriesCount==getSeriesActive().size() && _pointCount==getPointCount()) return;
     
-    // Get number of values and section width
+    // Get number of series, points and section width
     _seriesCount = getSeriesActive().size();
-    _valCount = getValueCount();
-    _sectionWidth = getWidth()/_valCount;
+    _pointCount = getPointCount();
+    _sectionWidth = getWidth()/_pointCount;
 
     // Get group widths
     double groupWidthRatio = 1 - _groupPad*2;
@@ -119,7 +119,8 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
     
     // Get active series and selected section
     List <DataSeries> seriesList = getSeriesActive();
-    int selSection = _chartView.getToolTipView().getValueIndex();
+    DataPoint dataPoint = _chartView.getSelDataPoint();
+    int selIndex = dataPoint!=null? dataPoint.getIndex() : -1;
     boolean colorSeries = !isColorValues();
     
     // If reveal is not full (1) then clip
@@ -127,10 +128,10 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
         aPntr.save(); aPntr.clipRect(0,getHeight()*(1-getReveal()),getWidth(),getHeight()*getReveal()); }
         
     // Iterate over sections
-    for(int i=0;i<_valCount;i++) {
+    for(int i=0;i<_pointCount;i++) {
         
         // If selected section, draw background
-        if(i==selSection) {
+        if(i==selIndex) {
             aPntr.setColor(Color.get("#4488FF09")); aPntr.fillRect(cx + i*_sectionWidth, aY, _sectionWidth, aH); }
         
         // Iterate over series
@@ -154,16 +155,19 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
 /**
  * Override to return point above bar.
  */
-public Point dataPointInLocal(DataSeries aSeries, int anIndex)
+public Point dataPointInLocal(DataPoint aDP)
 {
     // Get chart area bounds and recalc sizes
     double cx = 0, ch = getHeight(); calcSizes();
     
+    // Get data point info
+    int seriesIndex = aDP.getSeriesActiveIndex();
+    int pointIndex = aDP.getIndex();
+    double val = aDP.getValue();
+    
     // Caclulate bar bounds for data point
-    int seriesIndex = getSeriesActive().indexOf(aSeries);
-    double val = aSeries.getValue(anIndex);
-    double bx = anIndex*_sectionWidth + _groupPadWidth + (seriesIndex*2+1)*_barPadWidth + seriesIndex*_barWidth;
-    double by = seriesToLocal(anIndex, val).y, bh = ch - by;
+    double bx = pointIndex*_sectionWidth + _groupPadWidth + (seriesIndex*2+1)*_barPadWidth + seriesIndex*_barWidth;
+    double by = seriesToLocal(pointIndex, val).y, bh = ch - by;
     return new Point(Math.round(bx + _barWidth/2), Math.round(by));
 }
 
@@ -179,7 +183,7 @@ protected DataPoint getDataPointAt(double aX, double aY)
     List <DataSeries> seriesList = getSeriesActive();
         
     // Iterate over sections
-    for(int i=0;i<_valCount;i++) {
+    for(int i=0;i<_pointCount;i++) {
         
         // Iterate over series and if bar contains point, return data point
         for(int j=0;j<_seriesCount;j++) { DataSeries series = seriesList.get(j);

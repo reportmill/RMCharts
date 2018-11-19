@@ -2,6 +2,7 @@ package rmcharts.app;
 import java.text.DecimalFormat;
 import java.util.*;
 import snap.gfx.*;
+import snap.util.SnapUtils;
 import snap.view.*;
 import snap.web.WebURL;
 
@@ -54,6 +55,9 @@ public class ChartView extends ColView {
     
     // The series shapes
     Shape              _markerShapes[];
+    
+    // The selected data point
+    DataPoint          _selPoint;
     
     // Constants
     public static final String BAR_TYPE = "Bar";
@@ -324,6 +328,22 @@ public Shape[] getMarkerShapes()
     Shape shp3 = new Polygon(4,0,8,8,0,8);
     Shape shp4 = new Polygon(0,0,8,0,4,8);
     return _markerShapes = new Shape[] { shp0, shp1, shp2, shp3, shp4 };
+}
+
+/**
+ * Returns the selected data point.
+ */
+public DataPoint getSelDataPoint()  { return _selPoint; }
+
+/**
+ * Sets the tooltip series and value index from DataPoint.
+ */
+public void setDataPoint(DataPoint aDP)
+{
+    if(SnapUtils.equals(aDP, _selPoint)) return;
+    
+    _selPoint = aDP;
+    _toolTipView.reloadContents();
 }
 
 /**

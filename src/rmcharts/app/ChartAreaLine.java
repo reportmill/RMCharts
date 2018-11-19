@@ -22,16 +22,16 @@ public List <Path> getSeriesPaths()
 {
     // Get series paths
     List <Path> paths = new ArrayList();
-    int scount = getSeriesCount();
-    int slen = getValueCount();
+    int seriesCount = getSeriesCount();
+    int pointCount = getPointCount();
     
     // Iterate over series
-    for(int i=0; i<scount;i++) { DataSeries series = getSeries(i); if(series.isDisabled()) continue;
+    for(int i=0; i<seriesCount;i++) { DataSeries series = getSeries(i); if(series.isDisabled()) continue;
     
         Path path = new Path(); paths.add(path);
         
         // Iterate over values
-        for(int j=0;j<slen;j++) { double val = series.getValue(j);
+        for(int j=0;j<pointCount;j++) { double val = series.getValue(j);
             Point p = seriesToLocal(j, val);
             if(j==0) path.moveTo(p.x,p.y); else path.lineTo(p.x,p.y);
         }
@@ -48,9 +48,10 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
     List <DataSeries> seriesList = getSeriesActive();
     int scount = seriesList.size();
     
-    int count = getValueCount();
-    DataSeries selSeries = _chartView.getToolTipView().getSeries();
-    int selValIndex = _chartView.getToolTipView().getValueIndex();
+    int pointCount = getPointCount();
+    DataPoint selPoint = _chartView.getSelDataPoint();
+    DataSeries selSeries = selPoint!=null? selPoint.getSeries() : null;
+    int selIndex = selPoint!=null? selPoint.getIndex() : -1;
     
     // If reveal is not full (1) then clip
     if(getReveal()<1) {
@@ -68,14 +69,14 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
     for(int i=0; i<scount;i++) { DataSeries series = seriesList.get(i);
     
         // Iterate over values
-        for(int j=0;j<count;j++) { double val = series.getValue(j);
+        for(int j=0;j<pointCount;j++) { double val = series.getValue(j);
         
             Point p = seriesToLocal(j, val);
             
             Shape marker = getMarkerShape(series.getIndex()).copyFor(new Transform(p.x-4,p.y-4));
             Color c = getColor(series.getIndex());
             
-            if(series==selSeries && j==selValIndex) {
+            if(series==selSeries && j==selIndex) {
                 aPntr.setColor(c.blend(Color.CLEARWHITE, .5));
                 aPntr.fill(new Ellipse(p.x-10,p.y-10,20,20));
                 aPntr.setStroke(Stroke5); aPntr.setColor(Color.WHITE); aPntr.draw(marker);

@@ -90,6 +90,11 @@ public double getValue(int anIndex)
 public int getIndex()  { return _index; }
 
 /**
+ * Returns the index in dataset active series.
+ */
+public int getActiveIndex()  { return _dset.getSeriesActive().indexOf(this); }
+
+/**
  * Returns whether series is disabled.
  */
 public boolean isDisabled()  { return _disabled; }

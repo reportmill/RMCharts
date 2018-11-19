@@ -54,12 +54,22 @@ public int getIndex()  { return _index; }
 /**
  * Return series name.
  */
-public String getSeriesName()  { return _series!=null? _series.getName() : null; }
+public String getSeriesName()  { return _series.getName(); }
 
 /**
- * Return series key.
+ * Return index of data point series.
  */
-public double getSeriesKey()
+public int getSeriesIndex()  { return _series.getIndex(); }
+
+/**
+ * Return index of data point series in dataset active series.
+ */
+public int getSeriesActiveIndex()  { return _series.getActiveIndex(); }
+
+/**
+ * Return data point key.
+ */
+public double getKey()
 {
     DataSet dset = _series._dset;
     return dset.getSeriesStart() + _index;
@@ -71,13 +81,24 @@ public double getSeriesKey()
 public double getValue()  { return _y; }
 
 /**
- * Returns the DataPoint in local coords.
+ * Returns the DataPoint in chart area coords.
  */
-public Point getDataPointLocal()
+public Point getPointInChartArea()
 {
     ChartView cview = _series._dset._chartView;
     ChartArea carea = cview._chartArea;
-    return carea.dataPointInLocal(_series, _index);
+    return carea.dataPointInLocal(this);
+}
+
+/**
+ * Returns the DataPoint in chart view coords.
+ */
+public Point getPointInChartView()
+{
+    ChartView cview = _series._dset._chartView;
+    ChartArea carea = cview._chartArea;
+    Point pnt = carea.dataPointInLocal(this);
+    return carea.localToParent(pnt.x, pnt.y, cview);
 }
 
 /** Standard equals implementation. */

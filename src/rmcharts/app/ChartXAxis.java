@@ -85,7 +85,8 @@ public String getLabel(int anIndex)
         return _categories.get(anIndex);
         
     // Otherwise, return string for start value and index
-    int val = _chartArea.getSeriesStart() + anIndex;
+    DataSet dset = _chartArea.getDataSet();
+    int val = dset.getSeriesStart() + anIndex;
     return String.valueOf(val);
 }
 
@@ -112,20 +113,20 @@ protected void paintAxis(Painter aPntr, double aX, double aW, double aH)
     double labelY = labelsYOff + fontHeight;
     
     // Get number of data points
-    int valCount = _chartArea.getValueCount();
-    double sectionW = aW/(valCount-1);
+    int pointCount = _chartArea.getPointCount();
+    double sectionW = aW/(pointCount-1);
     double tickLen = getTickLength();
     
     // Draw axis ticks
     aPntr.setColor(AXIS_LINES_COLOR); aPntr.setStroke(Stroke.Stroke1);
-    for(int i=0;i<valCount;i++) {
+    for(int i=0;i<pointCount;i++) {
         double tickX = Math.round(aX + i*sectionW);
         aPntr.drawLine(tickX, 0, tickX, tickLen);
     }
         
     // Draw axis labels
     aPntr.setColor(AXIS_LABELS_COLOR);
-    for(int i=0;i<valCount;i++) {
+    for(int i=0;i<pointCount;i++) {
         String str = getLabel(i);
         Rect strBnds = aPntr.getStringBounds(str);
         double lx = aX + sectionW*i;
@@ -145,13 +146,13 @@ protected void paintAxisBar(Painter aPntr, double aX, double aW, double aH)
     double labelY = labelsYOff + fontHeight;
     
     // Get number of data points
-    int valCount = _chartArea.getValueCount();
-    double sectionW = aW/valCount;
+    int pointCount = _chartArea.getPointCount();
+    double sectionW = aW/pointCount;
     double tickLen = getTickLength();
     
     // Draw axis ticks
     aPntr.setColor(AXIS_LINES_COLOR); aPntr.setStroke(Stroke.Stroke1);
-    for(int i=0;i<valCount+1;i++) {
+    for(int i=0;i<pointCount+1;i++) {
         double tickX = Math.round(aX + i*sectionW);
         if(tickX<=0) tickX += .5; else if(tickX>=aW) tickX -= .5;
         aPntr.drawLine(tickX, 0, tickX, tickLen);
@@ -159,7 +160,7 @@ protected void paintAxisBar(Painter aPntr, double aX, double aW, double aH)
         
     // Draw axis labels
     aPntr.setColor(AXIS_LABELS_COLOR);
-    for(int i=0;i<valCount;i++) {
+    for(int i=0;i<pointCount;i++) {
         String str = getLabel(i);
         Rect strBnds = aPntr.getStringBounds(str);
         double lx = aX + sectionW*i + sectionW/2;

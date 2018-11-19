@@ -29,7 +29,9 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
 {
     // Get series
     DataSeries series = getSeries(0);
-    int pointCount = getValueCount();
+    DataPoint selPoint = _chartView.getSelDataPoint();
+    int selIndex = selPoint!=null? selPoint.getIndex() : -1;
+    int pointCount = getPointCount();
     Font font = getFont(); aPntr.setFont(font);
     
     double cw = getWidth(), ch = getHeight();
@@ -42,7 +44,7 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
     double total = 0; for(int i=0;i<pointCount;i++) total += vals[i];
     double reveal = getReveal(), max = 360*reveal;
     double angles[] = new double[pointCount]; for(int i=0;i<pointCount;i++) angles[i] = Math.round(vals[i]/total*max);
-    double start = -90, selIndex = _chartView._toolTipView.getValueIndex();
+    double start = -90;
     
     // Iterate over angles and paint wedges
     for(int i=0; i<angles.length; i++) { double angle = angles[i];
@@ -86,7 +88,7 @@ protected DataPoint getDataPointAt(double aX, double aY)
 {
     // Get series
     DataSeries series = getSeries(0);
-    int pointCount = getValueCount();
+    int pointCount = getPointCount();
     
     double cw = getWidth(), ch = getHeight();
     Insets ins = getInsetsAll();

@@ -66,14 +66,9 @@ public DataSeries getSeries(int anIndex)  { return _chartView.getSeries(anIndex)
 public List <DataSeries> getSeriesActive()  { return _chartView.getSeriesActive(); }
 
 /**
- * Returns the start of the series.
- */
-public int getSeriesStart()  { return _chartView.getSeriesStart(); }
-
-/**
  * Returns the length of the series.
  */
-public int getValueCount()  { return getDataSet().getValueCount(); }
+public int getPointCount()  { return getDataSet().getPointCount(); }
 
 /**
  * Returns the intervals.
@@ -122,7 +117,8 @@ public Point seriesToLocal(double aX, double aY)
     Insets ins = getInsetsAll();
     
     // Convert X
-    int count = getValueCount();
+    DataSet dset = getDataSet();
+    int count = dset.getPointCount();
     double w = getWidth() - ins.getWidth();
     double dx = w/(count-1);
     double nx = ins.left + aX*dx;
@@ -136,11 +132,12 @@ public Point seriesToLocal(double aX, double aY)
 }
 
 /**
- * Returns the given data point (series + value index) in local coords.
+ * Returns the given data point in local coords.
  */
-public Point dataPointInLocal(DataSeries aSeries, int anIndex)
+public Point dataPointInLocal(DataPoint aDP)
 {
-    return seriesToLocal(anIndex, aSeries.getValue(anIndex));
+    int index = aDP.getIndex(); double y = aDP.getValue();
+    return seriesToLocal(index, y);
 }
 
 /**
@@ -200,12 +197,12 @@ protected void processEvent(ViewEvent anEvent)
     // Handle MouseMove
     if(anEvent.isMouseMove() || anEvent.isMouseClick()) {
         DataPoint dpnt = getDataPointAt(anEvent.getX(), anEvent.getY());
-        _chartView.getToolTipView().setDataPoint(dpnt);
+        _chartView.setDataPoint(dpnt);
     }
         
     // Handle MouseExit
     if(anEvent.isMouseExit())
-        _chartView.getToolTipView().setDataPoint(null);
+        _chartView.setDataPoint(null);
 }
 
 /**
@@ -220,7 +217,7 @@ protected DataPoint getDataPointAt(double aX, double aY)
     DataPoint dataPoint = null; double dist = Float.MAX_VALUE;
     List <DataSeries> seriesList = getSeriesActive();
     for(int i=0;i<seriesList.size();i++) { DataSeries series = seriesList.get(i);
-        for(int j=0;j<getValueCount();j++) {
+        for(int j=0;j<getPointCount();j++) {
             Point pnt = seriesToLocal(j,series.getValue(j));
             double d = Point.getDistance(aX, aY, pnt.x, pnt.y);
             if(d<dist) { dist = d;

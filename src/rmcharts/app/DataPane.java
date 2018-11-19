@@ -35,8 +35,8 @@ protected View createUI()
     
     // Add column for number of values in series
     DataSet dset = getDataSet();
-    int valCount = dset.getValueCount();
-    for(int i=0;i<=valCount+1;i++) {
+    int pointCount = dset.getPointCount();
+    for(int i=0;i<=pointCount+1;i++) {
         TableCol col = new TableCol(); col.setPrefWidth(70);
         _tableView.addCol(col);
     }
@@ -63,7 +63,8 @@ protected void resetUI()
 void configureCell(ListCell <DataSeries> aCell)
 {
     DataSeries series = aCell.getItem(); if(series==null) return;
-    int col = aCell.getCol(), colCount = getDataSet().getValueCount(); if(col>=colCount) { aCell.setText(null); return;}
+    DataSet dset = getDataSet();
+    int col = aCell.getCol(), colCount = dset.getPointCount(); if(col>=colCount) { aCell.setText(null); return;}
     Double val = series.getValue(col);
     aCell.setText(val!=null? StringUtils.toString(val) : null);
     aCell.setAlign(HPos.RIGHT);
