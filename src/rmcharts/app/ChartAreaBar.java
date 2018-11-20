@@ -7,26 +7,29 @@ import snap.gfx.*;
  */
 public class ChartAreaBar extends ChartArea {
     
+    // The ratio of a section used to pad a group of bars
+    double             _groupPad = .2;
+    
+    // The ratio of a group used to pad a bar
+    double             _barPad = .1;
+    
+    // Whether to use colors for each series value instead of series
+    boolean            _colorValues;
+
     // The number of series and values to chart
     int                _seriesCount, _pointCount;
     
     // The width of a section (one for each series value)
     double             _sectionWidth;
     
-    // The ratio of a section used to pad a group of bars
-    double             _groupPad = .2;
-    
     // The width of a group and the group pad in points
     double             _groupWidth, _groupPadWidth;
-    
-    // The ratio of a group used to pad a bar
-    double             _barPad = .1;
     
     // The width of a bar and the bar pad in points
     double             _barWidth, _barPadWidth;
     
-    // Whether to use colors for each series value instead of series
-    boolean            _colorValues;
+    // The cached bars
+    Bar                _bars[][];
 
 /**
  * Creates a ChartAreaBar.
@@ -47,7 +50,7 @@ public double getGroupPadding()  { return _groupPad; }
 public void setGroupPadding(double aValue)
 {
     _groupPad = aValue;
-    clearSizes(); repaint();
+    clearCache(); repaint();
 }
 
 /**
@@ -61,7 +64,7 @@ public double getBarPadding()  { return _barPad; }
 public void setBarPadding(double aValue)
 {
     _barPad = aValue;
-    clearSizes(); repaint();
+    clearCache(); repaint();
 }
 
 /**
@@ -72,22 +75,37 @@ public boolean isColorValues()  { return _colorValues; }
 /**
  * Returns whether to use colors for each series value instead of series.
  */
-public void setColorValues(boolean aValue)  { _colorValues = aValue; }
+public void setColorValues(boolean aValue)  { _colorValues = aValue; clearCache(); }
+
+/**
+ * Override to clear bar cache.
+ */
+public void setWidth(double aValue)  { super.setWidth(aValue); clearCache(); }
+
+/**
+ * Override to clear bar cache.
+ */
+public void setHeight(double aValue)  { super.setHeight(aValue); clearCache(); }
+
+/**
+ * Call to clear bar cache.
+ */
+protected void clearCache()  { _bars = null; }
 
 /**
  * Override to recalculate group/point padding and width.
  */
-public void setWidth(double aValue)  { super.setWidth(aValue); clearSizes(); }
-
-/**
- * Override to recalculate group/point padding and width.
- */
-protected void calcSizes()
+protected Bar[][] getBars()
 {
     // If recacl not needed, just return
-    if(_seriesCount==getSeriesActive().size() && _pointCount==getPointCount()) return;
+    if(_bars!=null && _bars.length==getSeriesActive().size() && _bars[0].length==getPointCount()) return _bars;
+    
+    // Get ChartAreaBar info
+    double cx = 0, cy = 0, cw = getWidth(), ch = getHeight();
+    boolean colorSeries = !isColorValues();
     
     // Get number of series, points and section width
+    List <DataSeries> seriesList = getSeriesActive();
     _seriesCount = getSeriesActive().size();
     _pointCount = getPointCount();
     _sectionWidth = getWidth()/_pointCount;
@@ -101,27 +119,40 @@ protected void calcSizes()
     double barWidthRatio = 1 - _barPad*2;
     _barWidth = barWidthRatio>=0? barWidthRatio*_groupWidth/_seriesCount : 1;
     _barPadWidth = barWidthRatio>=0? _barPad*_groupWidth/_seriesCount : 1;
+    
+    // Create new bars array
+    Bar bars[][] = new Bar[_seriesCount][_pointCount];
+    
+    // Iterate over sections
+    for(int i=0;i<_pointCount;i++) {
+        
+        // Iterate over series
+        for(int j=0;j<_seriesCount;j++) { DataSeries series = seriesList.get(j);
+            DataPoint dataPoint = series.getPoint(i);
+            double val = dataPoint.getValue();
+            
+            // Draw bar
+            Color color = colorSeries? getColor(series.getIndex()) : getColor(i);
+            double bx = cx + i*_sectionWidth + _groupPadWidth + (j*2+1)*_barPadWidth + j*_barWidth;
+            double by = seriesToLocal(i, val).y, bh = cy + ch - by;
+            bars[j][i] = new Bar(dataPoint, bx, by, _barWidth, bh, color);
+        }
+    }
+    
+    return _bars = bars;
 }
-
-/**
- * Override to recalculate group/point padding and width.
- */
-protected void clearSizes()  { _seriesCount = -1; }
 
 /**
  * Paints chart.
  */
 protected void paintChart(Painter aPntr, double aX, double aY, double aW, double aH)
 {
-    // Get chart area bounds and recalc sizes
-    double cx = aX = 0, cw = aW = getWidth();
-    calcSizes();
-    
-    // Get active series and selected section
-    List <DataSeries> seriesList = getSeriesActive();
+    // Get selected point index (section index)
     DataPoint dataPoint = _chartView.getSelDataPoint();
     int selIndex = dataPoint!=null? dataPoint.getIndex() : -1;
-    boolean colorSeries = !isColorValues();
+    
+    double cx = 0, cy = 0, cw = getWidth(), ch = getHeight();
+    Bar bars[][] = getBars();
     
     // If reveal is not full (1) then clip
     if(getReveal()<1) {
@@ -132,19 +163,11 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
         
         // If selected section, draw background
         if(i==selIndex) {
-            aPntr.setColor(Color.get("#4488FF09")); aPntr.fillRect(cx + i*_sectionWidth, aY, _sectionWidth, aH); }
+            aPntr.setColor(Color.get("#4488FF09")); aPntr.fillRect(cx + i*_sectionWidth, cy, _sectionWidth, ch); }
         
-        // Iterate over series
-        for(int j=0;j<_seriesCount;j++) { DataSeries series = seriesList.get(j);
-        
-            int sind = getSeries().indexOf(series);
-            double val = series.getValue(i);
-            
-            // Draw bar
-            Color color = colorSeries? getColor(sind) : getColor(i); aPntr.setColor(color);
-            double bx = cx + i*_sectionWidth + _groupPadWidth + (j*2+1)*_barPadWidth + j*_barWidth;
-            double by = seriesToLocal(i, val).y, bh = aY + aH - by;
-            aPntr.fillRect(bx, by, _barWidth, bh - .5);
+        // Iterate over series and draw bars
+        for(int j=0;j<_seriesCount;j++) { Bar bar = bars[j][i];
+            aPntr.setColor(bar.color); aPntr.fillRect(bar.x, bar.y, bar.w, bar.h - .5);
         }
     }
     
@@ -157,18 +180,14 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
  */
 public Point dataPointInLocal(DataPoint aDP)
 {
-    // Get chart area bounds and recalc sizes
-    double cx = 0, ch = getHeight(); calcSizes();
-    
     // Get data point info
     int seriesIndex = aDP.getSeriesActiveIndex();
     int pointIndex = aDP.getIndex();
-    double val = aDP.getValue();
     
-    // Caclulate bar bounds for data point
-    double bx = pointIndex*_sectionWidth + _groupPadWidth + (seriesIndex*2+1)*_barPadWidth + seriesIndex*_barWidth;
-    double by = seriesToLocal(pointIndex, val).y, bh = ch - by;
-    return new Point(Math.round(bx + _barWidth/2), Math.round(by));
+    // Get bar for data point and return top-center point
+    Bar bars[][] = getBars();
+    Bar bar = bars[seriesIndex][pointIndex];
+    return new Point(Math.round(bar.x + bar.w/2), Math.round(bar.y));
 }
 
 /**
@@ -176,27 +195,36 @@ public Point dataPointInLocal(DataPoint aDP)
  */
 protected DataPoint getDataPointAt(double aX, double aY)
 {
-    // Get chart area bounds and recalc sizes
-    double cx = 0, ch = getHeight(); calcSizes();
-    
-    // Get active series list and count
-    List <DataSeries> seriesList = getSeriesActive();
+    // Get bars array
+    Bar bars[][] = getBars();
         
-    // Iterate over sections
-    for(int i=0;i<_pointCount;i++) {
-        
-        // Iterate over series and if bar contains point, return data point
-        for(int j=0;j<_seriesCount;j++) { DataSeries series = seriesList.get(j);
-            double val = series.getValue(i);
-            double bx = cx + i*_sectionWidth + _groupPadWidth + (j*2+1)*_barPadWidth + j*_barWidth;
-            double by = seriesToLocal(i, val).y, bh = aY + ch - by;
-            if(Rect.contains(bx-1, by, _barWidth + 2, bh, aX, aY))
-                return series.getPoint(i);
-        }
-    }
+    // Iterate over points (sections) and series and if bar contains point, return data point
+    for(int i=0;i<_pointCount;i++) { for(int j=0;j<_seriesCount;j++) { Bar bar = bars[j][i];
+        if(bar.contains(aX,aY))
+            return bar.point;
+    }}
     
     // Return null since bar not found for point
     return null;
+}
+
+/**
+ * A class to hold bar information.
+ */
+private class Bar {
+    
+    // Points
+    DataPoint point;
+    double x, y, w, h;
+    Color color;
+    
+    /** Creates a bar. */
+    public Bar(DataPoint aDP, double aX, double aY, double aW, double aH, Color aColor)
+    {
+        point = aDP; x = aX; y = aY; w = aW; h = aH; color = aColor;
+    }
+    
+    public boolean contains(double aX, double aY)  { return Rect.contains(x, y, w, h, aX, aY); }
 }
 
 }
