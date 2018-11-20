@@ -137,8 +137,11 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
     
     // Iterate over wedges and paint wedge
     for(int i=0; i<wedges.length; i++) { Wedge wedge = wedges[i];
+    
+        // Paint arc, connector line and white border
         Arc arc = wedge.getArc(reveal, i==selIndex);
         aPntr.setColor(_chartView.getColor(i)); aPntr.fill(arc);
+        if(reveal>=1) aPntr.draw(wedge.getLabelLine());
         aPntr.setColor(Color.WHITE); aPntr.setStroke(Stroke.Stroke1); aPntr.draw(arc);
     }
     
@@ -235,6 +238,7 @@ private class Wedge {
     
     // Cached Arc and label point
     Arc    _arc; Point  _textPoint; double _tw, _th;
+    Shape  _labelLine;
     
     /** Returns the basic arc. */
     public Arc getArc()
@@ -277,7 +281,7 @@ private class Wedge {
         return _textPoint = getLabelPoint(getAngleMid());
     }
     
-    /** Returns the label point. */
+    /** Returns the label point for specific angle. */
     public Point getLabelPoint(double anAngle)
     {
         _textAngle = anAngle;
@@ -290,6 +294,7 @@ private class Wedge {
         return _textPoint = new Point(px, py);
     }
     
+    /** Returns whether label rect intersects another wedge label rect. */
     public boolean labelIntersects(Wedge aWedge)
     {
         Font font = getFont();
@@ -297,6 +302,22 @@ private class Wedge {
         Rect bnds1 = new Rect(aWedge._textPoint.x, aWedge._textPoint.y - font.getAscent(), aWedge._tw, aWedge._th);
         bnds0.inset(-LABEL_PAD); bnds1.inset(-LABEL_PAD);
         return bnds0.intersects(bnds1);
+    }
+    
+    /** Returns the connector line. */
+    public Shape getLabelLine()
+    {
+        if(_labelLine!=null) return _labelLine;
+        double angRad = Math.toRadians(getAngleMid());
+        double p0x = _pieX + _pieR + (_pieR-5)*Math.cos(angRad);
+        double p0y = _pieY + _pieR + (_pieR-5)*Math.sin(angRad);
+        double cp0x = _pieX + _pieR + (_pieR+20)*Math.cos(angRad);
+        double cp0y = _pieY + _pieR + (_pieR+20)*Math.sin(angRad);
+        double p1x = _textPoint.x; if(getAngleMid()>90) p1x += _tw + 4; else p1x -= 4;
+        double p1y = _textPoint.y - getFont().getAscent() + _th/2;
+        double cp1x = p1x; if(getAngleMid()>90) cp1x += 10; else cp1x -=10;
+        double cp1y = p1y;
+        return _labelLine = new Cubic(p0x, p0y, cp0x, cp0y, cp1x, cp1y, p1x, p1y);
     }
 }
 
