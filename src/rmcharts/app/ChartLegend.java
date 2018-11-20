@@ -23,10 +23,11 @@ public ChartView getChartView()  { return _chartView!=null? _chartView : (_chart
 public void reloadContents()
 {
     ChartView chart = getChartView();
-    List <DataSeries> allSeries = chart.getSeries();
+    DataSet dset = chart.getDataSet();
+    List <DataSeries> allSeries = dset.getSeries();
     removeChildren();
 
-    for(int i=0; i<allSeries.size(); i++) { DataSeries series = allSeries.get(i);
+    for(int i=0; i<dset.getSeriesCount(); i++) { DataSeries series = dset.getSeries(i);
         
         // Get marker Shape (if LineChart, add crossbar)
         Shape shp = chart.getMarkerShape(i); shp = shp.copyFor(new Transform(6, 6));
@@ -62,8 +63,9 @@ void rowWasClicked(RowView aRow)
     int index = ArrayUtils.indexOf(getChildren(), aRow);
 
     // Get series and disable
-    ChartView chart = getParent(ChartView.class);
-    DataSeries series = chart.getSeries(index);
+    ChartView chart = getChartView();
+    DataSet dset = chart.getDataSet();
+    DataSeries series = dset.getSeries(index);
     series.setDisabled(!series.isDisabled());
     
     // Redraw chart and reload legend

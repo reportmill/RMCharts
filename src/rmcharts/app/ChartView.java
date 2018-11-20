@@ -1,6 +1,5 @@
 package rmcharts.app;
 import java.text.DecimalFormat;
-import java.util.*;
 import snap.gfx.*;
 import snap.util.SnapUtils;
 import snap.view.*;
@@ -56,8 +55,8 @@ public class ChartView extends ColView {
     // The series shapes
     Shape              _markerShapes[];
     
-    // The selected data point
-    DataPoint          _selPoint;
+    // The selected and targeted (under mouse) data point
+    DataPoint          _selPoint, _targPoint;
     
     // Constants
     public static final String BAR_TYPE = "Bar";
@@ -230,29 +229,9 @@ public ToolTipView getToolTipView()  { return _toolTipView; }
 public DataSet getDataSet()  { return _dataSet; }
 
 /**
- * Returns the series.
- */
-public List <DataSeries> getSeries()  { return _dataSet.getSeries(); }
-
-/**
- * Returns the number of series.
- */
-public int getSeriesCount()  { return _dataSet.getSeriesCount(); }
-
-/**
- * Returns the individual series at given index.
- */
-public DataSeries getSeries(int anIndex)  { return _dataSet.getSeries(anIndex); }
-
-/**
  * Adds a new series.
  */
 public void addSeries(DataSeries aSeries)  { _dataSet.addSeries(aSeries); }
-
-/**
- * Returns the active series.
- */
-public List <DataSeries> getActiveSeries()  { return _dataSet.getActiveSeries(); }
 
 /**
  * Returns the start of the series.
@@ -277,11 +256,6 @@ public void setShowPartialY(boolean aValue)
     if(aValue==_showPartialY) return;
     _showPartialY = aValue; reloadContents();
 }
-
-/**
- * Returns the intervals.
- */
-public Intervals getActiveIntervals()  { return _dataSet.getActiveIntervals(); }
 
 /**
  * Returns the colors.
@@ -344,6 +318,22 @@ public void setSelDataPoint(DataPoint aDP)
     if(SnapUtils.equals(aDP, _selPoint)) return;
     
     _selPoint = aDP;
+    _toolTipView.reloadContents();
+}
+
+/**
+ * Returns the targeted data point.
+ */
+public DataPoint getTargDataPoint()  { return _targPoint; }
+
+/**
+ * Sets the targeted data point.
+ */
+public void setTargDataPoint(DataPoint aDP)
+{
+    if(SnapUtils.equals(aDP, _targPoint)) return;
+    
+    _targPoint = aDP;
     _toolTipView.reloadContents();
 }
 

@@ -185,8 +185,8 @@ private Point _pnt;
 protected void processEvent(ViewEvent anEvent)
 {
     // Handle MouseMove
-    if(anEvent.isMouseMove() || anEvent.isMouseClick()) {
-        _chartView.getToolTipView().setXYInChartArea(_pnt = anEvent.getPoint().clone()); }
+    if(anEvent.isMouseMove()) {
+        _chartView.getToolTipView().setXYInChartArea(_pnt = anEvent.getPoint()); }
     super.processEvent(anEvent);
 }
 

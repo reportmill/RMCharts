@@ -48,22 +48,22 @@ public DataSet getDataSet()  { return _chartView.getDataSet(); }
 /**
  * Returns the series.
  */
-public List <DataSeries> getSeries()  { return _chartView.getSeries(); }
+public List <DataSeries> getSeries()  { return getDataSet().getSeries(); }
 
 /**
  * Returns the number of series.
  */
-public int getSeriesCount()  { return _chartView.getSeriesCount(); }
+public int getSeriesCount()  { return getDataSet().getSeriesCount(); }
 
 /**
  * Returns the individual series at given index.
  */
-public DataSeries getSeries(int anIndex)  { return _chartView.getSeries(anIndex); }
+public DataSeries getSeries(int anIndex)  { return getDataSet().getSeries(anIndex); }
 
 /**
  * Returns the active series.
  */
-public List <DataSeries> getActiveSeries()  { return _chartView.getActiveSeries(); }
+public List <DataSeries> getActiveSeries()  { return getDataSet().getActiveSeries(); }
 
 /**
  * Returns the length of the series.
@@ -73,7 +73,7 @@ public int getPointCount()  { return getDataSet().getPointCount(); }
 /**
  * Returns the intervals.
  */
-public Intervals getActiveIntervals()  { return _chartView.getActiveIntervals(); }
+public Intervals getActiveIntervals()  { return getDataSet().getActiveIntervals(); }
 
 /**
  * Returns the series color at index.
