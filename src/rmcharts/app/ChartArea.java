@@ -197,12 +197,12 @@ protected void processEvent(ViewEvent anEvent)
     // Handle MouseMove
     if(anEvent.isMouseMove() || anEvent.isMouseClick()) {
         DataPoint dpnt = getDataPointAt(anEvent.getX(), anEvent.getY());
-        _chartView.setDataPoint(dpnt);
+        _chartView.setSelDataPoint(dpnt);
     }
         
     // Handle MouseExit
     if(anEvent.isMouseExit())
-        _chartView.setDataPoint(null);
+        _chartView.setSelDataPoint(null);
 }
 
 /**

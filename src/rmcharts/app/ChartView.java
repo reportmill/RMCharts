@@ -336,9 +336,9 @@ public Shape[] getMarkerShapes()
 public DataPoint getSelDataPoint()  { return _selPoint; }
 
 /**
- * Sets the tooltip series and value index from DataPoint.
+ * Sets the selected data point.
  */
-public void setDataPoint(DataPoint aDP)
+public void setSelDataPoint(DataPoint aDP)
 {
     if(SnapUtils.equals(aDP, _selPoint)) return;
     

@@ -1,11 +1,21 @@
 package rmcharts.app;
 import java.text.DecimalFormat;
 import snap.gfx.*;
+import snap.view.ViewEvent;
 
 /**
  * A ChartArea subclass to display the contents of pie chart.
  */
 public class ChartAreaPie extends ChartArea {
+    
+    // The cached wedges
+    Wedge        _wedges[];
+    
+    // The pie center point
+    double       _pieX, _pieY;
+    
+    // The pie radius and diameter
+    double       _pieR, _pieD;
     
     // Whether legend was showing
     boolean      _showLegend;
@@ -27,58 +37,66 @@ public ChartAreaPie()
  */
 protected void paintChart(Painter aPntr, double aX, double aY, double aW, double aH)
 {
-    // Get series
-    DataSeries series = getSeries(0);
+    // Get wedges and other paint info
+    Wedge wedges[] = getWedges();
     DataPoint selPoint = _chartView.getSelDataPoint();
     int selIndex = selPoint!=null? selPoint.getIndex() : -1;
-    int pointCount = getPointCount();
-    Font font = getFont(); aPntr.setFont(font);
+    double reveal = getReveal();
     
-    double cw = getWidth(), ch = getHeight();
-    Insets ins = getInsetsAll();
-    double diam = ch - ins.getHeight(), rad = diam/2;
-    double px = ins.left + Math.round((cw - ins.getWidth() - diam)/2);
-    double py = ins.top + Math.round((ch - ins.getHeight() - diam)/2);
+    // Set font
+    aPntr.setFont(getFont());
     
-    double vals[] = new double[pointCount]; for(int i=0;i<pointCount;i++) vals[i] = series.getValue(i);
-    double total = 0; for(int i=0;i<pointCount;i++) total += vals[i];
-    double reveal = getReveal(), max = 360*reveal;
-    double angles[] = new double[pointCount]; for(int i=0;i<pointCount;i++) angles[i] = Math.round(vals[i]/total*max);
-    double start = -90;
+    // Iterate over wedges and paint wedge and label
+    for(int i=0; i<wedges.length; i++) { Wedge wedge = wedges[i];
     
-    // Iterate over angles and paint wedges
-    for(int i=0; i<angles.length; i++) { double angle = angles[i];
-    
-        // Get offset point (adjusted if wedge selected)
-        double px2 = px, py2 = py; if(i==selIndex) {
-            double ang2 = Math.toRadians(start + angle/2);
-            px2 = px + 10*Math.cos(ang2); py2 = py + 10*Math.sin(ang2);
-        }
-        
-        // Get diameter (adjusted, along with offsets, for reveal)
-        double diam2 = diam; if(reveal<1) { diam2 = diam2*reveal; px2 += rad*(1-reveal); py2 += rad*(1-reveal); }
-        
-        // Create arc and fill
-        Arc arc = new Arc(px2, py2, diam2, diam2, start, angle);
-        aPntr.setColor(_chartView.getColor(i));
-        aPntr.fill(arc);
+        // Get wedge arc and fill
+        Arc arc = wedge.getArc(reveal, i==selIndex);
+        aPntr.setColor(_chartView.getColor(i)); aPntr.fill(arc);
         
         // Paint label
-        String name = series.getPoint(i).getName();
-        if(reveal>=1 && name!=null && name.length()>0) {
-            String label = name + ": " + _fmt.format(vals[i]/total);
-            double ang2 = start + angle/2, ang2Rad = Math.toRadians(ang2);
-            double px3 = px2 + rad + (rad+20)*Math.cos(ang2Rad);
-            double py3 = py2 + rad + (rad+20)*Math.sin(ang2Rad) + font.getAscent();
-            Rect bnds = font.getStringBounds(label);
-            if(ang2>90) px3 -= bnds.width;
-            px3 = Math.round(px3); py3 = Math.round(py3);
-            aPntr.setColor(Color.BLACK); aPntr.drawString(label, px3, py3);
+        String text = wedge._text;
+        if(reveal>=1 && text!=null && text.length()>0) {
+            Point pnt = wedge.getLabelPoint();
+            aPntr.setColor(Color.BLACK); aPntr.drawString(text, pnt.x, pnt.y);
         }
-        
-        // Increment start
+    }
+}
+
+/**
+ * Returns the pie wedges.
+ */
+protected Wedge[] getWedges()
+{
+    // If wedges cached, just return
+    if(_wedges!=null && _wedges.length==getPointCount()) return _wedges;
+    
+    // Get series and point count
+    DataSeries series = getSeries(0);
+    int pointCount = getPointCount();
+    
+    // Get chart size and insets and calculate pie radius, diameter and center x/y
+    double cw = getWidth(), ch = getHeight(); Insets ins = getInsetsAll();
+    _pieD = ch - ins.getHeight(); _pieR = _pieD/2;
+    _pieX = ins.left + Math.round((cw - ins.getWidth() - _pieD)/2);
+    _pieY = ins.top + Math.round((ch - ins.getHeight() - _pieD)/2);
+    
+    // Get values and angles
+    double vals[] = new double[pointCount]; for(int i=0;i<pointCount;i++) vals[i] = series.getValue(i);
+    double total = 0; for(int i=0;i<pointCount;i++) total += vals[i];
+    double angles[] = new double[pointCount]; for(int i=0;i<pointCount;i++) angles[i] = Math.round(vals[i]/total*360);
+    
+    // Iterate over angles and create/configure wedges
+    Wedge wedges[] = new Wedge[pointCount]; double start = 0;
+    for(int i=0; i<angles.length; i++) { double angle = angles[i];
+        Wedge wedge = wedges[i] = new Wedge(); wedge._start = start; wedge._angle = angle;
+        String name = series.getPoint(i).getName();
+        if(name!=null && name.length()>0)
+            wedge._text = name + ": " + _fmt.format(vals[i]/total);
         start += angle;
     }
+    
+    // Return wedges
+    return _wedges = wedges;
 }
 
 /**
@@ -86,30 +104,33 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
  */
 protected DataPoint getDataPointAt(double aX, double aY)
 {
-    // Get series
-    DataSeries series = getSeries(0);
-    int pointCount = getPointCount();
-    
-    double cw = getWidth(), ch = getHeight();
-    Insets ins = getInsetsAll();
-    double diam = ch - ins.getHeight();
-    double px = ins.left + Math.round((cw - ins.getWidth() - diam)/2);
-    double py = ins.top + Math.round((ch - ins.getHeight() - diam)/2);
-    
-    double vals[] = new double[pointCount]; for(int i=0;i<pointCount;i++) vals[i] = series.getValue(i);
-    double total = 0; for(int i=0;i<pointCount;i++) total += vals[i];
-    double angles[] = new double[pointCount]; for(int i=0;i<pointCount;i++) angles[i] = Math.round(vals[i]/total*360);
-    double start = -90;
-    
-    for(int i=0; i<angles.length; i++) { double angle = angles[i];
-        Arc arc = new Arc(px - (i>0?10:0), py - (i>0?10:0), diam, diam, start, angle);
+    // Iterate over wedges and return point for wedge that contains given x/y
+    Wedge wedges[] = getWedges();
+    for(int i=0; i<wedges.length; i++) { Wedge wedge = wedges[i];
+        Arc arc = wedge.getArc();
         if(arc.contains(aX, aY))
-            return series.getPoint(i);
-        start += angle;
+            return getSeries(0).getPoint(i);
     }
     
-    // Return null since bar not found for point
+    // Return null since no wedge contains point
     return null;
+}
+
+/**
+ * Override to return current mouse point.
+ */
+public Point dataPointInLocal(DataPoint aDP) { return _pnt; }
+private Point _pnt;
+
+/**
+ * Handle events.
+ */
+protected void processEvent(ViewEvent anEvent)
+{
+    // Handle MouseMove
+    if(anEvent.isMouseMove() || anEvent.isMouseClick()) {
+        _chartView.getToolTipView().setXYInChartArea(_pnt = anEvent.getPoint().clone()); }
+    super.processEvent(anEvent);
 }
 
 /**
@@ -130,6 +151,80 @@ public void deactivate()
     ChartXAxis xaxis = _chartView.getXAxis(); xaxis.setVisible(true); xaxis.setManaged(true);
     ChartYAxis yaxis = _chartView.getYAxis(); yaxis.setVisible(true); yaxis.setManaged(true);
     _chartView.setShowLegend(_showLegend);
+}
+
+/**
+ * Clears the wedges cache.
+ */
+protected void clearCache()  { _wedges = null; }
+
+/**
+ * Override to clear wedge cache.
+ */
+public void setWidth(double aValue)  { super.setWidth(aValue); clearCache(); }
+
+/**
+ * Override to clear wedge cache.
+ */
+public void setHeight(double aValue)  { super.setHeight(aValue); clearCache(); }
+
+/**
+ * A class to hold cached wedge data.
+ */
+private class Wedge {
+    
+    // The start and sweep angles
+    double _start, _angle;
+    
+    // Label text
+    String _text;
+    
+    // Cached Arc and label point
+    Arc    _arc; Point  _textPoint;
+    
+    /** Returns the basic arc. */
+    public Arc getArc()
+    {
+        return _arc!=null? _arc : (_arc = new Arc(_pieX, _pieY, _pieD, _pieD, -90 + _start, _angle));
+    }
+    
+    /** Returns the arc with given reveal or selection status. */
+    public Arc getArc(double aReveal, boolean isSel)
+    {
+        // If no reveal or selection, return normal arc
+        if(aReveal>=1 && !isSel) return getArc();
+        
+        // Get arc start/sweep angles, x/y points and diameter
+        double start = -90 + _start*aReveal, angle = _angle*aReveal;
+        double px = _pieX, py = _pieY, diam = _pieD;
+        
+        // If selected, move x/y by 10 points from center of wedge
+        if(isSel) {
+            double ang2 = Math.toRadians(start + angle/2);
+            px += 10*Math.cos(ang2); py += 10*Math.sin(ang2);
+        }
+        
+        // If reveal, modify diameter and move to new center
+        if(aReveal<1) {
+            diam *= aReveal; px += _pieR*(1-aReveal); py += _pieR*(1-aReveal); }
+        
+        // Create arc and return
+        return new Arc(px, py, diam, diam, start, angle);
+    }
+    
+    /** Returns the label point. */
+    public Point getLabelPoint()
+    {
+        if(_textPoint!=null) return _textPoint;
+        Font font = getFont();
+        double ang2 = -90 + _start + _angle/2, ang2Rad = Math.toRadians(ang2);
+        double px = _pieX + _pieR + (_pieR+20)*Math.cos(ang2Rad);
+        double py = _pieY + _pieR + (_pieR+20)*Math.sin(ang2Rad) + font.getAscent();
+        Rect bnds = font.getStringBounds(_text);
+        if(ang2>90) px -= bnds.width;
+        px = Math.round(px); py = Math.round(py);
+        return _textPoint = new Point(px, py);
+    }
 }
 
 }

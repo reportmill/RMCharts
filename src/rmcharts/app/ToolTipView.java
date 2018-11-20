@@ -26,6 +26,26 @@ public ToolTipView(ChartView aCV)
 }
 
 /**
+ * Sets the X/Y in area coords.
+ */
+public void setXYInChartArea(Point aPnt)
+{
+    Point pnt = _chartView.getChartArea().localToParent(aPnt.x, aPnt.y, _chartView);
+    setXYInChartView(pnt);
+}
+
+/**
+ * Sets the X/Y in area coords.
+ */
+public void setXYInChartView(Point aPnt)
+{
+    double nx = aPnt.x - getWidth()/2;
+    double ny = aPnt.y - getHeight() - 8;
+    setXY(nx,ny);
+    getAnimCleared(0);
+}
+
+/**
  * Called when tooltip contents changed.
  */
 public void reloadContents()
