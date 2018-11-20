@@ -39,6 +39,10 @@ public void setXYInChartArea(Point aPnt)
  */
 public void setXYInChartView(Point aPnt)
 {
+    // If no data point, just return
+    if(_chartView.getSelDataPoint()==null) return;
+    
+    // Get new point, set and clear animations
     double nx = aPnt.x - getWidth()/2;
     double ny = aPnt.y - getHeight() - 8;
     setXY(nx,ny);
