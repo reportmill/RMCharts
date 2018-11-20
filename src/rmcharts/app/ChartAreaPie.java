@@ -22,14 +22,103 @@ public class ChartAreaPie extends ChartArea {
     
     // The format
     DecimalFormat _fmt = new DecimalFormat("#.# %");
+    
+    // Constants
+    static double LABEL_MARGIN = 30;
+    static double LABEL_PAD = 3;
+    static double PAD_TOP = 30, PAD_BOTTOM = 20, PAD_BOTTOM_MAX = 40;
 
 /**
  * Creates a ChartAreaPie.
  */
 public ChartAreaPie()
 {
-    setPadding(25,10,20,10);
+    setPadding(PAD_TOP, 10, PAD_BOTTOM, 10);
     setFont(Font.Arial12.getBold());
+}
+
+/**
+ * Returns the pie wedges.
+ */
+protected Wedge[] getWedges()
+{
+    // If wedges cached, just return
+    if(_wedges!=null && _wedges.length==getPointCount()) return _wedges;
+    
+    // Get series and point count
+    DataSeries series = getSeries(0);
+    int pointCount = getPointCount();
+    
+    // Get values and angles
+    double vals[] = new double[pointCount]; for(int i=0;i<pointCount;i++) vals[i] = series.getValue(i);
+    double total = 0; for(int i=0;i<pointCount;i++) total += vals[i];
+    double angles[] = new double[pointCount]; for(int i=0;i<pointCount;i++) angles[i] = Math.round(vals[i]/total*360);
+    
+    // Fix padding to accommodate bottom label, if needed
+    fixPaddingForBottomLabelIfNeeded(angles);
+
+    // Get chart size and insets and calculate pie radius, diameter and center x/y
+    double cw = getWidth(), ch = getHeight(); Insets ins = getInsetsAll();
+    _pieD = ch - ins.getHeight(); _pieR = _pieD/2;
+    _pieX = ins.left + Math.round((cw - ins.getWidth() - _pieD)/2);
+    _pieY = ins.top + Math.round((ch - ins.getHeight() - _pieD)/2);
+        
+    // Iterate over angles and create/configure wedges
+    Wedge wedges[] = new Wedge[pointCount]; double start = 0;
+    for(int i=0; i<angles.length; i++) { double angle = angles[i];
+        Wedge wedge = wedges[i] = new Wedge(); wedge._start = start; wedge._angle = angle;
+        String name = series.getPoint(i).getName();
+        if(name!=null && name.length()>0)
+            wedge._text = name + ": " + _fmt.format(vals[i]/total);
+        start += angle;
+    }
+    
+    // Set label points so that they don't obscure each other
+    setLabelPoints(wedges);
+    
+    // Return wedges
+    return _wedges = wedges;
+}
+
+/**
+ * Sets label points.
+ */
+protected void setLabelPoints(Wedge wedges[])
+{
+    // Set first and last wedge points
+    if(wedges.length==0) return;
+    wedges[0].getLabelPoint(); wedges[wedges.length-1].getLabelPoint();
+    
+    // Set label points for pie right side
+    for(int i=1; i<wedges.length; i++) { Wedge wedge = wedges[i], wedge2 = wedges[i-1];
+        if(wedge.getAngleMid()>90) break;
+        double angle = Math.max(wedge.getAngleMid(), wedge2._textAngle+2);
+        wedge.getLabelPoint(angle);
+        while(wedge.labelIntersects(wedge2))
+            wedge.getLabelPoint(angle+=1);
+    }
+    
+    // Set label points for pie left side
+    for(int i=wedges.length-2; i>=0; i--) { Wedge wedge = wedges[i], wedge2 = wedges[i+1];
+        if(wedge.getAngleMid()<90) break;
+        double angle = Math.min(wedge.getAngleMid(), wedge2._textAngle-2);
+        wedge.getLabelPoint(angle);
+        while(wedge.labelIntersects(wedge2))
+            wedge.getLabelPoint(angle-=1);
+    }
+}
+
+/** Changes padding to have an extra 20 points on bottom if label needed there. */
+void fixPaddingForBottomLabelIfNeeded(double angles[])
+{
+    boolean hasBottomWedge = false; Insets ins = getPadding();
+    double start = -90;
+    for(double a : angles) { double ang = start + a/2;
+        if(ang>60 && ang<120) { hasBottomWedge = true; break; } start += a; }
+    if(hasBottomWedge && ins.bottom!=PAD_BOTTOM_MAX)
+        setPadding(PAD_TOP, 10, PAD_BOTTOM_MAX, 10);
+    else if(!hasBottomWedge && ins.bottom!=PAD_BOTTOM)
+        setPadding(PAD_TOP, 10, PAD_BOTTOM, 10);
 }
 
 /**
@@ -46,57 +135,22 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
     // Set font
     aPntr.setFont(getFont());
     
-    // Iterate over wedges and paint wedge and label
+    // Iterate over wedges and paint wedge
     for(int i=0; i<wedges.length; i++) { Wedge wedge = wedges[i];
-    
-        // Get wedge arc and fill
         Arc arc = wedge.getArc(reveal, i==selIndex);
         aPntr.setColor(_chartView.getColor(i)); aPntr.fill(arc);
-        
-        // Paint label
+        aPntr.setColor(Color.WHITE); aPntr.setStroke(Stroke.Stroke1); aPntr.draw(arc);
+    }
+    
+    // Iterate over wedges and paint wedge label
+    if(reveal>=1)
+    for(int i=0; i<wedges.length; i++) { Wedge wedge = wedges[i];
         String text = wedge._text;
-        if(reveal>=1 && text!=null && text.length()>0) {
+        if(text!=null && text.length()>0) {
             Point pnt = wedge.getLabelPoint();
             aPntr.setColor(Color.BLACK); aPntr.drawString(text, pnt.x, pnt.y);
         }
     }
-}
-
-/**
- * Returns the pie wedges.
- */
-protected Wedge[] getWedges()
-{
-    // If wedges cached, just return
-    if(_wedges!=null && _wedges.length==getPointCount()) return _wedges;
-    
-    // Get series and point count
-    DataSeries series = getSeries(0);
-    int pointCount = getPointCount();
-    
-    // Get chart size and insets and calculate pie radius, diameter and center x/y
-    double cw = getWidth(), ch = getHeight(); Insets ins = getInsetsAll();
-    _pieD = ch - ins.getHeight(); _pieR = _pieD/2;
-    _pieX = ins.left + Math.round((cw - ins.getWidth() - _pieD)/2);
-    _pieY = ins.top + Math.round((ch - ins.getHeight() - _pieD)/2);
-    
-    // Get values and angles
-    double vals[] = new double[pointCount]; for(int i=0;i<pointCount;i++) vals[i] = series.getValue(i);
-    double total = 0; for(int i=0;i<pointCount;i++) total += vals[i];
-    double angles[] = new double[pointCount]; for(int i=0;i<pointCount;i++) angles[i] = Math.round(vals[i]/total*360);
-    
-    // Iterate over angles and create/configure wedges
-    Wedge wedges[] = new Wedge[pointCount]; double start = 0;
-    for(int i=0; i<angles.length; i++) { double angle = angles[i];
-        Wedge wedge = wedges[i] = new Wedge(); wedge._start = start; wedge._angle = angle;
-        String name = series.getPoint(i).getName();
-        if(name!=null && name.length()>0)
-            wedge._text = name + ": " + _fmt.format(vals[i]/total);
-        start += angle;
-    }
-    
-    // Return wedges
-    return _wedges = wedges;
 }
 
 /**
@@ -174,18 +228,18 @@ public void setHeight(double aValue)  { super.setHeight(aValue); clearCache(); }
 private class Wedge {
     
     // The start and sweep angles
-    double _start, _angle;
+    double _start, _angle, _textAngle;
     
     // Label text
     String _text;
     
     // Cached Arc and label point
-    Arc    _arc; Point  _textPoint;
+    Arc    _arc; Point  _textPoint; double _tw, _th;
     
     /** Returns the basic arc. */
     public Arc getArc()
     {
-        return _arc!=null? _arc : (_arc = new Arc(_pieX, _pieY, _pieD, _pieD, -90 + _start, _angle));
+        return _arc!=null? _arc : (_arc = new Arc(_pieX, _pieY, _pieD, _pieD, getAngleStart(), _angle));
     }
     
     /** Returns the arc with given reveal or selection status. */
@@ -212,18 +266,37 @@ private class Wedge {
         return new Arc(px, py, diam, diam, start, angle);
     }
     
+    /** Returns the mid angle. */
+    public double getAngleStart()  { return -90 + _start; }
+    public double getAngleMid()  { return getAngleStart() + _angle/2; }
+    
     /** Returns the label point. */
     public Point getLabelPoint()
     {
         if(_textPoint!=null) return _textPoint;
-        Font font = getFont();
-        double ang2 = -90 + _start + _angle/2, ang2Rad = Math.toRadians(ang2);
-        double px = _pieX + _pieR + (_pieR+20)*Math.cos(ang2Rad);
-        double py = _pieY + _pieR + (_pieR+20)*Math.sin(ang2Rad) + font.getAscent();
-        Rect bnds = font.getStringBounds(_text);
-        if(ang2>90) px -= bnds.width;
+        return _textPoint = getLabelPoint(getAngleMid());
+    }
+    
+    /** Returns the label point. */
+    public Point getLabelPoint(double anAngle)
+    {
+        _textAngle = anAngle;
+        double angRad = Math.toRadians(anAngle); Font font = getFont();
+        double px = _pieX + _pieR + (_pieR+LABEL_MARGIN)*Math.cos(angRad);
+        double py = _pieY + _pieR + (_pieR+LABEL_MARGIN)*Math.sin(angRad) + font.getAscent();
+        Rect bnds = _text!=null? font.getStringBounds(_text) : new Rect(); _tw = bnds.width; _th = bnds.height;
+        if(anAngle>90) px -= bnds.width;
         px = Math.round(px); py = Math.round(py);
         return _textPoint = new Point(px, py);
+    }
+    
+    public boolean labelIntersects(Wedge aWedge)
+    {
+        Font font = getFont();
+        Rect bnds0 = new Rect(_textPoint.x, _textPoint.y - font.getAscent(), _tw, _th);
+        Rect bnds1 = new Rect(aWedge._textPoint.x, aWedge._textPoint.y - font.getAscent(), aWedge._tw, aWedge._th);
+        bnds0.inset(-LABEL_PAD); bnds1.inset(-LABEL_PAD);
+        return bnds0.intersects(bnds1);
     }
 }
 

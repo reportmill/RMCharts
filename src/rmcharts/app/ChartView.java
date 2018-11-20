@@ -65,8 +65,9 @@ public class ChartView extends ColView {
     public static final String PIE_TYPE = "Pie";
     
     // Colors
-    static Color    COLORS[] = new Color[] { Color.get("#88B4E7"), Color.BLACK, Color.get("#A6EB8A"),
-        Color.get("#EBA769"), Color.get("#8185E2") };
+    static Color    COLORS[] = new Color[] { Color.get("#88B4E7"), Color.get("#434348"), Color.get("#A6EB8A"),
+        Color.get("#EBA769"), Color.get("#8185E2"), Color.get("#E06681"), Color.get("#E1D369"),
+        Color.get("#4A8E8E"), Color.get("#E26561") };
     
     // Shared
     static DecimalFormat _fmt = new DecimalFormat("#,###.##");
