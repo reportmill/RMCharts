@@ -89,7 +89,7 @@ protected void clearCache()  { _sections = null; }
 protected Section[] getSections()
 {
     // If recacl not needed, just return
-    int seriesCount = getSeriesActive().size(), pointCount = getPointCount();
+    int seriesCount = getActiveSeries().size(), pointCount = getPointCount();
     if(_sections!=null && _sections.length==pointCount && _seriesCount==seriesCount) return _sections;
     
     // Get ChartAreaBar info
@@ -97,8 +97,8 @@ protected Section[] getSections()
     boolean colorSeries = !isColorValues();
     
     // Get number of series, points and section width
-    List <DataSeries> seriesList = getSeriesActive();
-    _seriesCount = getSeriesActive().size();
+    List <DataSeries> seriesList = getActiveSeries();
+    _seriesCount = seriesCount;
     _pointCount = getPointCount();
     double sectionWidth = getWidth()/_pointCount;
 

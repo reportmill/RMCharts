@@ -92,7 +92,7 @@ public int getIndex()  { return _index; }
 /**
  * Returns the index in dataset active series.
  */
-public int getActiveIndex()  { return _dset.getSeriesActive().indexOf(this); }
+public int getActiveIndex()  { return _dset.getActiveSeries().indexOf(this); }
 
 /**
  * Returns whether series is disabled.
@@ -102,7 +102,11 @@ public boolean isDisabled()  { return _disabled; }
 /**
  * Sets whether series is disabled.
  */
-public void setDisabled(boolean aValue)  { _disabled = aValue; }
+public void setDisabled(boolean aValue)
+{
+    _disabled = aValue;
+    _dset.clearCache();
+}
 
 /**
  * Returns whether series is enabled.

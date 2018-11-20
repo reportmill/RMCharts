@@ -169,7 +169,7 @@ protected void paintAxis(Painter aPntr, double aX, double aY, double aW, double 
     double fontDesc = Font.Arial12.getDescent();
     
     // Get intervals
-    Intervals intervals = _chartArea.getIntervals();
+    Intervals intervals = _chartArea.getActiveIntervals();
     int lineCount = intervals.getCount(), sectionCount = lineCount - 1;
     double intervalDelta = intervals.getDelta(), intervalMax = intervals.getMax();
     double marginx = getLabelsMargin();
@@ -247,7 +247,7 @@ protected String getLabel(double aLineVal, double aDelta)
 protected double getMaxLabelWidth()
 {
     // Get intervals
-    Intervals intervals = _chartArea.getIntervals();
+    Intervals intervals = _chartArea.getActiveIntervals();
     int lineCount = intervals.getCount(), sectionCount = lineCount - 1;
     double intervalDelta = intervals.getDelta(), intervalMax = intervals.getMax();
     

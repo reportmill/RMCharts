@@ -63,7 +63,7 @@ public DataSeries getSeries(int anIndex)  { return _chartView.getSeries(anIndex)
 /**
  * Returns the active series.
  */
-public List <DataSeries> getSeriesActive()  { return _chartView.getSeriesActive(); }
+public List <DataSeries> getActiveSeries()  { return _chartView.getActiveSeries(); }
 
 /**
  * Returns the length of the series.
@@ -73,7 +73,7 @@ public int getPointCount()  { return getDataSet().getPointCount(); }
 /**
  * Returns the intervals.
  */
-public Intervals getIntervals()  { return _chartView.getIntervals(); }
+public Intervals getActiveIntervals()  { return _chartView.getActiveIntervals(); }
 
 /**
  * Returns the series color at index.
@@ -124,8 +124,8 @@ public Point seriesToLocal(double aX, double aY)
     double nx = ins.left + aX*dx;
 
     // Convert Y and return
-    double axisMinVal = getIntervals().getMin();
-    double axisMaxVal = getIntervals().getMax();
+    double axisMinVal = getActiveIntervals().getMin();
+    double axisMaxVal = getActiveIntervals().getMax();
     double h = getHeight() - ins.getHeight();
     double ny = ins.top + h - (aY-axisMinVal)/(axisMaxVal-axisMinVal)*h;
     return new Point(nx, ny);
@@ -172,7 +172,7 @@ protected void paintFront(Painter aPntr)
 protected void paintAxisY(Painter aPntr, double aX, double aY, double aW, double aH)
 {
     // Get number of interval lines and interval height
-    int intervalCount = getIntervals().getCount();
+    int intervalCount = getActiveIntervals().getCount();
     double ih = aH/(intervalCount-1);
     
     // Draw y axis lines
@@ -215,7 +215,7 @@ protected DataPoint getDataPointAt(double aX, double aY)
     
     // Iterate over active series to find series + value index closest to point
     DataPoint dataPoint = null; double dist = Float.MAX_VALUE;
-    List <DataSeries> seriesList = getSeriesActive();
+    List <DataSeries> seriesList = getActiveSeries();
     for(int i=0;i<seriesList.size();i++) { DataSeries series = seriesList.get(i);
         for(int j=0;j<getPointCount();j++) {
             Point pnt = seriesToLocal(j,series.getValue(j));

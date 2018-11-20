@@ -45,7 +45,7 @@ public List <Path> getSeriesPaths()
 protected void paintChart(Painter aPntr, double aX, double aY, double aW, double aH)
 {
     // Get Series list
-    List <DataSeries> seriesList = getSeriesActive();
+    List <DataSeries> seriesList = getActiveSeries();
     int scount = seriesList.size();
     
     int pointCount = getPointCount();

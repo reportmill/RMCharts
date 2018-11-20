@@ -251,7 +251,7 @@ public void addSeries(DataSeries aSeries)  { _dataSet.addSeries(aSeries); }
 /**
  * Returns the active series.
  */
-public List <DataSeries> getSeriesActive()  { return _dataSet.getSeriesActive(); }
+public List <DataSeries> getActiveSeries()  { return _dataSet.getActiveSeries(); }
 
 /**
  * Returns the start of the series.
@@ -280,7 +280,7 @@ public void setShowPartialY(boolean aValue)
 /**
  * Returns the intervals.
  */
-public Intervals getIntervals()  { return _dataSet.getIntervals(); }
+public Intervals getActiveIntervals()  { return _dataSet.getActiveIntervals(); }
 
 /**
  * Returns the colors.
