@@ -1,4 +1,5 @@
 package rmcharts.app;
+import java.util.List;
 import snap.gfx.Point;
 import snap.util.SnapUtils;
 
@@ -72,11 +73,17 @@ public int getSeriesActiveIndex()  { return _series.getActiveIndex(); }
  */
 public Object getKey()
 {
+    // If name, just return it
     if(_name!=null) return _name;
-    DataSet dset = _series._dset;
+    
+    // If categories, return that
+    List <String> cats = _series._dset._chartView.getXAxis().getCategories();
+    if(cats!=null && getIndex()<cats.size())
+        return cats.get(getIndex());
+    
+    // Otherwise return x val (as int, if whole number)
     double kval = getX();
-    if(kval==(int)kval) return (int)kval;
-    return kval;
+    return kval==(int)kval? (int)kval : kval;
 }
 
 /**

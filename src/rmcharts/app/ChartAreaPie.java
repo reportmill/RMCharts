@@ -67,9 +67,9 @@ protected Wedge[] getWedges()
     Wedge wedges[] = new Wedge[pointCount]; double start = 0;
     for(int i=0; i<angles.length; i++) { double angle = angles[i];
         Wedge wedge = wedges[i] = new Wedge(); wedge._start = start; wedge._angle = angle;
-        String name = series.getPoint(i).getName();
-        if(name!=null && name.length()>0)
-            wedge._text = name + ": " + _fmt.format(vals[i]/total);
+        String text = series.getPoint(i).getKeyString();
+        if(text!=null && text.length()>0)
+            wedge._text = text + ": " + _fmt.format(vals[i]/total);
         start += angle;
     }
     
@@ -133,7 +133,7 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
     double reveal = getReveal();
     
     // Set font
-    aPntr.setFont(getFont());
+    aPntr.setFont(getFont()); aPntr.setStroke(Stroke.Stroke1);
     
     // Iterate over wedges and paint wedge
     for(int i=0; i<wedges.length; i++) { Wedge wedge = wedges[i]; Color color = _chartView.getColor(i);
@@ -151,7 +151,7 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
         
         // Paint connector and white border
         if(reveal>=1) aPntr.draw(wedge.getLabelLine());
-        aPntr.setColor(Color.WHITE); aPntr.setStroke(Stroke.Stroke1); aPntr.draw(arc);
+        aPntr.setColor(Color.WHITE); aPntr.draw(arc);
     }
     
     // Iterate over wedges and paint wedge label
