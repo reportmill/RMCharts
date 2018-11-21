@@ -41,7 +41,7 @@ public ChartArea getChart(String aType)
 public ChartAreaBar getColumnChart()
 {
     if(_colChart!=null) return _colChart;
-    _colChart = new ChartAreaBar(); _colChart._chartView = _chartView; return _colChart;
+    _colChart = new ChartAreaBar(); _colChart.setChartView(_chartView); return _colChart;
 }
 
 /**
@@ -50,7 +50,7 @@ public ChartAreaBar getColumnChart()
 public ChartAreaLine getLineChart()
 {
     if(_lineChart!=null) return _lineChart;
-    _lineChart = new ChartAreaLine(); _lineChart._chartView = _chartView; return _lineChart;
+    _lineChart = new ChartAreaLine(); _lineChart.setChartView(_chartView); return _lineChart;
 }
 
 /**
@@ -59,7 +59,7 @@ public ChartAreaLine getLineChart()
 public ChartAreaPie getPieChart()
 {
     if(_pieChart!=null) return _pieChart;
-    _pieChart = new ChartAreaPie(); _pieChart._chartView = _chartView; return _pieChart;
+    _pieChart = new ChartAreaPie(); _pieChart.setChartView(_chartView); return _pieChart;
 }
 
 }

@@ -1,6 +1,7 @@
 package rmcharts.app;
 import java.text.DecimalFormat;
 import snap.gfx.*;
+import snap.util.*;
 import snap.view.ViewEvent;
 
 /**
@@ -35,6 +36,15 @@ public ChartAreaPie()
 {
     setPadding(PAD_TOP, 10, PAD_BOTTOM, 10);
     setFont(Font.Arial12.getBold());
+}
+
+/**
+ * Sets the chart view.
+ */
+protected void setChartView(ChartView aCV)
+{
+    super.setChartView(aCV);
+    _chartView.addPropChangeListener(pc -> selDataPointChanged(pc), ChartView.SelDataPoint_Prop);
 }
 
 /**
@@ -91,10 +101,13 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
     int targIndex = getTargPointIndex();
     int selIndexLast = getSelPointLastIndex();
     double reveal = getReveal();
-    double selPointMorph = _chartView.getSelDataPointMorph();
+    double selPointMorph = getSelDataPointMorph();
 
     // Set font
     aPntr.setFont(getFont()); aPntr.setStroke(Stroke.Stroke1);
+    
+    if(reveal>=1)
+        System.currentTimeMillis();
     
     // Iterate over wedges and paint wedge
     for(int i=0; i<wedges.length; i++) { Wedge wedge = wedges[i]; Color color = _chartView.getColor(i);
@@ -187,7 +200,7 @@ public void reactivate()
 {
     DataSet dset = getActiveSet(); if(dset.getSeriesCount()==0 || dset.getPointCount()==0) return;
     DataPoint dp = dset.getSeries(0).getPoint(0);
-    _chartView.setSelDataPoint(dp);
+    _disableMorph = true; _chartView.setSelDataPoint(dp); _disableMorph = false;
 }
 
 /**
@@ -246,10 +259,50 @@ void fixPaddingForBottomLabelIfNeeded(double angles[])
         setPadding(PAD_TOP, 10, PAD_BOTTOM, 10);
 }
 
+// Vars for animating SelDataPoint change
+DataPoint _selPointLast; double _selPointMorph = 1; boolean _disableMorph;
+static final String SelDataPointMorph_Prop = "SelDataPointMorph";
+
+/** Returns/sets the measure (from 0 to 1) of change of newly set SelDataPoint. */
+double getSelDataPointMorph()  { return _selPointMorph; }
+void setSelDataPointMorph(double aValue)  { _selPointMorph = aValue; repaint(); }
+
+/**
+ * Called when ChartView.SelDataPoint changes.
+ */
+void selDataPointChanged(PropChange aPC)
+{
+    // If not showing, just return
+    if(!isShowing() || _disableMorph) return;
+    
+    // Cache last point and configure SelDataPointMorph to change from 0 to 1 over time
+    _selPointLast = (DataPoint)aPC.getOldValue();
+    setSelDataPointMorph(0);
+    getAnimCleared(400).setValue(SelDataPointMorph_Prop, 1).setLinear().setOnFinish(a -> _selPointLast = null).play();
+}
+
 /** Convenience methods to return ChartView SelDataPoint.Index, SelDataPointLast.Index & TargDataPoint.Index. */
 int getSelPointIndex()  { DataPoint dp = _chartView.getSelDataPoint(); return dp!=null? dp.getIndex() : -1; }
-int getSelPointLastIndex()  { DataPoint dp = _chartView.getSelDataPointLast(); return dp!=null? dp.getIndex() : -1; }
+int getSelPointLastIndex()  { return _selPointLast!=null? _selPointLast.getIndex() : -1; }
 int getTargPointIndex()  { DataPoint dp = _chartView.getTargDataPoint(); return dp!=null? dp.getIndex() : -1; }
+
+/**
+ * Returns the value for given key.
+ */
+public Object getValue(String aPropName)
+{
+    if(aPropName.equals(SelDataPointMorph_Prop)) return getSelDataPointMorph();
+    return super.getValue(aPropName);
+}
+
+/**
+ * Sets the value for given key.
+ */
+public void setValue(String aPropName, Object aValue)
+{
+    if(aPropName.equals(SelDataPointMorph_Prop)) setSelDataPointMorph(SnapUtils.doubleValue(aValue));
+    else super.setValue(aPropName, aValue);
+}
 
 /**
  * A class to hold cached wedge data.

@@ -31,6 +31,11 @@ public ChartArea()
 }
 
 /**
+ * Sets the chart view.
+ */
+protected void setChartView(ChartView aCV)  { _chartView = aCV; }    
+
+/**
  * Returns the XAxis View.
  */
 public ChartXAxis getXAxis()  { return _chartView._xaxis; }
@@ -209,7 +214,7 @@ protected void processEvent(ViewEvent anEvent)
     if(anEvent.isMouseClick()) {
         DataPoint dpnt = getDataPointAt(anEvent.getX(), anEvent.getY());
         if(dpnt==_chartView.getSelDataPoint()) dpnt = null;
-        _chartView.setSelDataPointAnimated(dpnt);
+        _chartView.setSelDataPoint(dpnt);
     }
         
     // Handle MouseExit
