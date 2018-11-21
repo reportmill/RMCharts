@@ -74,8 +74,8 @@ protected void reloadContentsNow()
         
     // Get series and value
     DataSeries series = dataPoint.getSeries();
+    String selKey = dataPoint.getKeyString();
     double selValue = dataPoint.getValue();
-    double selXValue = dataPoint.getX();
         
     // Remove children and reset opacity, padding and spacing
     removeChildren(); setOpacity(1);
@@ -83,8 +83,7 @@ protected void reloadContentsNow()
     
     // Set KeyLabel string
     StringView keyLabel = new StringView(); keyLabel.setFont(Font.Arial10); addChild(keyLabel);
-    String key = String.valueOf(selXValue);
-    keyLabel.setText(key);
+    keyLabel.setText(selKey);
     
     // Create RowView: BulletView
     Color color = _chartView.getColor(series.getIndex());

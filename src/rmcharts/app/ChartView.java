@@ -319,8 +319,6 @@ public void setSelDataPoint(DataPoint aDP)
     
     _selPoint = aDP;
     repaint(); //_toolTipView.reloadContents();
-    
-    setTargDataPoint(aDP);
 }
 
 /**
@@ -345,6 +343,7 @@ public void setTargDataPoint(DataPoint aDP)
 public void reloadContents()
 {
     _legend.reloadContents();
+    _chartArea.reactivate();
     _chartArea.animate();
     _yaxis.repaint();
     _xaxis.repaint();

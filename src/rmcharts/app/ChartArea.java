@@ -61,6 +61,11 @@ public int getSeriesCount()  { return getDataSet().getSeriesCount(); }
 public DataSeries getSeries(int anIndex)  { return getDataSet().getSeries(anIndex); }
 
 /**
+ * Returns the active data set.
+ */
+public DataSet getActiveSet()  { return getDataSet().getActiveSet(); }
+
+/**
  * Returns the active series.
  */
 public List <DataSeries> getActiveSeries()  { return getDataSet().getActiveSeries(); }
@@ -237,14 +242,19 @@ protected DataPoint getDataPointAt(double aX, double aY)
 }
 
 /**
- * Called when chart is activated.
+ * Called after a chart area is installed in chart view.
  */
 public void activate()  { }
 
 /**
- * Called when chart is deactivated.
+ * Called before a chart area is removed from a chart view.
  */
 public void deactivate()  { }
+
+/**
+ * Called when chart is reloaded.
+ */
+public void reactivate()  { }
 
 /**
  * Returns the value for given key.

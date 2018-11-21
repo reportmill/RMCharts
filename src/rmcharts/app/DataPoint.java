@@ -1,5 +1,6 @@
 package rmcharts.app;
 import snap.gfx.Point;
+import snap.util.SnapUtils;
 
 /**
  * A class to represent a data point.
@@ -67,12 +68,24 @@ public int getSeriesIndex()  { return _series.getIndex(); }
 public int getSeriesActiveIndex()  { return _series.getActiveIndex(); }
 
 /**
- * Return data point key.
+ * Return data point key - either the name or the x value.
  */
-public double getKey()
+public Object getKey()
 {
+    if(_name!=null) return _name;
     DataSet dset = _series._dset;
-    return dset.getSeriesStart() + _index;
+    double kval = getX();
+    if(kval==(int)kval) return (int)kval;
+    return kval;
+}
+
+/**
+ * Return data point key as a string.
+ */
+public String getKeyString()
+{
+    Object key = getKey();
+    return SnapUtils.stringValue(key);
 }
 
 /**

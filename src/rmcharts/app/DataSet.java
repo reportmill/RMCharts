@@ -143,7 +143,7 @@ public Intervals getIntervals()
 /**
  * Returns the active dataset.
  */
-public DataSet getActive()
+public DataSet getActiveSet()
 {
     if(_active!=null) return _active;
     
@@ -161,12 +161,12 @@ public DataSet getActive()
 /**
  * Returns the active series.
  */
-public List <DataSeries> getActiveSeries()  { return getActive().getSeries(); }
+public List <DataSeries> getActiveSeries()  { return getActiveSet().getSeries(); }
 
 /**
  * Returns the intervals.
  */
-public Intervals getActiveIntervals()  { return getActive().getIntervals(); }
+public Intervals getActiveIntervals()  { return getActiveSet().getIntervals(); }
 
 /**
  * Clears cached values.

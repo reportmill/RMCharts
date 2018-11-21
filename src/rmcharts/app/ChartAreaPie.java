@@ -200,7 +200,7 @@ protected void processEvent(ViewEvent anEvent)
 }
 
 /**
- * Called when chart is activated.
+ * Override to hide x/y axis and legend.
  */
 public void activate()
 {
@@ -210,13 +210,23 @@ public void activate()
 }
 
 /**
- * Called when chart is deactivated.
+ * Override to restore x/y axis and legend.
  */
 public void deactivate()
 {
     ChartXAxis xaxis = _chartView.getXAxis(); xaxis.setVisible(true); xaxis.setManaged(true);
     ChartYAxis yaxis = _chartView.getYAxis(); yaxis.setVisible(true); yaxis.setManaged(true);
     _chartView.setShowLegend(_showLegend);
+}
+
+/**
+ * Override to select first data point.
+ */
+public void reactivate()
+{
+    DataSet dset = getActiveSet(); if(dset.getSeriesCount()==0 || dset.getPointCount()==0) return;
+    DataPoint dp = dset.getSeries(0).getPoint(0);
+    _chartView.setSelDataPoint(dp);
 }
 
 /**
