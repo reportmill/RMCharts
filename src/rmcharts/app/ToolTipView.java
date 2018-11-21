@@ -40,7 +40,7 @@ public void setXYInChartArea(Point aPnt)
 public void setXYInChartView(Point aPnt)
 {
     // If no data point, just return
-    if(_chartView.getSelDataPoint()==null) return;
+    if(_chartView.getTargDataPoint()==null) return;
     
     // Get new point, set and clear animations
     double nx = aPnt.x - getWidth()/2;
@@ -68,7 +68,7 @@ protected void reloadContentsNow()
     
     // Get DataPoint - if null - remove view
     DataSet dset = _chartView.getDataSet();
-    DataPoint dataPoint = _chartView.getSelDataPoint();
+    DataPoint dataPoint = _chartView.getTargDataPoint();
     if(dataPoint==null) {
         getAnimCleared(1000).setOpacity(0).setOnFinish(a -> _chartView.removeChild(this)).play(); return; }
         

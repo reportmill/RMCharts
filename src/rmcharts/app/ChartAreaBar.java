@@ -145,7 +145,7 @@ protected Section[] getSections()
 protected void paintChart(Painter aPntr, double aX, double aY, double aW, double aH)
 {
     // Get selected point index (section index)
-    DataPoint dataPoint = _chartView.getSelDataPoint();
+    DataPoint dataPoint = _chartView.getTargDataPoint();
     int selIndex = dataPoint!=null? dataPoint.getIndex() : -1;
     
     double cx = 0, cy = 0, cw = getWidth(), ch = getHeight();

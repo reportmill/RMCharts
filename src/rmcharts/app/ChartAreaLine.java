@@ -49,7 +49,7 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
     int scount = seriesList.size();
     
     int pointCount = getPointCount();
-    DataPoint selPoint = _chartView.getSelDataPoint();
+    DataPoint selPoint = _chartView.getTargDataPoint();
     DataSeries selSeries = selPoint!=null? selPoint.getSeries() : null;
     int selIndex = selPoint!=null? selPoint.getIndex() : -1;
     

@@ -27,7 +27,7 @@ public class ChartArea extends View {
 public ChartArea()
 {
     setGrowWidth(true); setPrefSize(600,350);
-    enableEvents(MouseMove, MouseExit);
+    enableEvents(MouseMove, MouseRelease, MouseExit);
 }
 
 /**
@@ -195,14 +195,21 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
 protected void processEvent(ViewEvent anEvent)
 {
     // Handle MouseMove
-    if(anEvent.isMouseMove() || anEvent.isMouseClick()) {
+    if(anEvent.isMouseMove()) {
         DataPoint dpnt = getDataPointAt(anEvent.getX(), anEvent.getY());
+        _chartView.setTargDataPoint(dpnt);
+    }
+        
+    // Handle MouseClick
+    if(anEvent.isMouseClick()) {
+        DataPoint dpnt = getDataPointAt(anEvent.getX(), anEvent.getY());
+        if(dpnt==_chartView.getSelDataPoint()) dpnt = null;
         _chartView.setSelDataPoint(dpnt);
     }
         
     // Handle MouseExit
     if(anEvent.isMouseExit())
-        _chartView.setSelDataPoint(null);
+        _chartView.setTargDataPoint(null);
 }
 
 /**

@@ -128,19 +128,28 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
 {
     // Get wedges and other paint info
     Wedge wedges[] = getWedges();
-    DataPoint selPoint = _chartView.getSelDataPoint();
-    int selIndex = selPoint!=null? selPoint.getIndex() : -1;
+    DataPoint selPoint = _chartView.getSelDataPoint(), targPoint = _chartView.getTargDataPoint();
+    int selIndex = selPoint!=null? selPoint.getIndex() : -1, targIndex = targPoint!=null? targPoint.getIndex() : -1;
     double reveal = getReveal();
     
     // Set font
     aPntr.setFont(getFont());
     
     // Iterate over wedges and paint wedge
-    for(int i=0; i<wedges.length; i++) { Wedge wedge = wedges[i];
+    for(int i=0; i<wedges.length; i++) { Wedge wedge = wedges[i]; Color color = _chartView.getColor(i);
     
-        // Paint arc, connector line and white border
-        Arc arc = wedge.getArc(reveal, i==selIndex);
-        aPntr.setColor(_chartView.getColor(i)); aPntr.fill(arc);
+        // If targeted, paint targ area
+        if(i==targIndex && i!=selIndex) {
+            Arc arc = wedge.getArc(reveal, i==selIndex, true);
+            aPntr.setColor(color.blend(Color.CLEARWHITE, .55)); aPntr.fill(arc);
+            color = color.blend(Color.WHITE, .15);
+        }
+    
+        // Paint arc
+        Arc arc = wedge.getArc(reveal, i==selIndex, false);
+        aPntr.setColor(color); aPntr.fill(arc);
+        
+        // Paint connector and white border
         if(reveal>=1) aPntr.draw(wedge.getLabelLine());
         aPntr.setColor(Color.WHITE); aPntr.setStroke(Stroke.Stroke1); aPntr.draw(arc);
     }
@@ -247,14 +256,17 @@ private class Wedge {
     }
     
     /** Returns the arc with given reveal or selection status. */
-    public Arc getArc(double aReveal, boolean isSel)
+    public Arc getArc(double aReveal, boolean isSel, boolean isTarg)
     {
         // If no reveal or selection, return normal arc
-        if(aReveal>=1 && !isSel) return getArc();
+        if(aReveal>=1 && !isSel && !isTarg) return getArc();
         
         // Get arc start/sweep angles, x/y points and diameter
         double start = -90 + _start*aReveal, angle = _angle*aReveal;
         double px = _pieX, py = _pieY, diam = _pieD;
+        
+        // If targeted, increase diam by 20
+        if(isTarg) { diam += 20; px -= 10; py -= 10; }
         
         // If selected, move x/y by 10 points from center of wedge
         if(isSel) {

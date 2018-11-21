@@ -318,7 +318,9 @@ public void setSelDataPoint(DataPoint aDP)
     if(SnapUtils.equals(aDP, _selPoint)) return;
     
     _selPoint = aDP;
-    _toolTipView.reloadContents();
+    repaint(); //_toolTipView.reloadContents();
+    
+    setTargDataPoint(aDP);
 }
 
 /**
