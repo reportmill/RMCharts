@@ -81,57 +81,18 @@ protected Wedge[] getWedges()
 }
 
 /**
- * Sets label points.
- */
-protected void setLabelPoints(Wedge wedges[])
-{
-    // Set first and last wedge points
-    if(wedges.length==0) return;
-    wedges[0].getLabelPoint(); wedges[wedges.length-1].getLabelPoint();
-    
-    // Set label points for pie right side
-    for(int i=1; i<wedges.length; i++) { Wedge wedge = wedges[i], wedge2 = wedges[i-1];
-        if(wedge.getAngleMid()>90) break;
-        double angle = Math.max(wedge.getAngleMid(), wedge2._textAngle+2);
-        wedge.getLabelPoint(angle);
-        while(wedge.labelIntersects(wedge2))
-            wedge.getLabelPoint(angle+=1);
-    }
-    
-    // Set label points for pie left side
-    for(int i=wedges.length-2; i>=0; i--) { Wedge wedge = wedges[i], wedge2 = wedges[i+1];
-        if(wedge.getAngleMid()<90) break;
-        double angle = Math.min(wedge.getAngleMid(), wedge2._textAngle-2);
-        wedge.getLabelPoint(angle);
-        while(wedge.labelIntersects(wedge2))
-            wedge.getLabelPoint(angle-=1);
-    }
-}
-
-/** Changes padding to have an extra 20 points on bottom if label needed there. */
-void fixPaddingForBottomLabelIfNeeded(double angles[])
-{
-    boolean hasBottomWedge = false; Insets ins = getPadding();
-    double start = -90;
-    for(double a : angles) { double ang = start + a/2;
-        if(ang>60 && ang<120) { hasBottomWedge = true; break; } start += a; }
-    if(hasBottomWedge && ins.bottom!=PAD_BOTTOM_MAX)
-        setPadding(PAD_TOP, 10, PAD_BOTTOM_MAX, 10);
-    else if(!hasBottomWedge && ins.bottom!=PAD_BOTTOM)
-        setPadding(PAD_TOP, 10, PAD_BOTTOM, 10);
-}
-
-/**
  * Paints chart.
  */
 protected void paintChart(Painter aPntr, double aX, double aY, double aW, double aH)
 {
     // Get wedges and other paint info
     Wedge wedges[] = getWedges();
-    DataPoint selPoint = _chartView.getSelDataPoint(), targPoint = _chartView.getTargDataPoint();
-    int selIndex = selPoint!=null? selPoint.getIndex() : -1, targIndex = targPoint!=null? targPoint.getIndex() : -1;
+    int selIndex = getSelPointIndex();
+    int targIndex = getTargPointIndex();
+    int selIndexLast = getSelPointLastIndex();
     double reveal = getReveal();
-    
+    double selPointMorph = _chartView.getSelDataPointMorph();
+
     // Set font
     aPntr.setFont(getFont()); aPntr.setStroke(Stroke.Stroke1);
     
@@ -140,13 +101,13 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
     
         // If targeted, paint targ area
         if(i==targIndex && i!=selIndex) {
-            Arc arc = wedge.getArc(reveal, i==selIndex, true);
+            Arc arc = wedge.getArc(i==selIndex, true, false, reveal, selPointMorph);
             aPntr.setColor(color.blend(Color.CLEARWHITE, .55)); aPntr.fill(arc);
             color = color.blend(Color.WHITE, .15);
         }
-    
+        
         // Paint arc
-        Arc arc = wedge.getArc(reveal, i==selIndex, false);
+        Arc arc = wedge.getArc(i==selIndex, false, i==selIndexLast, reveal, selPointMorph);
         aPntr.setColor(color); aPntr.fill(arc);
         
         // Paint connector and white border
@@ -245,6 +206,52 @@ public void setWidth(double aValue)  { super.setWidth(aValue); clearCache(); }
 public void setHeight(double aValue)  { super.setHeight(aValue); clearCache(); }
 
 /**
+ * Sets label points such that they don't overlap.
+ */
+void setLabelPoints(Wedge wedges[])
+{
+    // Set first and last wedge points
+    if(wedges.length==0) return;
+    wedges[0].getLabelPoint(); wedges[wedges.length-1].getLabelPoint();
+    
+    // Set label points for pie right side
+    for(int i=1; i<wedges.length; i++) { Wedge wedge = wedges[i], wedge2 = wedges[i-1];
+        if(wedge.getAngleMid()>90) break;
+        double angle = Math.max(wedge.getAngleMid(), wedge2._textAngle+2);
+        wedge.getLabelPoint(angle);
+        while(wedge.labelIntersects(wedge2))
+            wedge.getLabelPoint(angle+=1);
+    }
+    
+    // Set label points for pie left side
+    for(int i=wedges.length-2; i>=0; i--) { Wedge wedge = wedges[i], wedge2 = wedges[i+1];
+        if(wedge.getAngleMid()<90) break;
+        double angle = Math.min(wedge.getAngleMid(), wedge2._textAngle-2);
+        wedge.getLabelPoint(angle);
+        while(wedge.labelIntersects(wedge2))
+            wedge.getLabelPoint(angle-=1);
+    }
+}
+
+/** Changes padding to have an extra 20 points on bottom if label needed there. */
+void fixPaddingForBottomLabelIfNeeded(double angles[])
+{
+    boolean hasBottomWedge = false; Insets ins = getPadding();
+    double start = -90;
+    for(double a : angles) { double ang = start + a/2;
+        if(ang>60 && ang<120) { hasBottomWedge = true; break; } start += a; }
+    if(hasBottomWedge && ins.bottom!=PAD_BOTTOM_MAX)
+        setPadding(PAD_TOP, 10, PAD_BOTTOM_MAX, 10);
+    else if(!hasBottomWedge && ins.bottom!=PAD_BOTTOM)
+        setPadding(PAD_TOP, 10, PAD_BOTTOM, 10);
+}
+
+/** Convenience methods to return ChartView SelDataPoint.Index, SelDataPointLast.Index & TargDataPoint.Index. */
+int getSelPointIndex()  { DataPoint dp = _chartView.getSelDataPoint(); return dp!=null? dp.getIndex() : -1; }
+int getSelPointLastIndex()  { DataPoint dp = _chartView.getSelDataPointLast(); return dp!=null? dp.getIndex() : -1; }
+int getTargPointIndex()  { DataPoint dp = _chartView.getTargDataPoint(); return dp!=null? dp.getIndex() : -1; }
+
+/**
  * A class to hold cached wedge data.
  */
 private class Wedge {
@@ -266,10 +273,10 @@ private class Wedge {
     }
     
     /** Returns the arc with given reveal or selection status. */
-    public Arc getArc(double aReveal, boolean isSel, boolean isTarg)
+    public Arc getArc(boolean isSel, boolean isTarg, boolean isSelLast, double aReveal, double selMorph)
     {
         // If no reveal or selection, return normal arc
-        if(aReveal>=1 && !isSel && !isTarg) return getArc();
+        if(aReveal>=1 && !isSel && !isTarg && !isSelLast) return getArc();
         
         // Get arc start/sweep angles, x/y points and diameter
         double start = -90 + _start*aReveal, angle = _angle*aReveal;
@@ -281,7 +288,13 @@ private class Wedge {
         // If selected, move x/y by 10 points from center of wedge
         if(isSel) {
             double ang2 = Math.toRadians(start + angle/2);
-            px += 10*Math.cos(ang2); py += 10*Math.sin(ang2);
+            px += 10*selMorph*Math.cos(ang2); py += 10*selMorph*Math.sin(ang2);
+        }
+        
+        // If selected, move x/y by 10 points from center of wedge
+        else if(isSelLast) {
+            double ang2 = Math.toRadians(start + angle/2);
+            px += 10*(1-selMorph)*Math.cos(ang2); py += 10*(1-selMorph)*Math.sin(ang2);
         }
         
         // If reveal, modify diameter and move to new center

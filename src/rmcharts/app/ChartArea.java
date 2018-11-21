@@ -110,7 +110,7 @@ public void setReveal(double aValue)
 public void animate()
 {
     setReveal(0);
-    getAnimCleared(1000).setValue(Reveal_Prop,1).setInterpolator(snap.util.Interpolator.LINEAR).play();
+    getAnimCleared(1000).setValue(Reveal_Prop,1).setLinear().play();
 }
 
 /**
@@ -209,7 +209,7 @@ protected void processEvent(ViewEvent anEvent)
     if(anEvent.isMouseClick()) {
         DataPoint dpnt = getDataPointAt(anEvent.getX(), anEvent.getY());
         if(dpnt==_chartView.getSelDataPoint()) dpnt = null;
-        _chartView.setSelDataPoint(dpnt);
+        _chartView.setSelDataPointAnimated(dpnt);
     }
         
     // Handle MouseExit

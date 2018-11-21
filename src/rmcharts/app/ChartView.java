@@ -56,12 +56,16 @@ public class ChartView extends ColView {
     Shape              _markerShapes[];
     
     // The selected and targeted (under mouse) data point
-    DataPoint          _selPoint, _targPoint;
+    DataPoint          _selPoint, _targPoint, _selPointLast;
+    
+    // The measure (from 0 to 1) of change of newly set SelDataPoint
+    double             _selPointMorph = 1;
     
     // Constants
     public static final String BAR_TYPE = "Bar";
     public static final String LINE_TYPE = "Line";
     public static final String PIE_TYPE = "Pie";
+    public static final String SelDataPointMorph_Prop = "SelDataPointMorph";
     
     // Colors
     static Color    COLORS[] = new Color[] { Color.get("#88B4E7"), Color.get("#434348"), Color.get("#A6EB8A"),
@@ -316,9 +320,8 @@ public DataPoint getSelDataPoint()  { return _selPoint; }
 public void setSelDataPoint(DataPoint aDP)
 {
     if(SnapUtils.equals(aDP, _selPoint)) return;
-    
     _selPoint = aDP;
-    repaint(); //_toolTipView.reloadContents();
+    repaint();
 }
 
 /**
@@ -332,9 +335,37 @@ public DataPoint getTargDataPoint()  { return _targPoint; }
 public void setTargDataPoint(DataPoint aDP)
 {
     if(SnapUtils.equals(aDP, _targPoint)) return;
-    
     _targPoint = aDP;
     _toolTipView.reloadContents();
+}
+
+/**
+ * Returns the measure (from 0 to 1) of change of newly set SelDataPoint.
+ */
+public double getSelDataPointMorph()  { return _selPointMorph; }
+
+/** Sets the measure (from 0 to 1) of change of newly set SelDataPoint. */
+void setSelDataPointMorph(double aValue)  { _selPointMorph = aValue; repaint(); }
+
+/**
+ * Returns the previously selected data point (present during morph).
+ */
+public DataPoint getSelDataPointLast()  { return _selPointLast; }
+
+/**
+ * Sets the selected data point.
+ */
+public void setSelDataPointAnimated(DataPoint aDP)
+{
+    // If already set, just return
+    if(SnapUtils.equals(aDP, _selPoint)) return;
+    
+    // Cache last point and set new point
+    _selPointLast = _selPoint; setSelDataPoint(aDP);
+    
+    // Configure SelDataPointMorph to change from 0 to 1 over time
+    setSelDataPointMorph(0);
+    getAnimCleared(400).setValue(SelDataPointMorph_Prop, 1).setLinear().setOnFinish(a -> _selPointLast = null).play();
 }
 
 /**
@@ -369,6 +400,24 @@ public void loadFromString(String aStr)
     parser.parseString(aStr);
     if(_dataSet.isEmpty()) _dataSet.addSeriesForNameAndValues("Sample", 1, 2, 3, 3, 4, 5);
     reloadContents();
+}
+
+/**
+ * Returns the value for given key.
+ */
+public Object getValue(String aPropName)
+{
+    if(aPropName.equals(SelDataPointMorph_Prop)) return getSelDataPointMorph();
+    return super.getValue(aPropName);
+}
+
+/**
+ * Sets the value for given key.
+ */
+public void setValue(String aPropName, Object aValue)
+{
+    if(aPropName.equals(SelDataPointMorph_Prop)) setSelDataPointMorph(SnapUtils.doubleValue(aValue));
+    else super.setValue(aPropName, aValue);
 }
 
 /**
