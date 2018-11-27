@@ -180,7 +180,7 @@ public void activate()
 {
     ChartXAxis xaxis = _chartView.getXAxis(); xaxis.setVisible(false); xaxis.setManaged(false);
     ChartYAxis yaxis = _chartView.getYAxis(); yaxis.setVisible(false); yaxis.setManaged(false);
-    _showLegend = _chartView.isShowLegend();
+    _showLegend = _chartView.isShowLegend(); _chartView.setShowLegend(getSeriesCount()>1);
     
     // If multiple series, make sure only first is enabled
     if(getSeriesCount()>1) {
