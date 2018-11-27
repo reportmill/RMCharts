@@ -155,7 +155,7 @@ public String getTitle()  { return _titleView.getText(); }
 public void setTitle(String aStr)
 {
     _titleView.setText(aStr);
-    _titleView.setPhantom(aStr==null || aStr.length()==0);
+    _titleView.setVisible(aStr!=null && aStr.length()>0);
 }
 
 /**
@@ -169,7 +169,7 @@ public String getSubtitle()  { return _subtitleView.getText(); }
 public void setSubtitle(String aStr)
 {
     _subtitleView.setText(aStr);
-    _subtitleView.setPhantom(aStr==null || aStr.length()==0);
+    _subtitleView.setVisible(aStr!=null && aStr.length()>0);
 }
 
 /**
@@ -215,9 +215,7 @@ public boolean isShowLegend()  { return _legend.isVisible(); }
 public void setShowLegend(boolean aValue)
 {
     if(aValue==isShowLegend()) return;
-    
-    if(aValue) { _legend.setVisible(true); _legend.setManaged(true); _legend.setPickable(true); }
-    else { _legend.setVisible(false); _legend.setManaged(false); _legend.setPickable(false); }
+    _legend.setVisible(aValue);
 }
 
 /**

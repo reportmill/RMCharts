@@ -48,7 +48,7 @@ public void setShowFull(boolean aValue)
     
     // Enable ShowFull
     if(aValue) {
-        _tabView.setVisible(true); _tabView.setManaged(true); _tabView.setPickable(true);
+        _tabView.setVisible(true);
         if(!SnapUtils.isTeaVM) {
             Size psize = getWindow().getPrefSize();
             Rect screenRect = ViewEnv.getEnv().getScreenBoundsInset();
@@ -61,7 +61,7 @@ public void setShowFull(boolean aValue)
     
     // Disable ShowFull
     else {
-        _tabView.setVisible(false); _tabView.setManaged(false); _tabView.setPickable(false);
+        _tabView.setVisible(false);
         _chartBox.setPadding(0,0,0,0); _chartView.setEffect(null);
         getWindow().setMaximized(false);
     }
@@ -104,7 +104,7 @@ protected View createUI()
     _tabView.addTab("Chart Props", propsView);
     _tabView.addTab("Data Set", dataPaneUI);
     _tabView.addTab("JavaScript Embed", textBox);
-    _tabView.setVisible(false); _tabView.setManaged(false); _tabView.setPickable(false);
+    _tabView.setVisible(false);
     
     // Create ColView
     ColView col = new ColView(); col.setFillWidth(true); col.setGrowHeight(true); col.setFill(new Color(.93));
