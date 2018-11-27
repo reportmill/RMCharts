@@ -249,7 +249,11 @@ protected DataPoint getDataPointAt(double aX, double aY)
 /**
  * Called after a chart area is installed in chart view.
  */
-public void activate()  { }
+public void activate()
+{
+    // Enable all series
+    for(int i=0; i<getSeriesCount(); i++) getSeries(i).setDisabled(false);
+}
 
 /**
  * Called before a chart area is removed from a chart view.

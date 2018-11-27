@@ -104,8 +104,15 @@ public boolean isDisabled()  { return _disabled; }
  */
 public void setDisabled(boolean aValue)
 {
+    if(aValue==isDisabled()) return;
     _disabled = aValue;
     _dset.clearCache();
+    
+    // if Pie chart, clear other 
+    if((!aValue) && _dset._chartView.getChartArea() instanceof ChartAreaPie) {
+        for(DataSeries s : _dset.getSeries())
+            s.setDisabled(s!=this);
+    }
 }
 
 /**

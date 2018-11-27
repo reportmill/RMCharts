@@ -65,6 +65,8 @@ public void setShowFull(boolean aValue)
         _chartBox.setPadding(0,0,0,0); _chartView.setEffect(null);
         getWindow().setMaximized(false);
     }
+    
+    _optionButton.setText(aValue? "Min" : "Max");
 }
 
 /**
@@ -74,7 +76,7 @@ protected View createUI()
 {
     // Create OptionButton
     _optionButton = new Button("Max"); _optionButton.setName("OptionButton");
-    _optionButton.setSize(_optionButton.getPrefSize()); _optionButton.setManaged(false);
+    _optionButton.setManaged(false);
     
     // Create ChartView
     _chartView = new ChartView();
@@ -121,6 +123,17 @@ protected void respondUI(ViewEvent anEvent)
 }
 
 /**
+ * Performs an action.
+ */
+public void doAction(String anAction)
+{
+    String action = anAction.substring("Action:".length());
+
+    if(action.equals("Playground"))
+        setShowFull(true);
+}
+
+/**
  * A View class to hold chart.
  */
 public class ChartBox extends BoxView {
@@ -132,6 +145,7 @@ public class ChartBox extends BoxView {
     protected void layoutImpl()
     {
         super.layoutImpl();
+        _optionButton.setSize(_optionButton.getPrefSize());
         _optionButton.setXY(getWidth() - _optionButton.getWidth() - 5, 4);
     }
 }
