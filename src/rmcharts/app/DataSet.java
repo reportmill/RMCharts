@@ -171,6 +171,10 @@ public Intervals getActiveIntervals()  { return getActiveSet().getIntervals(); }
 /**
  * Clears cached values.
  */
-protected void clearCache()  { _active = null; _minVal = Float.MAX_VALUE; _maxVal = -Float.MAX_VALUE; }
+protected void clearCache()
+{
+    _active = null; _minVal = Float.MAX_VALUE; _maxVal = -Float.MAX_VALUE;
+    _chartView.getChartArea().clearCache();
+}
 
 }

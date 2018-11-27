@@ -266,6 +266,11 @@ public void deactivate()  { }
 public void reactivate()  { }
 
 /**
+ * Call to clear any cached data.
+ */
+protected void clearCache()  { }
+
+/**
  * Returns the value for given key.
  */
 public Object getValue(String aPropName)

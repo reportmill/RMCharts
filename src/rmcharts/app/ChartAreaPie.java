@@ -56,7 +56,8 @@ protected Wedge[] getWedges()
     if(_wedges!=null && _wedges.length==getPointCount()) return _wedges;
     
     // Get series and point count
-    DataSeries series = getSeries(0);
+    DataSet dset = getActiveSet();
+    DataSeries series = dset.getSeriesCount()>0? dset.getSeries(0) : getSeries(0);
     int pointCount = getPointCount();
     
     // Get values and angles
@@ -105,9 +106,6 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
 
     // Set font
     aPntr.setFont(getFont()); aPntr.setStroke(Stroke.Stroke1);
-    
-    if(reveal>=1)
-        System.currentTimeMillis();
     
     // Iterate over wedges and paint wedge
     for(int i=0; i<wedges.length; i++) { Wedge wedge = wedges[i]; Color color = _chartView.getColor(i);
