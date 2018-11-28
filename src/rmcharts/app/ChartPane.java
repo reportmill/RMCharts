@@ -16,21 +16,13 @@ public class ChartPane extends ViewOwner {
     ChartView     _chartView;
     
     // The ChartBox
-    ChartBox      _chartBox;
+    BoxView       _chartBox;
     
     // The TabView
     TabView       _tabView;
     
     // The Options button
     Button        _optionButton;
-
-/**
- * Creates a ChartPane.
- */
-public ChartPane()
-{
-    
-}
 
 /**
  * Returns whether to show app stuff.
@@ -66,7 +58,8 @@ public void setShowFull(boolean aValue)
         getWindow().setMaximized(false);
     }
     
-    _optionButton.setText(aValue? "Min" : "Max");
+    _optionButton.setText(aValue? " Min " : " Max ");
+    _optionButton.setSizeToPrefSize();
 }
 
 /**
@@ -75,13 +68,13 @@ public void setShowFull(boolean aValue)
 protected View createUI()
 {
     // Create OptionButton
-    _optionButton = new Button("Max"); _optionButton.setName("OptionButton");
-    _optionButton.setManaged(false);
+    _optionButton = new Button(" Max "); _optionButton.setName("OptionButton");
+    _optionButton.setManaged(false); _optionButton.setLean(Pos.TOP_RIGHT); _optionButton.setMargin(4,5,0,0);
+    _optionButton.setSizeToPrefSize();
     
     // Create ChartView
     _chartView = new ChartView();
-    _chartBox = new ChartBox();
-    _chartBox.setGrowHeight(true);
+    _chartBox = new BoxView(_chartView, true, true); _chartBox.setGrowHeight(true);
     _chartBox.addChild(_optionButton);
     
     // Create PropsView
@@ -131,23 +124,6 @@ public void doAction(String anAction)
 
     if(action.equals("Playground"))
         setShowFull(true);
-}
-
-/**
- * A View class to hold chart.
- */
-public class ChartBox extends BoxView {
-    
-    /** Create ChartBox. */
-    public ChartBox()  { super(_chartView, true, true); }
-    
-    /** Override to position OptionsButton. */
-    protected void layoutImpl()
-    {
-        super.layoutImpl();
-        _optionButton.setSize(_optionButton.getPrefSize());
-        _optionButton.setXY(getWidth() - _optionButton.getWidth() - 5, 4);
-    }
 }
 
 }
