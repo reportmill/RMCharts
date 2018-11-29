@@ -93,7 +93,7 @@ protected View createUI()
     textBox.setGrowHeight(true); textBox.setPrefHeight(400);
     
     // Create TabView
-    _tabView = new TabView(); _tabView.setPrefHeight(340); _tabView.setGrowHeight(true);
+    _tabView = new TabView(); _tabView.setPrefHeight(340); //_tabView.setGrowHeight(true);
     _tabView.addTab("Chart Props", propsView);
     _tabView.addTab("Data Set", dataPaneUI);
     _tabView.addTab("JavaScript Embed", textBox);
@@ -102,7 +102,7 @@ protected View createUI()
     // Create ColView
     ColView col = new ColView(); col.setFillWidth(true); col.setGrowHeight(true); col.setFill(new Color(.93));
     col.setChildren(_chartBox, _tabView);
-    return col;
+    return SplitView.makeSplitView(col);
 }
 
 /**
@@ -111,8 +111,10 @@ protected View createUI()
 protected void respondUI(ViewEvent anEvent)
 {
     // Handle OptionButton
-    if(anEvent.equals("OptionButton"))
-        setShowFull(!isShowFull());
+    if(anEvent.equals("OptionButton")) {
+        if(ViewUtils.isAltDown()) getUI(SplitView.class).setItemVisibleWithAnim(_tabView, !_tabView.isVisible());
+        else setShowFull(!isShowFull());
+    }
 }
 
 /**
