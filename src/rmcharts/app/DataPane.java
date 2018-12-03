@@ -31,15 +31,8 @@ public DataSet getDataSet()  { return _chartView.getDataSet(); }
 protected View createUI()
 {
     _tableView = new TableView(); _tableView.setGrowHeight(true);
+    _tableView.setShowHeader(true);
     _tableView.setCellConfigure(c -> configureCell(c));
-    
-    // Add column for number of values in series
-    DataSet dset = getDataSet();
-    int pointCount = dset.getPointCount();
-    for(int i=0;i<=pointCount+1;i++) {
-        TableCol col = new TableCol(); col.setPrefWidth(70);
-        _tableView.addCol(col);
-    }
     
     // Create box and return
     ColView colView = new ColView(); colView.setPadding(25,5,5,5); colView.setFillWidth(true);
@@ -55,6 +48,42 @@ protected void resetUI()
     DataSet dset = getDataSet();
     List <DataSeries> seriesList = dset.getSeries();
     _tableView.setItems(seriesList);
+    
+    // Check column count
+    if(_tableView.getColCount()!=dset.getPointCount()+1)
+        resetTableColumns();
+    
+    // Reset headers
+    DataSeries series = dset.getSeries(0);
+    int pointCount = dset.getPointCount();
+    for(int i=0;i<pointCount;i++) {
+        DataPoint dpnt = series.getPoint(i);
+        String hdrText = dpnt.getKeyString();
+        TableCol col = _tableView.getCol(i);
+        Label header = col.getHeader(); header.setText(hdrText);
+    }
+}
+
+/**
+ * Resets table columns.
+ */
+void resetTableColumns()
+{
+    // Clear columns
+    while(_tableView.getColCount()>0) _tableView.removeCol(0);
+    
+    // Add column for number of values in series
+    DataSet dset = getDataSet();
+    int pointCount = dset.getPointCount();
+    for(int i=0;i<=pointCount;i++) {
+        TableCol col = new TableCol(); col.setPrefWidth(70);
+        Label header = col.getHeader(); header.setAlign(HPos.CENTER);
+        _tableView.addCol(col);
+    }
+    
+    // Configure last (empty) column to be zero size
+    TableCol lastCol = _tableView.getCol(pointCount);
+    lastCol.setPrefWidth(0); lastCol.setGrowWidth(true);
 }
 
 /**

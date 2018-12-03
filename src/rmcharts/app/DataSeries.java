@@ -42,16 +42,16 @@ public void setName(String aValue)  { _name = aValue; }
 public List <DataPoint> getPoints()  { return _points; }
 
 /**
- * Returns the number values.
+ * Returns the number of points.
  */
-public int getCount()  { return _points.size(); }
+public int getPointCount()  { return _points.size(); }
 
 /**
  * Returns the data point at given index.
  */
 public DataPoint getPoint(int anIndex)
 {
-    return anIndex<getCount()? _points.get(anIndex) : null;
+    return anIndex<getPointCount()? _points.get(anIndex) : null;
 }
 
 /**
@@ -71,7 +71,7 @@ public void addValue(String aName, double aValue)
     DataPoint dpnt = new DataPoint();
     dpnt._series = this;
     dpnt._name = aName;
-    dpnt._index = getCount();
+    dpnt._index = getPointCount();
     dpnt._y = aValue;
     _points.add(dpnt);
 }

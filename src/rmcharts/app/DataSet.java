@@ -115,7 +115,7 @@ public void setSeriesStart(int aValue)
 /**
  * Returns the number of points in each series.
  */
-public int getPointCount()  { return _series.get(0).getCount(); }
+public int getPointCount()  { return _series.get(0).getPointCount(); }
 
 /**
  * Returns the intervals.
