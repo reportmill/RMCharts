@@ -49,6 +49,16 @@ public double getX()
 public double getY()  { return _y; }
 
 /**
+ * Sets the Y value.
+ */
+public void setY(double aValue)
+{
+    if(aValue==getY()) return;
+    _y = aValue;
+    _series._dset.clearCache();
+}
+
+/**
  * Returns the index of this point in series.
  */
 public int getIndex()  { return _index; }
@@ -99,6 +109,11 @@ public String getKeyString()
  * Return series value.
  */
 public double getValue()  { return _y; }
+
+/**
+ * Sets series value.
+ */
+public void setValue(double aValue)  { setY(aValue); }
 
 /**
  * Returns the DataPoint in chart area coords.

@@ -1,6 +1,7 @@
 package rmcharts.app;
 import java.util.List;
 import snap.gfx.HPos;
+import snap.util.SnapUtils;
 import snap.util.StringUtils;
 import snap.view.*;
 
@@ -31,8 +32,9 @@ public DataSet getDataSet()  { return _chartView.getDataSet(); }
 protected View createUI()
 {
     _tableView = new TableView(); _tableView.setGrowHeight(true);
-    _tableView.setShowHeader(true);
+    _tableView.setShowHeader(true); _tableView.setEditable(true);
     _tableView.setCellConfigure(c -> configureCell(c));
+    _tableView.setCellConfigureEdit(c -> configureCellEdit(c));
     
     // Create box and return
     ColView colView = new ColView(); colView.setPadding(25,5,5,5); colView.setFillWidth(true);
@@ -97,6 +99,31 @@ void configureCell(ListCell <DataSeries> aCell)
     Double val = series.getValue(col);
     aCell.setText(val!=null? StringUtils.toString(val) : null);
     aCell.setAlign(HPos.RIGHT);
+}
+
+/**
+ * Called when cell is edited.
+ */
+void configureCellEdit(ListCell <DataSeries> aCell)
+{
+    aCell.setEditing(true);
+    aCell.addEventHandler(e -> cellFiredAction(aCell), Action);
+}
+
+/**
+ * Called when cell is edited and fires action.
+ */
+void cellFiredAction(ListCell <DataSeries> aCell)
+{
+    // Get new value and col
+    double newVal = SnapUtils.doubleValue(aCell.getText());
+    int col = aCell.getCol();
+    
+    // Get data point for series col and set value
+    DataSeries series = aCell.getItem();
+    DataPoint dpoint = series.getPoint(col);
+    dpoint.setValue(newVal);
+    aCell.getEventAdapter().clear();
 }
 
 }
