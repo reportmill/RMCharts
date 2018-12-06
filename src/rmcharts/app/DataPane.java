@@ -30,7 +30,7 @@ public DataSet getDataSet()  { return _chartView.getDataSet(); }
  */
 protected void initUI()
 {
-    _tableView = getView("TableView", TableView.class); _tableView.setFont(Font.Arial13);
+    _tableView = getView("TableView", TableView.class);
     _tableView.setShowHeader(true); _tableView.setEditable(true); _tableView.setCellPadding(new Insets(6));
     _tableView.setCellConfigure(c -> configureCell(c));
     _tableView.setCellConfigureEdit(c -> configureCellEdit(c));

@@ -97,6 +97,7 @@ protected View createUI()
     _tabView.addTab("Chart Props", propsView);
     _tabView.addTab("Data Set", dataPaneUI);
     _tabView.addTab("JavaScript Embed", textBox);
+    _tabView.setFont(Font.Arial13);
     _tabView.setVisible(false);
     
     // Create ColView
