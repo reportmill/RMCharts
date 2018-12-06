@@ -55,7 +55,7 @@ public void setY(double aValue)
 {
     if(aValue==getY()) return;
     _y = aValue;
-    _series._dset.clearCache();
+    clearCache();
 }
 
 /**
@@ -136,7 +136,17 @@ public Point getPointInChartView()
     return carea.localToParent(pnt.x, pnt.y, cview);
 }
 
-/** Standard equals implementation. */
+/**
+ * Clears cached values.
+ */
+protected void clearCache()
+{
+    if(_series!=null) _series.clearCache();
+}
+
+/**
+ * Standard equals implementation.
+ */
 public boolean equals(Object anObj)
 {
     DataPoint other = anObj instanceof DataPoint? (DataPoint)anObj : null; if(other==null) return false;

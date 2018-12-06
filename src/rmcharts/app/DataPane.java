@@ -1,8 +1,7 @@
 package rmcharts.app;
 import java.util.List;
-import snap.gfx.HPos;
-import snap.util.SnapUtils;
-import snap.util.StringUtils;
+import snap.gfx.*;
+import snap.util.*;
 import snap.view.*;
 
 /**
@@ -29,17 +28,16 @@ public DataSet getDataSet()  { return _chartView.getDataSet(); }
 /**
  * Create UI.
  */
-protected View createUI()
+protected void initUI()
 {
-    _tableView = new TableView(); _tableView.setGrowHeight(true);
-    _tableView.setShowHeader(true); _tableView.setEditable(true);
+    _tableView = getView("TableView", TableView.class); _tableView.setFont(Font.Arial13);
+    _tableView.setShowHeader(true); _tableView.setEditable(true); _tableView.setCellPadding(new Insets(6));
     _tableView.setCellConfigure(c -> configureCell(c));
     _tableView.setCellConfigureEdit(c -> configureCellEdit(c));
     
     // Create box and return
-    ColView colView = new ColView(); colView.setPadding(25,5,5,5); colView.setFillWidth(true);
-    colView.setChildren(_tableView);
-    return colView;
+    //ColView colView = new ColView(); colView.setPadding(25,5,5,5); colView.setFillWidth(true);
+    //colView.setChildren(_tableView);
 }
 
 /**
@@ -49,6 +47,12 @@ protected void resetUI()
 {
     DataSet dset = getDataSet();
     List <DataSeries> seriesList = dset.getSeries();
+    
+    // Update SeriesSpinner, PointSpinner
+    setViewValue("SeriesSpinner", seriesList.size());
+    setViewValue("PointSpinner", dset.getPointCount());
+    
+    // Set TableView items
     _tableView.setItems(seriesList);
     
     // Check column count
@@ -67,6 +71,14 @@ protected void resetUI()
 }
 
 /**
+ * Resets the UI.
+ */
+protected void respondUI(ViewEvent anEvent)
+{
+    
+}
+
+/**
  * Resets table columns.
  */
 void resetTableColumns()
@@ -78,7 +90,7 @@ void resetTableColumns()
     DataSet dset = getDataSet();
     int pointCount = dset.getPointCount();
     for(int i=0;i<=pointCount;i++) {
-        TableCol col = new TableCol(); col.setPrefWidth(70);
+        TableCol col = new TableCol(); col.setPrefWidth(80);
         Label header = col.getHeader(); header.setAlign(HPos.CENTER);
         _tableView.addCol(col);
     }

@@ -20,6 +20,9 @@ public class DataSeries {
     
     // Whether series is disabled
     boolean           _disabled;
+    
+    // Cached array of values, ratios, total
+    double            _vals[], _ratios[], _total;
 
 /**
  * Returns the dataset.
@@ -74,6 +77,7 @@ public void addValue(String aName, double aValue)
     dpnt._index = getPointCount();
     dpnt._y = aValue;
     _points.add(dpnt);
+    clearCache();
 }
 
 /**
@@ -82,6 +86,37 @@ public void addValue(String aName, double aValue)
 public double getValue(int anIndex)
 {
     DataPoint dp = getPoint(anIndex); return dp!=null? dp.getValue() : 0;
+}
+
+/**
+ * Returns the total of all values.
+ */
+public double getTotal()
+{
+    if(_vals==null) getValues();
+    return _total;
+}
+
+/**
+ * Returns an array of series values.
+ */
+public double[] getValues()
+{
+    if(_vals!=null) return _vals;
+    int count = getPointCount(); _total = 0;
+    double vals[] = new double[count]; for(int i=0;i<count;i++) { double v = getValue(i); vals[i] = v; _total += v; }
+    return _vals = vals;
+}
+
+/**
+ * Returns an array of series ratios.
+ */
+public double[] getRatios()
+{
+    if(_ratios!=null) return _ratios;
+    double vals[] = getValues(), total = getTotal(); int count = vals.length;
+    double ratios[] = new double[count]; for(int i=0;i<count;i++) ratios[i] = vals[i]/total;
+    return _ratios = ratios;
 }
 
 /**
@@ -138,6 +173,15 @@ public double getMaxValue()
     double maxVal = -Float.MAX_VALUE;
     for(DataPoint dp : _points) if(dp.getValue()>maxVal) maxVal = dp.getValue();
     return maxVal;
+}
+
+/**
+ * Clears cached values.
+ */
+protected void clearCache()
+{
+    _vals = _ratios = null;
+    if(_dset!=null) _dset.clearCache();
 }
 
 }

@@ -9,6 +9,9 @@ import snap.view.ViewEvent;
  */
 public class ChartAreaPie extends ChartArea {
     
+    // The cached values, ratios and angles
+    double       _vals[], _ratios[], _angles[];
+    
     // The cached wedges
     Wedge        _wedges[];
     
@@ -48,6 +51,19 @@ protected void setChartView(ChartView aCV)
 }
 
 /**
+ * Returns the angles.
+ */
+public double[] getAngles()
+{
+    DataSet dset = getActiveSet();
+    DataSeries series = dset.getSeriesCount()>0? dset.getSeries(0) : getSeries(0);
+    int count = getPointCount();
+    double ratios[] = series.getRatios();
+    double angles[] = new double[count]; for(int i=0;i<count;i++) angles[i] = Math.round(ratios[i]*360);
+    return angles;
+}
+
+/**
  * Returns the pie wedges.
  */
 protected Wedge[] getWedges()
@@ -58,16 +74,11 @@ protected Wedge[] getWedges()
     // Get series and point count
     DataSet dset = getActiveSet();
     DataSeries series = dset.getSeriesCount()>0? dset.getSeries(0) : getSeries(0);
-    int pointCount = getPointCount();
     
-    // Get values and angles
-    double vals[] = new double[pointCount]; for(int i=0;i<pointCount;i++) vals[i] = series.getValue(i);
-    double total = 0; for(int i=0;i<pointCount;i++) total += vals[i];
-    double angles[] = new double[pointCount]; for(int i=0;i<pointCount;i++) angles[i] = Math.round(vals[i]/total*360);
+    // Get ratios and angles
+    double ratios[] = series.getRatios();
+    double angles[] = getAngles();
     
-    // Fix padding to accommodate bottom label, if needed
-    fixPaddingForBottomLabelIfNeeded(angles);
-
     // Get chart size and insets and calculate pie radius, diameter and center x/y
     double cw = getWidth(), ch = getHeight(); Insets ins = getInsetsAll();
     _pieD = ch - ins.getHeight(); _pieR = _pieD/2;
@@ -75,12 +86,12 @@ protected Wedge[] getWedges()
     _pieY = ins.top + Math.round((ch - ins.getHeight() - _pieD)/2);
         
     // Iterate over angles and create/configure wedges
-    Wedge wedges[] = new Wedge[pointCount]; double start = 0;
+    Wedge wedges[] = new Wedge[angles.length]; double start = 0;
     for(int i=0; i<angles.length; i++) { double angle = angles[i];
         Wedge wedge = wedges[i] = new Wedge(); wedge._start = start; wedge._angle = angle;
         String text = series.getPoint(i).getKeyString();
         if(text!=null && text.length()>0)
-            wedge._text = text + ": " + _fmt.format(vals[i]/total);
+            wedge._text = text + ": " + _fmt.format(ratios[i]);
         start += angle;
     }
     
@@ -205,6 +216,9 @@ public void reactivate()
     DataSet dset = getActiveSet(); if(dset.getSeriesCount()==0 || dset.getPointCount()==0) return;
     DataPoint dp = dset.getSeries(0).getPoint(0);
     _disableMorph = true; _chartView.setSelDataPoint(dp); _disableMorph = false;
+    
+    // Fix padding to accommodate bottom label, if needed
+    fixPaddingForBottomLabelIfNeeded();
 }
 
 /**
@@ -251,10 +265,10 @@ void setLabelPoints(Wedge wedges[])
 }
 
 /** Changes padding to have an extra 20 points on bottom if label needed there. */
-void fixPaddingForBottomLabelIfNeeded(double angles[])
+void fixPaddingForBottomLabelIfNeeded()
 {
+    double angles[] = getAngles(), start = -90;
     boolean hasBottomWedge = false; Insets ins = getPadding();
-    double start = -90;
     for(double a : angles) { double ang = start + a/2;
         if(ang>60 && ang<120) { hasBottomWedge = true; break; } start += a; }
     if(hasBottomWedge && ins.bottom!=PAD_BOTTOM_MAX)
