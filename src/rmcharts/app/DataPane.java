@@ -135,7 +135,7 @@ void cellFiredAction(ListCell <DataSeries> aCell)
     DataSeries series = aCell.getItem();
     DataPoint dpoint = series.getPoint(col);
     dpoint.setValue(newVal);
-    aCell.getEventAdapter().clear();
+    runLater(() -> aCell.getEventAdapter().clear());
 }
 
 }
