@@ -75,7 +75,24 @@ protected void resetUI()
  */
 protected void respondUI(ViewEvent anEvent)
 {
+    // Handle ClearButton
+    if(anEvent.equals("ClearButton")) {
+        DataSet dset = getDataSet();
+        dset.clear();
+        dset.addSeriesForNameAndValues(null, 0);
+    }
     
+    // Handle SeriesSpinner
+    if(anEvent.equals("SeriesSpinner")) {
+        DataSet dset = getDataSet();
+        dset.setSeriesCount(anEvent.getIntValue());
+    }
+    
+    // Handle PointSpinner
+    if(anEvent.equals("PointSpinner")) {
+        DataSet dset = getDataSet();
+        dset.setPointCount(anEvent.getIntValue());
+    }
 }
 
 /**
@@ -130,6 +147,10 @@ void cellFiredAction(ListCell <DataSeries> aCell)
     // Get new value and col
     double newVal = SnapUtils.doubleValue(aCell.getText());
     int col = aCell.getCol();
+    
+    // If outside point count, add bogus point
+    if(col>=getDataSet().getPointCount())
+        getDataSet().setPointCount(col+1);
     
     // Get data point for series col and set value
     DataSeries series = aCell.getItem();

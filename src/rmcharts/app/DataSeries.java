@@ -40,14 +40,31 @@ public String getName()  { return _name; }
 public void setName(String aValue)  { _name = aValue; }
 
 /**
- * Returns the data points list.
- */
-public List <DataPoint> getPoints()  { return _points; }
-
-/**
  * Returns the number of points.
  */
 public int getPointCount()  { return _points.size(); }
+
+/**
+ * Sets the number of points.
+ */
+public void setPointCount(int aValue)
+{
+    // If silly value, just return
+    if(aValue<1 || aValue>1000) return;
+    
+    // If not enough points, add
+    while(aValue>getPointCount())
+        addPoint(null, null);
+        
+    // If too many points, remove
+    while(aValue<getPointCount())
+        removePoint(getPointCount()-1);
+}
+
+/**
+ * Returns the data points list.
+ */
+public List <DataPoint> getPoints()  { return _points; }
 
 /**
  * Returns the data point at given index.
@@ -58,26 +75,31 @@ public DataPoint getPoint(int anIndex)
 }
 
 /**
- * Sets the values.
+ * Adds a point.
  */
-public void setValues(double ... theVals)
+public void addPoint(DataPoint aPoint)
 {
-    _points.clear();
-    for(double v : theVals) addValue(null, v);
+    aPoint._series = this; aPoint._index = getPointCount();
+    _points.add(aPoint);
+    clearCache();
 }
 
 /**
- * Adds a value.
+ * Removes a point at given index.
  */
-public void addValue(String aName, double aValue)
+public DataPoint removePoint(int anIndex)
 {
-    DataPoint dpnt = new DataPoint();
-    dpnt._series = this;
-    dpnt._name = aName;
-    dpnt._index = getPointCount();
-    dpnt._y = aValue;
-    _points.add(dpnt);
+    DataPoint dpnt = _points.remove(anIndex);
     clearCache();
+    return dpnt;
+}
+
+/**
+ * Adds a point for name and value.
+ */
+public void addPoint(String aName, Double aValue)
+{
+    DataPoint dpnt = new DataPoint(); dpnt._name = aName; dpnt._y = aValue; addPoint(dpnt);
 }
 
 /**
@@ -86,6 +108,25 @@ public void addValue(String aName, double aValue)
 public double getValue(int anIndex)
 {
     DataPoint dp = getPoint(anIndex); return dp!=null? dp.getValue() : 0;
+}
+
+/**
+ * Sets the value at given index.
+ */
+public void setValue(Double aValue, int anIndex)
+{
+    while(anIndex>=getPointCount()) addPoint(null, null);
+    DataPoint dpnt = getPoint(anIndex);
+    dpnt.setValue(aValue);
+}
+
+/**
+ * Sets the values.
+ */
+public void setValues(double ... theVals)
+{
+    _points.clear();
+    for(double v : theVals) addPoint(null, v);
 }
 
 /**

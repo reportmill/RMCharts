@@ -516,15 +516,15 @@ protected void parseSeriesData(JSONNode aNode, DataSeries aSeries)
                 }
             }
             
-            // Add value
-            aSeries.addValue(name, val);
+            // Add point
+            aSeries.addPoint(name, val);
         }
         
         // Handle Node is number
         else {
             Number value = dataNode.getNumber();
             if(value!=null)
-                aSeries.addValue(null, value.doubleValue());
+                aSeries.addPoint(null, value.doubleValue());
         }
     }
 }

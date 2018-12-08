@@ -90,6 +90,7 @@ public double getDelta()  { return _delta; }
 private static List <Double> getIntervalsFor(double aMinValue, double aMaxValue, double aHeight, double aMinHeight)
 {
     // Find factor of 10 that is just below maxValue (10 ^ factor+1 is above)
+    if(aMinValue==aMaxValue) aMaxValue++;
     double bigValue = Math.max(Math.abs(aMinValue), Math.abs(aMaxValue));
     int pow = -10; double factor = Math.pow(10, pow);
     while(true) { if(factor<=bigValue && factor*10>=bigValue) break; pow++; factor = Math.pow(10,pow); }

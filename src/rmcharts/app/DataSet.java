@@ -46,6 +46,25 @@ public boolean isEmpty()  { return _series.isEmpty(); }
 public int getSeriesCount()  { return _series.size(); }
 
 /**
+ * Sets the number of series.
+ */
+public void setSeriesCount(int aValue)
+{
+    // Ignore silly values
+    if(aValue<1 || aValue>20) return;
+    
+    // If value larger than cound, create empty series
+    while(aValue>getSeriesCount()) {
+        DataSeries series = addSeriesForNameAndValues(null, 0);
+        series.setPointCount(getPointCount());
+    }
+    
+    // If value smaller than count, remove series
+    while(aValue<getSeriesCount())
+        removeSeries(getSeriesCount()-1);
+}
+
+/**
  * Returns the individual series at given index.
  */
 public DataSeries getSeries(int anIndex)  { return _series.get(anIndex); }
@@ -62,9 +81,33 @@ public void addSeries(DataSeries aSeries)
 }
 
 /**
+ * Removes the series at index.
+ */
+public DataSeries removeSeries(int anIndex)
+{
+    DataSeries series = _series.remove(anIndex);
+    clearCache();
+    return series;
+}
+
+/**
+ * Removes the given series.
+ */
+public int removeSeries(DataSeries aSeries)
+{
+    int index = _series.indexOf(aSeries);
+    if(index>=0) removeSeries(index);
+    return index;
+}
+
+/**
  * Clears the series.
  */
-public void clear()  { _series.clear(); }
+public void clear()
+{
+    _series.clear();
+    clearCache();
+}
 
 /**
  * Returns the minimum value for active series.
@@ -91,11 +134,12 @@ public double getMaxValue()
 /**
  * Adds a new series for given name and values.
  */
-public void addSeriesForNameAndValues(String aName, double ... theVals)
+public DataSeries addSeriesForNameAndValues(String aName, double ... theVals)
 {
     DataSeries series = new DataSeries(); series.setName(aName);
     addSeries(series);
     series.setValues(theVals);
+    return series;
 }
 
 /**
@@ -116,6 +160,15 @@ public void setSeriesStart(int aValue)
  * Returns the number of points in each series.
  */
 public int getPointCount()  { return _series.get(0).getPointCount(); }
+
+/**
+ * Sets the point count.
+ */
+public void setPointCount(int aValue)
+{
+    for(DataSeries series : getSeries())
+        series.setPointCount(aValue);
+}
 
 /**
  * Returns the intervals.

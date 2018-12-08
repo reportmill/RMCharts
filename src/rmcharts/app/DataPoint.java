@@ -18,7 +18,7 @@ public class DataPoint {
     Double       _x;
     
     // The data point y value
-    double       _y;
+    Double       _y;
     
     // The index
     int          _index;
@@ -46,12 +46,12 @@ public double getX()
 /**
  * Returns the Y value.
  */
-public double getY()  { return _y; }
+public double getY()  { return _y!=null? _y : 0; }
 
 /**
  * Sets the Y value.
  */
-public void setY(double aValue)
+public void setY(Double aValue)
 {
     if(aValue==getY()) return;
     _y = aValue;
@@ -108,12 +108,12 @@ public String getKeyString()
 /**
  * Return series value.
  */
-public double getValue()  { return _y; }
+public double getValue()  { return _y!=null? _y : 0; }
 
 /**
  * Sets series value.
  */
-public void setValue(double aValue)  { setY(aValue); }
+public void setValue(Double aValue)  { setY(aValue); }
 
 /**
  * Returns the DataPoint in chart area coords.
