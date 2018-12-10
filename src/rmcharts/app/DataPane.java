@@ -34,6 +34,7 @@ protected void initUI()
     _tableView.setShowHeader(true); _tableView.setEditable(true); _tableView.setCellPadding(new Insets(6));
     _tableView.setCellConfigure(c -> configureCell(c));
     _tableView.setCellConfigureEdit(c -> configureCellEdit(c));
+    _tableView.addEventHandler(e -> tableViewDidClick(e), MouseRelease);
     
     // Create box and return
     //ColView colView = new ColView(); colView.setPadding(25,5,5,5); colView.setFillWidth(true);
@@ -115,6 +116,17 @@ void resetTableColumns()
     // Configure last (empty) column to be zero size
     TableCol lastCol = _tableView.getCol(pointCount);
     lastCol.setPrefWidth(0); lastCol.setGrowWidth(true);
+}
+
+/**
+ * Called when tableView is clicked to start cell edit.
+ */
+void tableViewDidClick(ViewEvent anEvent)
+{
+    if(anEvent.isMouseClick()) {
+        ListCell cell = _tableView.getCellAtXY(anEvent.getX(), anEvent.getY());
+        if(cell!=null) _tableView.editCell(cell);
+    }
 }
 
 /**
