@@ -118,7 +118,7 @@ public ChartView()
     // Set sample values
     //setTitle("Sample Growth by Sector, 2012-2018");
     _dataSet.addSeriesForNameAndValues("Sample", 1, 2, 2, 3, 4, 4, 5);
-    reloadContents();
+    reloadContents(true);
 }
 
 /**
@@ -136,7 +136,7 @@ public void setType(String aType)
     // Get ChartArea for type, set in ChartView and reload contents
     ChartArea chartArea = _chartTypes.getChart(aType);
     setChartArea(chartArea);
-    reloadContents();
+    reloadContents(true);
 }
 
 /**
@@ -254,7 +254,7 @@ public boolean isShowPartialY()  { return _showPartialY; }
 public void setShowPartialY(boolean aValue)
 {
     if(aValue==_showPartialY) return;
-    _showPartialY = aValue; reloadContents();
+    _showPartialY = aValue; reloadContents(true);
 }
 
 /**
@@ -268,7 +268,7 @@ public Color[] getColors()  { return _colors; }
 public void setColors(Color ... theColors)
 {
     _colors = theColors;
-    reloadContents();
+    reloadContents(true);
 }
 
 /**
@@ -338,11 +338,11 @@ public void setTargDataPoint(DataPoint aDP)
 /**
  * Reloads chart view contents.
  */
-public void reloadContents()
+public void reloadContents(boolean doAnim)
 {
     _legend.reloadContents();
     _chartArea.reactivate();
-    _chartArea.animate();
+    if(doAnim) _chartArea.animate();
     _yaxis.repaint();
     _xaxis.repaint();
 }
@@ -366,7 +366,7 @@ public void loadFromString(String aStr)
     ChartParser parser = new ChartParser(this);
     parser.parseString(aStr);
     if(_dataSet.isEmpty()) _dataSet.addSeriesForNameAndValues("Sample", 1, 2, 3, 3, 4, 5);
-    reloadContents();
+    reloadContents(true);
 }
 
 /**

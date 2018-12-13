@@ -228,7 +228,7 @@ protected void clearCache()
 {
     _active = null; _minVal = Float.MAX_VALUE; _maxVal = -Float.MAX_VALUE;
     _chartView.getChartArea().clearCache();
-    _chartView.repaint();
+    _chartView.reloadContents(false);
 }
 
 }

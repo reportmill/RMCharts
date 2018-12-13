@@ -69,7 +69,7 @@ void rowWasClicked(RowView aRow)
     series.setDisabled(!series.isDisabled());
     
     // Redraw chart and reload legend
-    chart.reloadContents();
+    chart.reloadContents(true);
 }
 
 }

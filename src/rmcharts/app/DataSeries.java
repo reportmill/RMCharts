@@ -37,7 +37,11 @@ public String getName()  { return _name; }
 /**
  * Sets the name.
  */
-public void setName(String aValue)  { _name = aValue; }
+public void setName(String aValue)
+{
+    _name = aValue;
+    clearCache();
+}
 
 /**
  * Returns the number of points.

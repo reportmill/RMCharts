@@ -35,6 +35,8 @@ protected void initUI()
     _tableView.setCellConfigure(c -> configureCell(c));
     _tableView.setCellConfigureEdit(c -> configureCellEdit(c));
     _tableView.addEventHandler(e -> tableViewDidClick(e), MouseRelease);
+    _tableView.getHeaderCol().getHeader().setText("Series Name");
+    _tableView.setShowHeaderCol(true);
     
     // Create box and return
     //ColView colView = new ColView(); colView.setPadding(25,5,5,5); colView.setFillWidth(true);
@@ -134,9 +136,12 @@ void tableViewDidClick(ViewEvent anEvent)
  */
 void configureCell(ListCell <DataSeries> aCell)
 {
+    aCell.getStringView().setMinSize(40, aCell.getFont().getLineHeight());
     DataSeries series = aCell.getItem(); if(series==null) return;
     DataSet dset = getDataSet();
-    int col = aCell.getCol(), colCount = dset.getPointCount(); if(col>=colCount) { aCell.setText(null); return;}
+    int col = aCell.getCol(), colCount = dset.getPointCount();
+    if(col<0) { aCell.setText(series.getName()); return; }
+    if(col>=colCount) { aCell.setText(null); return;}
     Double val = series.getValue(col);
     aCell.setText(val!=null? StringUtils.toString(val) : null);
     aCell.setAlign(HPos.RIGHT);
@@ -157,15 +162,20 @@ void configureCellEdit(ListCell <DataSeries> aCell)
 void cellFiredAction(ListCell <DataSeries> aCell)
 {
     // Get new value and col
-    double newVal = SnapUtils.doubleValue(aCell.getText());
+    String text = aCell.getText();
+    double newVal = SnapUtils.doubleValue(text);
+    DataSeries series = aCell.getItem();
     int col = aCell.getCol();
+    
+    // If header column, set series name and return
+    if(col<0) {
+        series.setName(text); return; }
     
     // If outside point count, add bogus point
     if(col>=getDataSet().getPointCount())
         getDataSet().setPointCount(col+1);
     
     // Get data point for series col and set value
-    DataSeries series = aCell.getItem();
     DataPoint dpoint = series.getPoint(col);
     dpoint.setValue(newVal);
     runLater(() -> aCell.getEventAdapter().clear());
