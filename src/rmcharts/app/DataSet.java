@@ -55,7 +55,7 @@ public void setSeriesCount(int aValue)
     
     // If value larger than cound, create empty series
     while(aValue>getSeriesCount()) {
-        DataSeries series = addSeriesForNameAndValues(null, 0);
+        DataSeries series = addSeriesForNameAndValues((String)null, (Double)null);
         series.setPointCount(getPointCount());
     }
     
@@ -134,7 +134,7 @@ public double getMaxValue()
 /**
  * Adds a new series for given name and values.
  */
-public DataSeries addSeriesForNameAndValues(String aName, double ... theVals)
+public DataSeries addSeriesForNameAndValues(String aName, Double ... theVals)
 {
     DataSeries series = new DataSeries(); series.setName(aName);
     addSeries(series);
@@ -168,6 +168,17 @@ public void setPointCount(int aValue)
 {
     for(DataSeries series : getSeries())
         series.setPointCount(aValue);
+}
+
+/**
+ * Returns whether slice at point index is empty.
+ */
+public boolean isSliceEmpty(int anIndex)
+{
+    for(DataSeries ser : getSeries())
+        if(ser.getPoint(anIndex).isValueSet())
+            return false;
+    return true;
 }
 
 /**

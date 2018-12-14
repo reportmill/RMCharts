@@ -31,7 +31,7 @@ public List <Path> getSeriesPaths()
         Path path = new Path(); paths.add(path);
         
         // Iterate over values
-        for(int j=0;j<pointCount;j++) { double val = series.getValue(j);
+        for(int j=0;j<pointCount;j++) { double val = series.getValueX(j);
             Point p = seriesToLocal(j, val);
             if(j==0) path.moveTo(p.x,p.y); else path.lineTo(p.x,p.y);
         }
@@ -69,7 +69,7 @@ protected void paintChart(Painter aPntr, double aX, double aY, double aW, double
     for(int i=0; i<scount;i++) { DataSeries series = seriesList.get(i);
     
         // Iterate over values
-        for(int j=0;j<pointCount;j++) { double val = series.getValue(j);
+        for(int j=0;j<pointCount;j++) { double val = series.getValueX(j);
         
             Point p = seriesToLocal(j, val);
             

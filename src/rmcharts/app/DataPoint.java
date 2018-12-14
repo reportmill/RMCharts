@@ -53,7 +53,7 @@ public double getY()  { return _y!=null? _y : 0; }
  */
 public void setY(Double aValue)
 {
-    if(aValue==getY()) return;
+    if(aValue==_y) return;
     _y = aValue;
     clearCache();
 }
@@ -106,14 +106,24 @@ public String getKeyString()
 }
 
 /**
+ * Returns whether value is set.
+ */
+public boolean isValueSet()  { return _y!=null; }
+
+/**
  * Return series value.
  */
-public double getValue()  { return _y!=null? _y : 0; }
+public Double getValue()  { return _y; }
 
 /**
  * Sets series value.
  */
 public void setValue(Double aValue)  { setY(aValue); }
+
+/**
+ * Return series value or zero (if null).
+ */
+public double getValueX()  { return _y!=null? _y : 0; }
 
 /**
  * Returns the DataPoint in chart area coords.

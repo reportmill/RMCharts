@@ -146,7 +146,7 @@ public Point seriesToLocal(double aX, double aY)
  */
 public Point dataPointInLocal(DataPoint aDP)
 {
-    int index = aDP.getIndex(); double y = aDP.getValue();
+    int index = aDP.getIndex(); double y = aDP.getValueX();
     return seriesToLocal(index, y);
 }
 
@@ -235,7 +235,7 @@ protected DataPoint getDataPointAt(double aX, double aY)
     List <DataSeries> seriesList = getActiveSeries();
     for(int i=0;i<seriesList.size();i++) { DataSeries series = seriesList.get(i);
         for(int j=0;j<getPointCount();j++) {
-            Point pnt = seriesToLocal(j,series.getValue(j));
+            Point pnt = seriesToLocal(j,series.getValueX(j));
             double d = Point.getDistance(aX, aY, pnt.x, pnt.y);
             if(d<dist) { dist = d;
                 dataPoint = series.getPoint(j); }

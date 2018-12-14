@@ -117,7 +117,7 @@ public ChartView()
     
     // Set sample values
     //setTitle("Sample Growth by Sector, 2012-2018");
-    _dataSet.addSeriesForNameAndValues("Sample", 1, 2, 2, 3, 4, 4, 5);
+    _dataSet.addSeriesForNameAndValues("Sample", 1d, 2d, 2d, 3d, 4d, 5d);
     reloadContents(true);
 }
 
@@ -365,7 +365,7 @@ public void loadFromString(String aStr)
     _dataSet.clear();
     ChartParser parser = new ChartParser(this);
     parser.parseString(aStr);
-    if(_dataSet.isEmpty()) _dataSet.addSeriesForNameAndValues("Sample", 1, 2, 3, 3, 4, 5);
+    if(_dataSet.isEmpty()) _dataSet.addSeriesForNameAndValues("Sample", 1d, 2d, 3d, 3d, 4d, 5d);
     reloadContents(true);
 }
 

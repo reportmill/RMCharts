@@ -125,7 +125,7 @@ protected Section[] getSections()
         // Iterate over series
         for(int j=0;j<_seriesCount;j++) { DataSeries series = seriesList.get(j);
             DataPoint dataPoint = series.getPoint(i);
-            double val = dataPoint.getValue();
+            double val = dataPoint.getValueX();
             
             // Draw bar
             Color color = colorSeries? getColor(series.getIndex()) : getColor(i);

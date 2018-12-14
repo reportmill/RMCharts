@@ -109,9 +109,17 @@ public void addPoint(String aName, Double aValue)
 /**
  * Returns the value at given index.
  */
-public double getValue(int anIndex)
+public Double getValue(int anIndex)
 {
-    DataPoint dp = getPoint(anIndex); return dp!=null? dp.getValue() : 0;
+    DataPoint dp = getPoint(anIndex); return dp!=null? dp.getValue() : null;
+}
+
+/**
+ * Returns the value at given index.
+ */
+public double getValueX(int anIndex)
+{
+    DataPoint dp = getPoint(anIndex); return dp!=null? dp.getValueX() : 0;
 }
 
 /**
@@ -127,10 +135,10 @@ public void setValue(Double aValue, int anIndex)
 /**
  * Sets the values.
  */
-public void setValues(double ... theVals)
+public void setValues(Double ... theVals)
 {
     _points.clear();
-    for(double v : theVals) addPoint(null, v);
+    for(Double v : theVals) addPoint(null, v);
 }
 
 /**
@@ -149,7 +157,7 @@ public double[] getValues()
 {
     if(_vals!=null) return _vals;
     int count = getPointCount(); _total = 0;
-    double vals[] = new double[count]; for(int i=0;i<count;i++) { double v = getValue(i); vals[i] = v; _total += v; }
+    double vals[] = new double[count]; for(int i=0;i<count;i++) { double v = getValueX(i); vals[i] = v; _total += v; }
     return _vals = vals;
 }
 
@@ -206,7 +214,7 @@ public boolean isEnabled()  { return !_disabled; }
 public double getMinValue()
 {
     double minVal = Float.MAX_VALUE;
-    for(DataPoint dp : _points) if(dp.getValue()<minVal) minVal = dp.getValue();
+    for(DataPoint dp : _points) if(dp.getValueX()<minVal) minVal = dp.getValueX();
     return minVal;
 }
 
@@ -216,8 +224,18 @@ public double getMinValue()
 public double getMaxValue()
 {
     double maxVal = -Float.MAX_VALUE;
-    for(DataPoint dp : _points) if(dp.getValue()>maxVal) maxVal = dp.getValue();
+    for(DataPoint dp : _points) if(dp.getValueX()>maxVal) maxVal = dp.getValueX();
     return maxVal;
+}
+
+/**
+ * Returns whether series is clear (no name and no values).
+ */
+public boolean isClear()
+{
+    if(getName()!=null && getName().length()>0) return false;
+    for(DataPoint dp : getPoints()) if(dp.isValueSet()) return false;
+    return true;
 }
 
 /**

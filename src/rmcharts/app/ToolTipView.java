@@ -75,7 +75,7 @@ protected void reloadContentsNow()
     // Get series and value
     DataSeries series = dataPoint.getSeries();
     String selKey = dataPoint.getKeyString();
-    double selValue = dataPoint.getValue();
+    double selValue = dataPoint.getValueX();
         
     // Remove children and reset opacity, padding and spacing
     removeChildren(); setOpacity(1);
