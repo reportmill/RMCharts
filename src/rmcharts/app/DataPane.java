@@ -36,9 +36,9 @@ protected void initUI()
     _tableView = getView("TableView", TableView.class);
     _tableView.setShowHeader(true); _tableView.setEditable(true); _tableView.setCellPadding(new Insets(6));
     _tableView.setCellConfigure(c -> configureCell(c));
-    _tableView.setCellEditBegin(c -> cellEditBegin(c));
+    _tableView.setCellEditStart(c -> cellEditStart(c));
     _tableView.setCellEditEnd(c -> cellEditEnd(c));
-    _tableView.addEventHandler(e -> tableViewDidClick(e), MouseRelease);
+    _tableView.addEventHandler(e -> tableViewDidMousePress(e), MousePress);
     _tableView.getHeaderCol().getHeader().setText("Series Name");
     _tableView.setShowHeaderCol(true);
     
@@ -82,6 +82,16 @@ protected void resetUI()
  */
 protected void respondUI(ViewEvent anEvent)
 {
+    // Handle TableView
+    if(anEvent.equals("TableView")) {
+        //trimDataSet();
+        //ListCell cell = _tableView.getSelCell();
+        //if(cell!=null) {
+        //    expandDataSet(cell.getRow(), cell.getCol());
+        //    ViewUtils.runOnMouseUp(() -> _tableView.editCell(cell));
+        //}
+    }
+    
     // Handle ClearButton
     if(anEvent.equals("ClearButton")) {
         DataSet dset = getDataSet();
@@ -125,26 +135,28 @@ void resetTableColumns()
 }
 
 /**
- * Called when tableView is clicked to start cell edit.
+ * Called when tableView gets mouse press to start cell edit.
  */
-void tableViewDidClick(ViewEvent anEvent)
+void tableViewDidMousePress(ViewEvent anEvent)
 {
-    if(anEvent.isMouseClick()) {
-        ListCell cell = _tableView.getCellAtXY(anEvent.getX(), anEvent.getY());
-        if(cell!=null) {
-            int row = cell.getRow(), col = cell.getCol();
-            if(row<getDataSet().getSeriesCount() && col<getDataSet().getPointCount())
-                _tableView.editCell(cell);
-            else {
-                checkDataSetBounds(row, col);
-                resetLater();
-                getEnv().runLater(() -> {
-                    _tableView.setSelCell(row, col);
-                    getEnv().runLater(() -> _tableView.editCell(_tableView.getCell(row,col)));
-                });
-            }
-        }
+    // Get cell at event point (if none, just return)
+    ListCell cell = _tableView.getCellAtXY(anEvent.getX(), anEvent.getY()); if(cell==null) return;
+
+    // If row/col inside dataset bounds, edit
+    int row = cell.getRow(), col = cell.getCol();
+    if(row>=getDataSet().getSeriesCount() || col>=getDataSet().getPointCount()) {
+        expandDataSet(row, col);
+        resetLater();
+        runLater(() -> _tableView.setSelCell(row, col));
     }
+        
+    // Start edit on MouseUp
+    ViewUtils.runOnMouseUp(() -> {
+        ListCell cell2 = _tableView.getSelCell();
+        if(cell2!=null)
+            _tableView.editCell(cell2);
+        else System.err.println("tableViewMouseUP: WTF?");
+    });
 }
 
 /**
@@ -153,7 +165,7 @@ void tableViewDidClick(ViewEvent anEvent)
 void configureCell(ListCell <DataSeries> aCell)
 {
     // Make sure empty cells are minimum size
-    aCell.getStringView().setMinSize(40, aCell.getFont().getLineHeight());
+    aCell.getStringView().setMinSize(40, Math.ceil(aCell.getFont().getLineHeight()));
     
     // Get DataSet and cell series
     DataSet dset = getDataSet();
@@ -173,10 +185,9 @@ void configureCell(ListCell <DataSeries> aCell)
 /**
  * Called when cell starts editing.
  */
-void cellEditBegin(ListCell <DataSeries> aCell)
+void cellEditStart(ListCell <DataSeries> aCell)
 {
     aCell.setEditing(true);
-    aCell.addEventHandler(_cellEditLsnr = e -> cellFiredAction(aCell), Action);
 }
 
 /**
@@ -184,35 +195,31 @@ void cellEditBegin(ListCell <DataSeries> aCell)
  */
 void cellEditEnd(ListCell <DataSeries> aCell)
 {
-    aCell.removeEventHandler(_cellEditLsnr, Action); _cellEditLsnr = null;
-    trimDataSet();
-}
-
-/**
- * Called when cell is edited and fires action.
- */
-void cellFiredAction(ListCell <DataSeries> aCell)
-{
     // Get new value and col
-    String text = aCell.getEditor().getText();
+    String text = aCell.getText();
     Double newVal = text!=null && text.length()>0? SnapUtils.doubleValue(text) : null;
     DataSeries series = aCell.getItem();
     int row = aCell.getRow(), col = aCell.getCol();
     
     // If header column, set series name and return
-    if(col<0) {
-        series.setName(text); return; }
+    if(col<0)
+        series.setName(text);
     
     // Get data point for series col and set value
-    DataPoint dpoint = series.getPoint(col);
-    dpoint.setValue(newVal);
-    _tableView.updateItems(series);
+    else {
+        DataPoint dpoint = series.getPoint(col);
+        dpoint.setValue(newVal);
+        _tableView.updateItems(series);
+    }
+    
+    // Trim DataSet
+    trimDataSet();
 }
 
 /**
  * Updates DataSet Series count and Point count to include given row/col.
  */
-void checkDataSetBounds(int aRow, int aCol)
+void expandDataSet(int aRow, int aCol)
 {
     DataSet dset = getDataSet();
     if(aRow>=dset.getSeriesCount())
