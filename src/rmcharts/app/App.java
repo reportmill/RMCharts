@@ -16,7 +16,6 @@ public class App extends Object {
 public static void main(String args[])
 {
     snaptea.TV.set();
-    
     if(SnapUtils.isTeaVM) {
         showChart();       //chartPane.getWindow().setMaximized(true);
     }

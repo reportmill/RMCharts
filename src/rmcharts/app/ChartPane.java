@@ -100,6 +100,11 @@ protected View createUI()
     _tabView.setFont(Font.Arial13);
     _tabView.setVisible(false);
     
+    getEnv().runDelayed(() -> {
+        setShowFull(true);
+        _tabView.setSelIndex(1);
+    }, 100, true);
+    
     // Create ColView
     ColView col = new ColView(); col.setFillWidth(true); col.setGrowHeight(true); col.setFill(new Color(.93));
     col.setChildren(_chartBox, _tabView);
