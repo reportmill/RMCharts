@@ -10,19 +10,19 @@ import snap.view.*;
 public class SheetView extends TableView <Object> {
 
     // The min row/col counts
-    int               _minRowCount, _minColCount;
+    int                  _minRowCount, _minColCount;
     
     // The extra row/col counts
-    int               _extraRowCount = 1, _extraColCount = 1;
+    int                  _extraRowCount = 1, _extraColCount = 1;
     
-    // The extra column width
-    double            _extraColWidth = 80;
+    // The default preferred width of columns
+    double               _prefColWidth = 80;
     
-    // The Cell Configure method
-    Consumer <Label>  _headerConf;
+    // The Column Configure method
+    Consumer <TableCol>  _colConf;
     
     // The Rebuild run
-    Runnable          _rebuildRun, _rebuildRunCached = () -> { rebuildNow(); _rebuildRun = null; };
+    Runnable             _rebuildRun, _rebuildRunCached = () -> { rebuildNow(); _rebuildRun = null; };
     
 /**
  * Creates a SheetView.
@@ -91,28 +91,28 @@ public void setExtraColCount(int aValue)
 }
 
 /**
- * Returns the extra col count.
+ * Returns the default preferred width of columns.
  */
-public double getExtraColWidth()  { return _extraColWidth; }
+public double getPrefColWidth()  { return _prefColWidth; }
 
 /**
- * Sets the extra col count.
+ * Sets the default preferred width of columns.
  */
-public void setExtraColWidth(double aValue)
+public void setPrefColWidth(double aValue)
 {
-    _extraColWidth = aValue;
+    _prefColWidth = aValue;
     rebuild();
 }
 
 /**
- * Returns method to configure header labels.
+ * Returns method to configure column (and column header).
  */
-public Consumer <Label> getHeaderConfigure()  { return _headerConf; }
+public Consumer <TableCol> getColConfigure()  { return _colConf; }
 
 /**
- * Sets method to configure header labels.
+ * Sets method to configure column (and column header).
  */
-public void setHeaderConfigure(Consumer<Label> aHC)  { _headerConf = aHC; }
+public void setColConfigure(Consumer <TableCol> aCC)  { _colConf = aCC; }
 
 /**
  * Return column at index, adding if needed.
@@ -120,7 +120,7 @@ public void setHeaderConfigure(Consumer<Label> aHC)  { _headerConf = aHC; }
 public TableCol getColForce(int anIndex)
 {
     // If column count too low, add columns
-    if(anIndex>=getColCount()) { double colWidth = getExtraColWidth();
+    if(anIndex>=getColCount()) { double colWidth = getPrefColWidth();
         while(anIndex>=getColCount()) {
             TableCol col = new TableCol(); col.setPrefWidth(colWidth); col.setWidth(colWidth);
             Label header = col.getHeader(); header.setAlign(HPos.CENTER);
@@ -166,8 +166,8 @@ protected void rebuildNow()
         }
     }
     
-    // Reset headers
-    resetHeaders();
+    // Configure columns/headers
+    configureColumns();
     
     // Calculate row count
     int rowCount = getMinRowCount() + getExtraRowCount();
@@ -198,16 +198,15 @@ protected void rebuildNow()
 }
 
 /**
- * Called to reset headers.
+ * Called to configure columns/headers.
  */
-protected void resetHeaders()
+protected void configureColumns()
 {
-    Consumer <Label> hdrConf = getHeaderConfigure();
-    for(int i=0;i<getMinColCount();i++) {
+    Consumer <TableCol> colConf = getColConfigure();
+    for(int i=0;i<getColCount();i++) {
         TableCol col = getCol(i);
-        Label header = col.getHeader();
-        if(hdrConf!=null) hdrConf.accept(header);
-        else header.setText(String.valueOf((char)('A' + i)));
+        if(colConf!=null) colConf.accept(col);
+        else col.getHeader().setText(String.valueOf((char)('A' + i)));
     }
 }
 

@@ -35,8 +35,8 @@ protected void initUI()
 {
     _sheetView = getView("SheetView", SheetView.class);
     _sheetView.setCellConfigure(c -> configureCell(c));  //_sheetView.setCellEditStart(c -> cellEditStart(c));
+    _sheetView.setColConfigure(c -> configureColumn(c));
     _sheetView.setCellEditEnd(c -> cellEditEnd(c));
-    _sheetView.getHeaderCol().getHeader().setText("Series");
 }
 
 /**
@@ -108,6 +108,29 @@ void configureCell(ListCell aCell)
     Double val = series.getValue(col-1);
     aCell.setText(val!=null? StringUtils.toString(val) : null);
     aCell.setAlign(HPos.RIGHT);
+}
+
+/**
+ * Configures a table column.
+ */
+void configureColumn(TableCol aCol)
+{
+    // Get dataset, series and column index
+    DataSet dset = getDataSet();
+    DataSeries series = dset.getSeries(0);
+    int col = aCol.getColIndex(); if(col>dset.getPointCount()) return;
+    
+    // Handle first column: Set header to "Series Name" (left aligned) with adjustable width
+    if(col==0) {
+        Label hdr = aCol.getHeader(); hdr.setText("Series Name"); hdr.setAlign(HPos.LEFT);
+        aCol.setPrefWidth(-1);
+        return;
+    }
+    
+    // Set the rest of column headers to Series.Point[i].KeyString
+    DataPoint dpnt = series.getPoint(col-1);
+    String hdrText = dpnt.getKeyString();
+    aCol.getHeader().setText(hdrText);
 }
 
 /**
