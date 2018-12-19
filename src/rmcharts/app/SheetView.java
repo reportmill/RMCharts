@@ -32,6 +32,8 @@ public SheetView()
     setShowHeader(true); setEditable(true); setCellPadding(new Insets(6));
     setShowHeaderCol(true);
     getHeaderCol().setPrefWidth(35);
+    
+    getScrollView().getScroller().addPropChangeListener(pc -> rebuild(), Width_Prop, Height_Prop);
 }
 
 /**
@@ -179,7 +181,7 @@ protected void rebuildNow()
         items.add(items.size());
     
     // If still extra height, add more extra rows
-    double totalHeight = items.size()*rowHeight, tableHeight = getScrollView().getHeight();
+    double totalHeight = items.size()*rowHeight, tableHeight = getScrollView().getScroller().getHeight();
     if(totalHeight<tableHeight) while(totalHeight<tableHeight) {
         items.add(items.size()); totalHeight += rowHeight; }
     
@@ -222,15 +224,5 @@ protected void configureCell(TableCol <Object> aCol, ListCell <Object> aCell)
     // Do normal version
     super.configureCell(aCol, aCell);
 }
-
-/**
- * Override to rebuild.
- */
-public void setWidth(double aValue)  { if(aValue==getWidth()) return; super.setWidth(aValue); rebuild(); }
-
-/**
- * Override to rebuild.
- */
-public void setHeight(double aValue)  { if(aValue==getHeight()) return; super.setHeight(aValue); rebuild(); }
 
 }
