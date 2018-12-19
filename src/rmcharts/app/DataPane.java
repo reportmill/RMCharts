@@ -167,6 +167,7 @@ void cellEditEnd(ListCell aCell)
     // Update row and trim DataSet in case series/points were cleared
     _sheetView.updateItems(aCell.getItem());
     trimDataSet();
+    resetLater();
 }
 
 /**
