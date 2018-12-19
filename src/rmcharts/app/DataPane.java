@@ -65,7 +65,8 @@ protected void respondUI(ViewEvent anEvent)
     if(anEvent.equals("ClearButton")) {
         DataSet dset = getDataSet();
         dset.clear();
-        dset.addSeriesForNameAndValues(null, 0d);
+        dset.addSeriesForNameAndValues("Series 1", 1d, 2d, 3d);
+        _sheetView.setSelCell(0,0); _sheetView.requestFocus();
     }
     
     // Handle SeriesSpinner
