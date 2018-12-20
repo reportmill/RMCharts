@@ -119,7 +119,7 @@ void configureColumn(TableCol aCol)
     // Get dataset, series and column index
     DataSet dset = getDataSet();
     DataSeries series = dset.getSeries(0);
-    int col = aCol.getColIndex(); if(col>dset.getPointCount()) return;
+    int col = aCol.getColIndex(); if(col>dset.getPointCount()) { aCol.getHeader().setText(null); return; }
     
     // Handle first column: Set header to "Series Name" (left aligned) with adjustable width
     if(col==0) {
