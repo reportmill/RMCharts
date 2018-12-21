@@ -21,6 +21,9 @@ public class ChartPane extends ViewOwner {
     // The TabView
     TabView       _tabView;
     
+    // The TextView
+    TextView      _textView;
+    
     // The Options button
     Button        _optionButton;
 
@@ -86,10 +89,10 @@ protected View createUI()
     View dataPaneUI = dataPane.getUI();
 
     // Create TextView
-    TextView textView = new TextView();
-    textView.setDefaultStyle(textView.getDefaultStyle().copyFor(Font.Arial14));
-    textView.setSource(WebURL.getURL(ChartPane.class, "Sample.json"));
-    BoxView textBox = new BoxView(textView, true, true); textBox.setFill(new Color(.93)); textBox.setPadding(4,4,4,4);
+    _textView = new TextView();
+    _textView.setDefaultStyle(_textView.getDefaultStyle().copyFor(Font.Arial14));
+    _textView.setSource(WebURL.getURL(ChartPane.class, "Sample.json"));
+    BoxView textBox = new BoxView(_textView, true, true); textBox.setFill(new Color(.93)); textBox.setPadding(4,4,4,4);
     textBox.setGrowHeight(true); textBox.setPrefHeight(400);
     
     // Create TabView
@@ -118,6 +121,15 @@ protected void respondUI(ViewEvent anEvent)
     if(anEvent.equals("OptionButton")) {
         if(ViewUtils.isAltDown()) getUI(SplitView.class).setItemVisibleWithAnim(_tabView, !_tabView.isVisible());
         else setShowFull(!isShowFull());
+    }
+    
+    // Handle TabView
+    if(anEvent.equals(_tabView) && _tabView.getSelIndex()==2) {
+        String str0 = "<script src=\"RMCharts.js\"></script>\n";
+        String str1 = "var params = " + new ChartWriter(_chartView).getString() + ";\n\n";
+        String str2 = "window.onload = function() { ReportMill.chart(\"container\", params); }\n\n";
+        String str3 = str0 + "<script>\n\n" + str1 + str2 + "</script>";
+        _textView.setText(str3);
     }
 }
 

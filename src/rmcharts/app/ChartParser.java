@@ -138,8 +138,8 @@ protected void parseXAxisCategories(JSONNode aNode)
  */
 protected void parseXAxisLabels(JSONNode aNode)
 {
-    // Get YAxis
-    ChartYAxis yaxis = _chartView.getYAxis();
+    // Get XAxis
+    ChartXAxis xaxis = _chartView.getXAxis();
 
     // Iterate over nodes
     for(JSONNode child : aNode.getNodes()) { String key = child.getKey();
