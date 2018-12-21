@@ -113,7 +113,7 @@ protected void writeList(List aList)
  */
 protected void writeColor(Color aColor)
 {
-    System.err.println("MapWriter.writeColor: Not impl");
+    writeValue(aColor.toHexString());
 }
 
 /**

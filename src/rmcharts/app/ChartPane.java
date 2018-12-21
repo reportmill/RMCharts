@@ -125,11 +125,8 @@ protected void respondUI(ViewEvent anEvent)
     
     // Handle TabView
     if(anEvent.equals(_tabView) && _tabView.getSelIndex()==2) {
-        String str0 = "<script src=\"RMCharts.js\"></script>\n";
-        String str1 = "var params = " + new ChartWriter(_chartView).getString() + ";\n\n";
-        String str2 = "window.onload = function() { ReportMill.chart(\"container\", params); }\n\n";
-        String str3 = str0 + "<script>\n\n" + str1 + str2 + "</script>";
-        _textView.setText(str3);
+        String str = new ChartWriter(_chartView).getStringWithHTML();
+        _textView.setText(str);
     }
 }
 

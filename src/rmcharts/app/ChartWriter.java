@@ -27,6 +27,32 @@ public String getString()
 }
 
 /**
+ * Returns a String for chart with <Script> tags.
+ */
+public String getStringWithScript()
+{
+    String str0 = "<script src=\"http://reportmill.com/rmc/RMCharts.js\" defer></script>\n";
+    String str1 = "var params = " + getString() + ";\n\n";
+    String str2 = "window.onload = function() { ReportMill.chart(\"container\", params); }\n\n";
+    String str3 = str0 + "<script defer>\n\n" + str1 + str2 + "</script>";
+    return str3;
+}
+
+/**
+ * Returns a String for chart with <Script> tags.
+ */
+public String getStringWithHTML()
+{
+    String str0 = "<HTML>\n<head>\n\n";
+    String str1 = getStringWithScript();
+    String str2 = "\n\n</head>\n\n<body>\n\n";
+    String str3 = "<div id=\"container\" ";
+    String str4 = "style=\"min-width:310px;max-width:800px;height:400px;box-shadow:1px 2px 4px grey;\"></div>\n\n";
+    String str5 = "</body>\n</HTML>";
+    return str0 + str1 + str2 + str3 + str4 + str5;
+}
+
+/**
  * Write chart to map.
  */
 public Map writeAll()
